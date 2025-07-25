@@ -5,7 +5,7 @@ generate_tree <- function(features, depth = 1, max_depth = 5, p_stop = 0.3) {
     return(list(prediction = paste("Class", sample(LETTERS, 1))))
   }
 
-  # Randomly choose a feature - to be replaced with Informartion Gain & Gini Impurity functions for feature selection
+  # Randomly choose a feature - to be replaced with (Informartion Gain/Gain Ration/Gini Impurity) functions for feature selection
   split_feature <- sample(features, 1)
   # Randomly chose a split value - SVM for optimal value
   split_value <- round(runif(1, 0, 10), 2)  # Random split between 0 and 10

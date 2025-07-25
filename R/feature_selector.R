@@ -73,3 +73,28 @@ gain_ratio <- function(target, feature) {
 
   ig / si
 }
+
+
+
+## Wrapper Function for Feature Selection Criteria
+feature_selector <- function(target, features, criteria_type = c("gini", "info_gain", "gain_ratio")){
+  if (criteria_type == "gini"){
+    scores <- sapply(iris[, names(iris) != 'Species'], gini)
+    return(sort(scores)[1])
+  }
+  else if(criteria_type == "info_gain"){
+    scores <- sapply(features, function(feature) {
+      info_gain(feature, target)
+    })
+    return(sort(scores, decreasing = TRUE)[1])
+  }
+  else if(criteria_type == "gain_ratio"){
+    scores <- sapply(features, function(feature) {
+      gain_ratio(feature, target)
+    })
+    return(sort(scores, decreasing = TRUE)[1])
+  }
+  else{
+    stop("Please Select a Valid Criteria!")
+  }
+}
