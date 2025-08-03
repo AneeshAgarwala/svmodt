@@ -2,24 +2,20 @@ generate_tree <- function(target, features, criteria_type = c("gini", "info_gain
                           depth = 1, max_depth = 5, p_stop = 0.3) {
 
   # Helper: Safe majority class prediction
-  majority_prediction <- function(vec) {
+  class_probabilities <- function(vec) {
     f <- factor(vec)
-    if (length(f) == 0 || all(is.na(f))) {
-      return(NA)
-    } else {
-      counts <- tabulate(f)
-      if (length(counts) == 0) {
-        return(NA)
-      } else {
-        return(levels(f)[which.max(counts)])
-      }
-    }
+    counts <- tabulate(f)
+    probs <- counts / sum(counts)
+    names(probs) <- levels(f)
+    return(probs)
   }
+
 
   # Stopping condition
   if (depth >= max_depth || runif(1) < p_stop || length(unique(target)) == 1) {
-    prediction <- majority_prediction(target)
-    return(list(prediction = prediction))
+    probs <- class_probabilities(target)
+    prediction <- names(probs)[which.max(probs)]
+    return(list(prediction = prediction, probs = probs))
   }
 
   # Select best feature using selected criteria
@@ -35,8 +31,9 @@ generate_tree <- function(target, features, criteria_type = c("gini", "info_gain
 
   # Edge case: if either side is empty, stop recursion
   if (all(!left_idx) || all(!right_idx)) {
-    prediction <- safe_majority_prediction(target)
-    return(list(prediction = prediction))
+    probs <- class_probabilities(target)
+    prediction <- names(probs)[which.max(probs)]
+    return(list(prediction = prediction, probs = probs))
   }
 
   # Recursive calls on left and right subtrees
