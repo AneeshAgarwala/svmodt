@@ -1,0 +1,96 @@
+---
+title: "A Brief Information on Feature Selection"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{A Brief Information on Feature Selection}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: bibliography.bib
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Gini Impurity
+
+This criteria measures measures how often a randomly chosen element from the data set would be incorrectly labeled, assuming it is randomly labeled according to the class distribution [@breiman2017classification].
+
+$$
+\text{Gini}(D) = 1 - \sum_{i=1}^{C} p_i^2
+$$
+
+Where:
+
+\- $p_i$ is the proportion of class $i$
+
+\- $C$ is the number of classes
+
+### Interpretation
+
+Lower Gini values indicate purer nodes. The feature that produces the **lowest Gini impurity** after a split is preferred.
+
+## Information Gain
+
+This criteria helps identify the best feature to split a dataset by measuring the reduction in entropy (uncertainty) after the split [@compareinfogini].
+
+1.  Calculate Source Entropy
+
+    -   Measures the impurity or uncertainty of the entire data set before splitting.
+
+    -   $$
+        Entropy(S) = - \sum_{i = 1}^{n}p_ilog_2(p_i)
+        $$
+
+        -   where $p_i​$ is the proportion of instances in class $i$, and $n$ is the number of classes.
+
+2.  Calculate Entropy After Feature Split
+
+    -   For each feature:
+
+        -   Split the dataset by unique feature values
+
+Compute entropy of each subset (value group).
+
+-   Weight these entropies by the proportion of instances in each subset.
+
+-   $$
+    \text{Entropy}(S \mid F) = \sum_{j=1}^{m} \frac{N_j}{N} \cdot \text{Entropy}(S_j)
+    $$
+
+    -   where $N_j$​ is the number of samples with the $j$-th value of feature $F$, and $m$ is the number of unique values.
+
+3.  Compute Information Gain
+    -   Information Gain is the difference between the original entropy and the weighted entropy after the split:
+    -   $$
+        IG(S,F) = Entropy(S) - Entropy(S|F)
+        $$
+4.  **Select Feature with Highest IG**
+    -   Repeat the process for all candidate features.[@Quinlan1986InductionOD]
+
+### Interpretation
+
+The feature with the **highest Information Gain** is chosen as the best split at the current decision node.
+
+## Gain Ratio
+
+This criteria is a normalized version of Information Gain that corrects its bias toward features with many unique values .
+
+$$
+\text{GainRatio}(D, A) = \frac{IG(D, A)}{\text{IntrinsicInfo}(A)}
+$$
+
+Where:
+
+$$
+\text{IntrinsicInfo}(A) = -\sum_{v \in \text{values}(A)} \frac{|D_v|}{|D|} \log_2 \left( \frac{|D_v|}{|D|} \right)
+$$
+
+### Interpretation
+
+Select the feature with the **highest gain ratio**, which balances information and conciseness.
+
+## References
