@@ -1,0 +1,10 @@
+---
+title: "Documentation for the 'generate_tree' function in SVODT"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Documentation for the 'generate_tree' function in SVODT}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+![](generate-tree.png)
