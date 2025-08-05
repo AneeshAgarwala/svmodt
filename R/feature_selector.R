@@ -80,7 +80,7 @@ gain_ratio <- function(target, feature) {
 feature_selector <- function(target, features, criteria_type = c("gini", "info_gain", "gain_ratio")){
   if (criteria_type == "gini"){
     scores <- sapply(features, gini)
-    return(names(sort(scores)[1]))
+    return(names(sort(scores, decreasing = TRUE)[1]))
   }
   else if(criteria_type == "info_gain"){
     scores <- sapply(features, function(feature) {
