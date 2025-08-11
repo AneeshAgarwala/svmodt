@@ -1,14 +1,21 @@
 predict_tree <- function(node, input, return_probs = FALSE) {
-  # Handle batch prediction
+  # Batch prediction for data.frame input
   if (is.data.frame(input)) {
-    return(
-      apply(input, 1, function(row) {
-        predict_tree(node, as.list(row), return_probs = return_probs)
-      })
-    )
+    preds <- lapply(seq_len(nrow(input)), function(i) {
+      predict_tree(node, as.list(input[i, , drop = FALSE]), return_probs = return_probs)
+    })
+
+    if (return_probs) {
+      preds_matrix <- do.call(rbind, preds)
+      rownames(preds_matrix) <- NULL
+      return(preds_matrix)
+    } else {
+      # Return vector of predictions
+      return(unlist(preds))
+    }
   }
 
-  # If leaf node
+  # Leaf node prediction
   if (!is.null(node$prediction)) {
     if (return_probs) {
       return(node$probs)
@@ -18,13 +25,29 @@ predict_tree <- function(node, input, return_probs = FALSE) {
   }
 
   feature_value <- input[[node$split_feature]]
+
   if (is.null(feature_value)) {
-    stop(paste("Missing feature:", node$split_feature))
+    warning(paste("Missing feature:", node$split_feature, "- returning NA"))
+    if (return_probs) {
+      return(rep(NA, length(node$probs)))
+    } else {
+      return(NA)
+    }
   }
 
-  if (feature_value <= node$split_value) {
-    return(predict_tree(node$left, input, return_probs))
+  # Numeric split
+  if (is.numeric(feature_value) && is.numeric(node$split_value)) {
+    if (feature_value <= node$split_value) {
+      return(predict_tree(node$left, input, return_probs))
+    } else {
+      return(predict_tree(node$right, input, return_probs))
+    }
   } else {
-    return(predict_tree(node$right, input, return_probs))
+    # Categorical split
+    if (feature_value == node$split_value) {
+      return(predict_tree(node$left, input, return_probs))
+    } else {
+      return(predict_tree(node$right, input, return_probs))
+    }
   }
 }
