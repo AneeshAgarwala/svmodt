@@ -3,36 +3,18 @@
 
 ## Gini Impurity for Variable Selection
 gini <- function(labels) {
-  # Convert to factor and then to integer codes
-  f <- as.integer(factor(labels))
-
-  # Tabulate counts
-  counts <- tabulate(f)
-
-  # Proportions
-  proportions <- counts / sum(counts)
-
-  # Gini calculation
-  gini <- 1 - sum(proportions^2)
-  return(gini)
+  counts <- tabulate(factor(labels))
+  p <- counts / sum(counts)
+  1 - sum(p * p)
 }
 
 
 ## Entropy for Information Gain
 entropy <- function(labels) {
-  # Convert to integer codes (if not already)
-  labels_int <- as.integer(factor(labels))
-
-  # Count using tabulate
-  counts <- tabulate(labels_int)
-  probs <- counts / sum(counts)
-
-  # Avoid log2(0) issues
-  non_zero_probs <- probs[probs > 0]
-
-  ent <- -sum(non_zero_probs * log2(non_zero_probs))
-  return(ent)
+  p <- prop.table(table(labels))
+  -sum(p[p > 0] * log2(p[p > 0]))
 }
+
 
 
 ## Information Gain Criteria for Variable Selection
@@ -56,14 +38,10 @@ info_gain <- function(feature, target) {
 
 # Quantifies how broadly and evenly the dataset is split by the feature
 intrinsic_info <- function(feature) {
-  # Convert feature to factor and then to integer codes
-  feature_int <- as.integer(factor(feature))
-  counts <- tabulate(feature_int)
-  probs <- counts / sum(counts)
-  # Remove zeros to avoid log2(0)
-  probs <- probs[probs > 0]
-  -sum(probs * log2(probs))
+  p <- prop.table(table(feature))
+  -sum(p[p > 0] * log2(p[p > 0]))
 }
+
 
 
 gain_ratio <- function(target, feature) {
