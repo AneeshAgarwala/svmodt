@@ -17,25 +17,39 @@ entropy <- function(labels) {
 
 
 ## Information Gain Criteria for Variable Selection
-info_gain <- function(feature, target) {
-  total_entropy <- entropy(target)
+info_gain <- function(feature, target, metric = c("entropy", "gini")) {
+
+  if (is.null(metric)){
+    metric <- "gini"
+  }
+
+  # Choose impurity function
+  impurity_fun <- switch(metric,
+                         "entropy" = entropy,
+                         "gini" = gini)
+
+  # Parent impurity
+  total_impurity <- impurity_fun(target)
+
+  # Unique feature levels
   feature_levels <- unique(feature)
 
-  weighted_entropy <- sum(
+  # Weighted impurity after split
+  weighted_impurity <- sum(
     sapply(feature_levels, function(level) {
       subset <- target[feature == level]
-      (length(subset) / length(target)) * entropy(subset)
+      (length(subset) / length(target)) * impurity_fun(subset)
     })
   )
 
-  ig <- total_entropy - weighted_entropy
+  # Information gain = impurity reduction
+  ig <- total_impurity - weighted_impurity
   return(ig)
 }
 
-
 ## Gain Ratio - Treats bias of Info Gain towards features with diverse set of values
 gain_ratio <- function(target, feature) {
-  ig <- info_gain(feature = feature, target = target)
+  ig <- info_gain(feature = feature, target = target, metric = "entropy")
   si <- entropy(feature) ## Intrinsic Info of the Feature calculated through Entropy
   if (si == 0) return(0)
   ig / si
@@ -44,9 +58,15 @@ gain_ratio <- function(target, feature) {
 
 
 ## Wrapper Function for Feature Selection Criteria
-feature_selector <- function(target, features, criteria_type = c("gini", "info_gain", "gain_ratio")) {
-
+feature_selector <- function(target, features, criteria_type = c("gini", "info_gain", "gain_ratio"), ig_metric = NULL) {
   criteria_type <- match.arg(criteria_type)
+  if (is.null(criteria_type)){
+    criteria_type <- "gini"
+  }
+
+  if (is.null(ig_metric)){
+    ig_metric <- "gini"
+  }
 
   best_feature <- NULL
   best_split <- NULL
@@ -76,7 +96,7 @@ feature_selector <- function(target, features, criteria_type = c("gini", "info_g
             score <- -weighted_gini  # minimize impurity via negation
 
           } else if (criteria_type == "info_gain") {
-            score <- info_gain(split_factor, target)
+            score <- info_gain(split_factor, target, metric = ig_metric)
 
           } else if (criteria_type == "gain_ratio") {
             score <- gain_ratio(target, split_factor)

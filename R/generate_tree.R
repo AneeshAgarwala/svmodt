@@ -1,8 +1,16 @@
-generate_tree <- function(target, features, criteria_type = c("gini", "info_gain", "gain_ratio"),
+generate_tree <- function(target, features, criteria_type = c("gini", "info_gain", "gain_ratio"), ig_metric = c("gini", "entropy"),
                           depth = 1, max_depth = 5, p_stop = 0.3, all_levels = NULL) {
 
   if (is.null(all_levels)) {
     all_levels <- levels(factor(target))  # get all classes from original data (first call)
+  }
+
+  if (missing(ig_metric)){
+    ig_metric <- NULL
+  }
+
+  if (criteria_type %in% c("gini", "gain_ratio")){
+    ig_metric <- NULL
   }
 
   # Stopping condition
@@ -13,7 +21,7 @@ generate_tree <- function(target, features, criteria_type = c("gini", "info_gain
   }
 
   # Select best feature using selected criteria
-  fvs <- feature_selector(target = target, features = features, criteria_type = criteria_type)
+  fvs <- feature_selector(target = target, features = features, criteria_type = criteria_type, ig_metric = ig_metric)
   split_feature <- fvs$feature
   split_value <- fvs$split
 
@@ -44,7 +52,8 @@ generate_tree <- function(target, features, criteria_type = c("gini", "info_gain
     depth = depth + 1,
     max_depth = max_depth,
     p_stop = p_stop,
-    all_levels = all_levels
+    all_levels = all_levels,
+    ig_metric = ig_metric
   )
 
   right_subtree <- generate_tree(
@@ -54,7 +63,8 @@ generate_tree <- function(target, features, criteria_type = c("gini", "info_gain
     depth = depth + 1,
     max_depth = max_depth,
     p_stop = p_stop,
-    all_levels = all_levels
+    all_levels = all_levels,
+    ig_metric = ig_metric
   )
 
   list(
