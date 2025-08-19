@@ -1,4 +1,3 @@
-# Generate 2D square-shaped data
 make_cube <- function(n = 2000, side = 2, noise = 0.05) {
   set.seed(123)
   x <- runif(n, -side, side) + rnorm(n, 0, noise)
@@ -7,12 +6,15 @@ make_cube <- function(n = 2000, side = 2, noise = 0.05) {
   data.frame(x, y, z)
 }
 
-# Example usage
+# Generate Data
 df <- make_cube(n = 5000, side = 1, noise = 0.02)
 
-df <- df |> dplyr::mutate(feature = ifelse(x<0 & y <0 & z < 0, "A", "B"))
+df <- df |>
+  dplyr::mutate(feature = ifelse(x<0 & y <0 & z < 0, "A", "B")) |>
+  dplyr::mutate(feature = as.factor(feature))
 
-plot_ly(data = df, x = ~x, y = ~y, z = ~z, color =  ~ feature)
+
+#plotly::plot_ly(data = df, x = ~x, y = ~y, z = ~z, color =  ~ feature)
 
 rotate_x <- function(df, angle) {
   Rx <- matrix(c(1, 0, 0,
