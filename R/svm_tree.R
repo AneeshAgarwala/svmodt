@@ -1,50 +1,51 @@
-library(kernlab)
+svm_split <- function(data, response, depth = 1, max_depth = 30, min_samples = 5,
+                      global_levels = NULL, debug = FALSE, root_data = NULL,
+                      purity_threshold = 0.95, predict_type = c("decision", "probabilities")) {
 
-svm_split <- function(data, response, depth = 1, max_depth = 3, min_samples = 20, global_levels = NULL, debug = FALSE) {
+  predict_type <- match.arg(predict_type)
 
-  # Capture global levels at root
-  if (is.null(global_levels)) {
-    global_levels <- sort(unique(data[[response]]))
+  if (is.null(root_data)) root_data <- data
+  if (is.null(global_levels)) global_levels <- sort(unique(data[[response]]))
+
+  data[[response]] <- factor(data[[response]], levels = global_levels)
+  for (col in names(data)) {
+    if (is.factor(data[[col]])) {
+      data[[col]] <- factor(data[[col]], levels = levels(root_data[[col]]))
+    }
   }
 
-  # Force response to be factor with global levels
-  data[[response]] <- factor(data[[response]], levels = global_levels)
-
-  # Stop conditions
   y_table <- table(data[[response]])
-  if (depth > max_depth ||
-      nrow(data) < min_samples ||
+  class_dist <- prop.table(y_table)
+  major_class_prop <- max(class_dist)
+
+  if (depth > max_depth || nrow(data) < min_samples ||
       length(unique(data[[response]])) == 1 ||
-      min(y_table) < 2) {  # prevents rare class causing ksvm error
+      min(y_table) < 2 || major_class_prop >= purity_threshold) {
     return(list(
       is_leaf = TRUE,
       prediction = names(which.max(y_table)),
       n = nrow(data),
-      class_dist = prop.table(y_table)
+      class_dist = class_dist
     ))
   }
 
-  # Compute class proportions and better weights
-  class_props <- y_table / sum(y_table)
-  # Use inverse frequency weighting
   class_weights <- sum(y_table) / (length(y_table) * y_table)
   class_weights <- setNames(class_weights[global_levels], global_levels)
   class_weights[is.na(class_weights)] <- 1e-6
 
-  # Optional debug
   if (debug) {
     cat("\n---- Node at depth", depth, "----\n")
     print(list(
       levels_in_data = levels(data[[response]]),
       global_levels = global_levels,
-      class_props = class_props,
+      class_dist = class_dist,
+      major_class_prop = major_class_prop,
       class_weights = class_weights
     ))
   }
 
-  # Fit SVM
   formula <- as.formula(paste(response, "~ ."))
-  model <- ksvm(
+  tmp_model <- ksvm(
     formula,
     data = data,
     kernel = "vanilladot",
@@ -52,36 +53,53 @@ svm_split <- function(data, response, depth = 1, max_depth = 3, min_samples = 20
     prob.model = TRUE
   )
 
-  # Get decision values
-  decision_vals <- predict(model, data, type = "decision")
-  if (is.matrix(decision_vals)) decision_vals <- decision_vals[,1]
+  # --- Determine splitting indices based on predict_type ---
+  if (predict_type == "decision") {
+    decision_vals <- predict(tmp_model, data, type = "decision")
+    if (is.matrix(decision_vals)) decision_vals <- decision_vals[,1]
+    left_idx  <- which(decision_vals < 0)
+    right_idx <- which(decision_vals >= 0)
+  } else if (predict_type == "probabilities") {
+    probs <- predict(tmp_model, data, type = "probabilities")
+    # For binary, use probability of first class; for multiclass, use max probability
+    if (is.matrix(probs)) {
+      max_prob_class <- apply(probs, 1, which.max)
+      left_idx <- which(max_prob_class == 1)
+      right_idx <- which(max_prob_class != 1)
+    } else {
+      left_idx <- which(probs < 0.5)
+      right_idx <- which(probs >= 0.5)
+    }
+  }
 
-  # Split data
-  left_idx  <- which(decision_vals < 0)
-  right_idx <- which(decision_vals >= 0)
+  left_data  <- data[left_idx, , drop = FALSE]
+  right_data <- data[right_idx, , drop = FALSE]
 
-  # If split fails, make leaf
-  if (length(left_idx) == 0 || length(right_idx) == 0) {
+  if (nrow(left_data) < min_samples || nrow(right_data) < min_samples ||
+      length(unique(left_data[[response]])) < 2 ||
+      length(unique(right_data[[response]])) < 2) {
     return(list(
       is_leaf = TRUE,
       prediction = names(which.max(y_table)),
       n = nrow(data),
-      class_dist = prop.table(y_table)
+      class_dist = class_dist
     ))
   }
 
-  # Recursive calls
-  left_child  <- svm_split(data[left_idx, ], response, depth + 1, max_depth, min_samples, global_levels, debug)
-  right_child <- svm_split(data[right_idx, ], response, depth + 1, max_depth, min_samples, global_levels, debug)
+  left_child  <- svm_split(left_data, response, depth + 1,
+                           max_depth, min_samples, global_levels, debug, root_data, purity_threshold,
+                           predict_type)
+  right_child <- svm_split(right_data, response, depth + 1,
+                           max_depth, min_samples, global_levels, debug, root_data, purity_threshold,
+                           predict_type)
 
   return(list(
     is_leaf = FALSE,
-    model = model,
+    model = tmp_model,
     left = left_child,
     right = right_child,
     depth = depth,
     n = nrow(data),
-    class_dist = prop.table(y_table)
+    class_dist = class_dist
   ))
 }
-
