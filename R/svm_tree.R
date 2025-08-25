@@ -24,9 +24,10 @@ svm_split <- function(data, response, depth = 1, max_depth = 3, min_samples = 20
     ))
   }
 
-  # Compute class proportions and weights
+  # Compute class proportions and better weights
   class_props <- y_table / sum(y_table)
-  class_weights <- 1 - class_props
+  # Use inverse frequency weighting
+  class_weights <- sum(y_table) / (length(y_table) * y_table)
   class_weights <- setNames(class_weights[global_levels], global_levels)
   class_weights[is.na(class_weights)] <- 1e-6
 
