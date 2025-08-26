@@ -10,13 +10,12 @@ predict_tree <- function(node, input, return_probs = FALSE) {
       rownames(preds_matrix) <- NULL
       return(preds_matrix)
     } else {
-      # Return vector of predictions
       return(unlist(preds))
     }
   }
 
-  # Leaf node prediction
-  if (!is.null(node$prediction)) {
+  # Leaf node
+  if (is.null(node$split_feature)) {
     if (return_probs) {
       return(node$probs)
     } else {
@@ -24,18 +23,17 @@ predict_tree <- function(node, input, return_probs = FALSE) {
     }
   }
 
+  # Internal node: route by split
   feature_value <- input[[node$split_feature]]
-
   if (is.null(feature_value)) {
     warning(paste("Missing feature:", node$split_feature, "- returning NA"))
     if (return_probs) {
-      return(rep(NA, length(node$probs)))
+      return(rep(NA_real_, length(node$probs)))
     } else {
       return(NA)
     }
   }
 
-  # Numeric split
   if (is.numeric(feature_value) && is.numeric(node$split_value)) {
     if (feature_value <= node$split_value) {
       return(predict_tree(node$left, input, return_probs))
@@ -43,7 +41,6 @@ predict_tree <- function(node, input, return_probs = FALSE) {
       return(predict_tree(node$right, input, return_probs))
     }
   } else {
-    # Categorical split
     if (feature_value == node$split_value) {
       return(predict_tree(node$left, input, return_probs))
     } else {

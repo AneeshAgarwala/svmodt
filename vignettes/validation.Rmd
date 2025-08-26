@@ -28,7 +28,7 @@ rpart_vec <- c()
 base_r_vec <- c()
 
 for (i in 1:200) {
-  split_data <- initial_split(iris, prop = 0.8, strata = Species)
+  split_data <- initial_split(iris, prop = 0.5, strata = Species)
   train_data <- training(split_data)
   test_data <- testing(split_data)
   
@@ -37,12 +37,12 @@ for (i in 1:200) {
   x_test <- test_data[, names(iris) != "Species"]
   y_test <- test_data$Species
   
-  rpart_mod <- rpart(formula = Species~., data = iris, control =  rpart.control(maxdepth = 3))
+  rpart_mod <- rpart(formula = Species~., data = train_data, control =  rpart.control(maxdepth = 3, cp = 0.01))
   #rpart.plot(rpart_mod)
   pred_rpart <- predict(rpart_mod, x_test, type = "class")
   rpart_vec[i] <- mean(pred_rpart != y_test)
   
-  tree1 <- generate_tree(y_train, features = x_train, criteria_type = "gini", max_depth = 4, p_stop = 0.01)
+  tree1 <- generate_tree(y_train, features = x_train, criteria_type = "gini", max_depth = 4, alpha = 0.01)
   #print_tree(tree1)
   p1 <- predict_tree(tree1, x_test)
   base_r_vec[i] <- mean(p1 != y_test)
@@ -59,7 +59,8 @@ p1 <- oob_error |>
   ggplot() +
   geom_point(aes(x = rpart_vec, y = base_r_vec)) +
   geom_abline() +
-  labs(y = "Prediction Error (base R)", x = "Prediction Error (rpart)")
+  labs(y = "Prediction Error (base R)", x = "Prediction Error (rpart)") +
+  theme_minimal()
 
 p2 <- oob_error |>
   ggplot() +
@@ -67,7 +68,8 @@ p2 <- oob_error |>
   geom_hline(yintercept = mean(base_r_vec) - mean(rpart_vec), colour = "blue", linewidth = 1.5) +
   geom_hline(yintercept = mean(base_r_vec) - mean(rpart_vec) + 1.96*sd(base_r_vec - rpart_vec) , colour = "green", linewidth = 1, linetype = 2) +
   geom_hline(yintercept = mean(base_r_vec) - mean(rpart_vec) - 1.96*sd(base_r_vec - rpart_vec) , colour = "green", linewidth = 1, linetype = 2) +
-  labs(y = "Difference", x = "Mean Prediction Error")
+  labs(y = "Difference", x = "Mean Prediction Error") +
+  theme_minimal()
 
 p1 + p2
 

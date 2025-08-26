@@ -1,18 +1,20 @@
-## Print Method
+## Pretty-print decision tree (works with pruned tree structure)
 print_tree <- function(node, depth = 0) {
   indent <- paste0(rep("  ", depth), collapse = "")
 
-  if (!is.null(node$prediction)) {
-    cat(indent, "Predict:", node$prediction, "\n")
+  if (is.null(node$split_feature)) {
+    # Leaf node
+    cat(indent, "Predict:", node$prediction,
+        "(n =", node$n, ")\n")
   } else {
-    cat(indent, node$split_feature, "<=", node$split_value, "\n")
-    if (!is.null(node$left)) {
-      cat(indent, "Left:\n")
-      print_tree(node$left, depth + 1)
-    }
-    if (!is.null(node$right)) {
-      cat(indent, "Right:\n")
-      print_tree(node$right, depth + 1)
-    }
+    # Internal node
+    cat(indent, node$split_feature, "<=", node$split_value,
+        "(n =", node$n, ")\n")
+
+    cat(indent, " Left:\n")
+    print_tree(node$left, depth + 1)
+
+    cat(indent, " Right:\n")
+    print_tree(node$right, depth + 1)
   }
 }
