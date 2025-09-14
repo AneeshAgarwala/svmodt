@@ -28,7 +28,7 @@ rpart_vec <- c()
 base_r_vec <- c()
 
 for (i in 1:200) {
-  split_data <- initial_split(iris, prop = 0.5, strata = Species)
+  split_data <- initial_split(iris, prop = 0.8, strata = Species)
   train_data <- training(split_data)
   test_data <- testing(split_data)
   
