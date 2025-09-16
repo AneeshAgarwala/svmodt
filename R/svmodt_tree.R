@@ -1,18 +1,19 @@
 library(e1071)
 
-library(e1071)
-
 svm_split <- function(data, response, depth = 1, max_depth = 3,
                       min_samples = 5, max_features = NULL,
-                      feature_method = c("random", "mutual", "cor"), ...) {
+                      feature_method = c("random", "mutual", "cor"),
+                      verbose = FALSE, ...) {
 
-  cat("\n--- Node at depth", depth, "---\n")
-  cat("Rows:", nrow(data), "\n")
-  cat("Response distribution:\n")
-  print(table(data[[response]]))
+  if (verbose) {
+    cat("\n--- Node at depth", depth, "---\n")
+    cat("Rows:", nrow(data), "\n")
+    cat("Response distribution:\n")
+    print(table(data[[response]]))
+  }
 
   if (anyNA(data)) {
-    cat("Warning: NA values detected! Stopping here.\n")
+    if (verbose) cat("Warning: NA values detected! Stopping here.\n")
     return(list(is_leaf = TRUE,
                 prediction = names(which.max(table(data[[response]]))),
                 n = nrow(data),
@@ -24,9 +25,11 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
 
   # --- Stopping conditions ---
   if (depth > max_depth || length(unique(y)) == 1 || nrow(data) < min_samples) {
-    reason <- ifelse(depth > max_depth, "max depth reached",
-                     ifelse(length(unique(y)) == 1, "pure node", "too few samples"))
-    cat("Stopping:", reason, "\n")
+    if (verbose) {
+      reason <- ifelse(depth > max_depth, "max depth reached",
+                       ifelse(length(unique(y)) == 1, "pure node", "too few samples"))
+      cat("Stopping:", reason, "\n")
+    }
     return(list(is_leaf = TRUE,
                 prediction = names(which.max(table(y))),
                 n = nrow(data),
@@ -42,7 +45,7 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
   }
 
   if (length(features) == 0) {
-    cat("Stopping at depth", depth, "- no usable features\n")
+    if (verbose) cat("Stopping at depth", depth, "- no usable features\n")
     return(list(is_leaf = TRUE,
                 prediction = names(which.max(table(y))),
                 n = nrow(data),
@@ -50,18 +53,18 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
                 scaler = NULL))
   }
 
-  cat("Using features:", paste(features, collapse = ", "), "\n")
+  if (verbose) cat("Using features:", paste(features, collapse = ", "), "\n")
 
   # --- Scaling ---
-  scaler <- scale_node(data[features])  # returns list(train, transform)
+  scaler <- scale_node(data[features])
   X_scaled <- scaler$train
 
-  # --- Train SVM without storing full dataset ---
+  # --- Train SVM ---
   model <- tryCatch(
     svm(x = X_scaled, y = y, kernel = "linear", decision.values = TRUE,
         probability = FALSE, scale = FALSE, ...),
     error = function(e) {
-      cat("SVM failed:", e$message, "\n")
+      if (verbose) cat("SVM failed:", e$message, "\n")
       return(NULL)
     }
   )
@@ -80,11 +83,22 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
 
   left_idx  <- which(dec_vals > 0)
   right_idx <- which(dec_vals <= 0)
-  cat("Left size:", length(left_idx), "Right size:", length(right_idx), "\n")
+
+  if (verbose) cat("Left size:", length(left_idx), "Right size:", length(right_idx), "\n")
+
+  # --- Stop if SVM fails to split ---
+  if (length(left_idx) == 0 || length(right_idx) == 0) {
+    if (verbose) cat("Stopping: ineffective split (all points on one side)\n")
+    return(list(is_leaf = TRUE,
+                prediction = names(which.max(table(y))),
+                n = nrow(data),
+                features = features,
+                scaler = scaler))
+  }
 
   # --- Handle small child nodes ---
   if (length(left_idx) < min_samples && length(right_idx) < min_samples) {
-    cat("Stopping: both child nodes too small\n")
+    if (verbose) cat("Stopping: both child nodes too small\n")
     return(list(is_leaf = TRUE,
                 prediction = names(which.max(table(y))),
                 n = nrow(data),
@@ -94,10 +108,10 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
 
   # --- Single-child nodes ---
   if (length(left_idx) < min_samples) {
-    cat("Left child too small, only right child\n")
+    if (verbose) cat("Left child too small, only right child\n")
     right_child <- svm_split(data[right_idx, , drop = FALSE], response,
                              depth + 1, max_depth, min_samples,
-                             max_features, feature_method, ...)
+                             max_features, feature_method, verbose = verbose, ...)
     return(list(
       is_leaf = FALSE,
       model = model,
@@ -112,10 +126,10 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
   }
 
   if (length(right_idx) < min_samples) {
-    cat("Right child too small, only left child\n")
+    if (verbose) cat("Right child too small, only left child\n")
     left_child <- svm_split(data[left_idx, , drop = FALSE], response,
                             depth + 1, max_depth, min_samples,
-                            max_features, feature_method, ...)
+                            max_features, feature_method, verbose = verbose, ...)
     return(list(
       is_leaf = FALSE,
       model = model,
@@ -132,10 +146,10 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
   # --- Normal recursive splits ---
   left  <- svm_split(data[left_idx, , drop = FALSE], response,
                      depth + 1, max_depth, min_samples,
-                     max_features, feature_method, ...)
+                     max_features, feature_method, verbose = verbose, ...)
   right <- svm_split(data[right_idx, , drop = FALSE], response,
                      depth + 1, max_depth, min_samples,
-                     max_features, feature_method, ...)
+                     max_features, feature_method, verbose = verbose, ...)
 
   list(
     is_leaf = FALSE,
