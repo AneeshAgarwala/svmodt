@@ -1,3 +1,5 @@
+library(e1071)
+
 svm_split <- function(data, response, depth = 1, max_depth = 3,
                       min_samples = 5, max_features = NULL,
                       feature_method = c("random", "mutual", "cor"),
@@ -57,22 +59,42 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
   scaler <- scale_node(data[features])
   X_scaled <- scaler$train
 
-  # --- Train SVM ---
+  # class proportions
+  class_counts  <- table(y)
+  class_weights <- as.list(1 / as.numeric(class_counts))
+  names(class_weights) <- names(class_counts)
+  # normalise (optional)
+  class_weights <- unlist(class_weights) / sum(unlist(class_weights))
+
+  if (verbose) {
+    cat("Class weights:", paste(names(class_weights),
+                                round(unlist(class_weights), 3), collapse = ", "), "\n")
+  }
+
   model <- tryCatch(
-    svm(x = X_scaled, y = y, kernel = "linear", decision.values = TRUE,
-        probability = FALSE, scale = FALSE, ...),
+    svm(x = X_scaled, y = y,
+        kernel = "linear",
+        decision.values = TRUE,
+        probability = FALSE,
+        scale = FALSE,
+        class.weights = class_weights,
+        ...),
     error = function(e) {
       if (verbose) cat("SVM failed:", e$message, "\n")
       return(NULL)
     }
   )
 
+
   if (is.null(model)) {
-    return(list(is_leaf = TRUE,
-                prediction = names(which.max(table(y))),
-                n = nrow(data),
-                features = features,
-                scaler = scaler))
+    if (verbose) cat("Stopping: SVM model is NULL\n")
+    return(list(
+      is_leaf   = TRUE,
+      prediction= names(which.max(table(y))),
+      n         = nrow(data),
+      features  = features,
+      scaler    = scaler
+    ))
   }
 
   # --- Decision values ---

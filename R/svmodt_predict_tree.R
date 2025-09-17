@@ -6,6 +6,7 @@ svm_predict_tree <- function(tree, newdata) {
   if (nrow(newdata) == 0) return(character(0))
 
   # Scale features
+
   X_scaled <- apply_scaler(newdata[, tree$features, drop = FALSE], tree$scaler)
 
   # SVM decision values

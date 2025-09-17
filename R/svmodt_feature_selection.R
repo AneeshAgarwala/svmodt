@@ -1,3 +1,5 @@
+library(FSelectorRcpp)
+
 choose_features <- function(data, response, max_features,
                             method = c("random","mutual","cor")) {
   method <- match.arg(method)
