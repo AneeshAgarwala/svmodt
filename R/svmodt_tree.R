@@ -1,5 +1,3 @@
-library(e1071)
-
 svm_split <- function(data, response, depth = 1, max_depth = 3,
                       min_samples = 5, max_features = NULL,
                       feature_method = c("random", "mutual", "cor"),

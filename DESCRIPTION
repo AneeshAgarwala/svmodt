@@ -20,3 +20,10 @@ Suggests:
 VignetteBuilder: knitr
 Depends: 
     R (>= 3.5)
+Imports: 
+    dplyr,
+    e1071,
+    FSelectorRcpp,
+    ggplot2,
+    kernlab,
+    sparseSVM
