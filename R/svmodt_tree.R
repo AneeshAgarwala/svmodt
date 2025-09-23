@@ -1,7 +1,12 @@
 svm_split <- function(data, response, depth = 1, max_depth = 3,
                       min_samples = 5, max_features = NULL,
                       feature_method = c("random", "mutual", "cor"),
-                      verbose = FALSE, ...) {
+                      verbose = FALSE, all_classes = NULL, ...) {
+
+
+  if (is.null(all_classes)) {
+    all_classes <- levels(factor(data[[response]]))
+  }
 
   if (verbose) {
     cat("\n--- Node at depth", depth, "---\n")
@@ -13,14 +18,15 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
   # Handle NA rows
   if (anyNA(data)) {
     if (verbose) cat("Warning: NA values detected! Stopping here.\n")
-    return(leaf_node(data[[response]], nrow(data)))
+    return(leaf_node(data[[response]], nrow(data), all_classes))
   }
 
   y <- data[[response]]
 
   # Stopping rules
-  if (stop_conditions_met(data, y, depth, max_depth, min_samples, verbose)) {
-    return(leaf_node(y, nrow(data)))
+  if (depth > max_depth || length(unique(y)) == 1 || nrow(data) < min_samples) {
+    if (verbose) cat("Stopping at depth", depth, "\n")
+    return(leaf_node(y, nrow(data), all_classes))
   }
 
   # Feature selection
@@ -28,7 +34,7 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
   else choose_features(data, response, max_features, feature_method)
   if (length(features) == 0) {
     if (verbose) cat("Stopping: no usable features\n")
-    return(leaf_node(y, nrow(data)))
+    return(leaf_node(y, nrow(data), all_classes))
   }
   if (verbose) cat("Using features:", paste(features, collapse = ", "), "\n")
 
@@ -39,7 +45,7 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
   # Fit SVM
   model <- fit_svm(X_scaled, y, verbose, ...)
   if (is.null(model)) {
-    return(leaf_node(y, nrow(data), features, scaler))
+    return(leaf_node(y, nrow(data), all_classes, features, scaler))
   }
 
   # Decision boundary
@@ -52,7 +58,7 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
   # No effective split
   if (length(left_idx) == 0 || length(right_idx) == 0) {
     if (verbose) cat("Stopping: ineffective split (all points on one side)\n")
-    return(leaf_node(y, nrow(data), features, scaler))
+    return(leaf_node(y, nrow(data), all_classes, features, scaler))
   }
 
   # Small child handling
@@ -70,11 +76,11 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
   left  <- svm_split(data[left_idx, , drop = FALSE], response,
                      depth + 1, max_depth, min_samples,
                      max_features, feature_method,
-                     verbose = verbose, ...)
+                     verbose = verbose, all_classes = all_classes, ...)
   right <- svm_split(data[right_idx, , drop = FALSE], response,
                      depth + 1, max_depth, min_samples,
                      max_features, feature_method,
-                     verbose = verbose, ...)
+                     verbose = verbose, all_classes = all_classes, ...)
 
   list(
     is_leaf = FALSE,
