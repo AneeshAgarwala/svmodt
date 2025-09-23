@@ -1,5 +1,3 @@
-library(FSelectorRcpp)
-
 choose_features <- function(data, response, max_features,
                             method = c("random","mutual","cor")) {
   method <- match.arg(method)
@@ -12,12 +10,11 @@ choose_features <- function(data, response, max_features,
   }
 
   if (method == "mutual") {
-    scores <- FSelectorRcpp::information_gain(reformulate(predictors, response), data)
-    topk <- head(scores[order(-scores$importance), "attributes"], max_features)
-    return(topk)
-  }
-
-  if (method == "cor") {
+    scores <- FSelectorRcpp::information_gain(
+      reformulate(predictors, response), data
+    )
+    head(scores[order(-scores$importance), "attributes"], max_features)
+  } else { # correlation
     y <- data[[response]]
     if (is.character(y)) y <- as.numeric(factor(y))
     if (is.factor(y))   y <- as.numeric(y)
@@ -28,6 +25,6 @@ choose_features <- function(data, response, max_features,
       suppressWarnings(abs(cor(x, y, use = "complete.obs")))
     })
     cor_vals <- cor_vals[!is.na(cor_vals)]
-    return(names(sort(cor_vals, decreasing = TRUE))[1:max_features])
+    names(sort(cor_vals, decreasing = TRUE))[1:max_features]
   }
 }
