@@ -1,4 +1,4 @@
-svm_tree_predict <- function(tree, newdata, return_probs = FALSE) {
+dtksvm_tree_predict <- function(tree, newdata, return_probs = FALSE) {
 
   n <- nrow(newdata)
 

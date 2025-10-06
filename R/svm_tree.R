@@ -1,4 +1,4 @@
-svm_split <- function(data, response, depth = 1, max_depth = 30, min_samples = 5,
+dtksvm_split <- function(data, response, depth = 1, max_depth = 30, min_samples = 5,
                       global_levels = NULL, debug = FALSE, root_data = NULL,
                       purity_threshold = 0.95, predict_type = c("decision", "probabilities"),
                       indices = NULL) {

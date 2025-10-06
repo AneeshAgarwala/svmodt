@@ -1,4 +1,4 @@
-print_svm_tree <- function(tree, indent = 0) {
+print_dtksvm_tree <- function(tree, indent = 0) {
   prefix <- paste(rep("  ", indent), collapse = "")
 
   if (tree$is_leaf) {
