@@ -6,7 +6,6 @@ choose_features <- function(data, response, max_features,
   if (length(predictors) <= max_features) return(predictors)
 
   if (method == "random") {
-    set.seed(123)  # Consider making seed configurable
     return(sample(predictors, max_features))
   }
 

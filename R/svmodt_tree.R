@@ -11,9 +11,9 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
                                used_features = character(0),  # Features used in parent nodes
 
                                class_weights = c("none", "balanced", "balanced_subsample", "custom"),
-                               custom_class_weights = NULL,  # Named vector if class_weights="custom"
+                      custom_class_weights = NULL,  # Named vector if class_weights="custom"
 
-                               verbose = FALSE, all_classes = NULL, ...) {
+                      verbose = FALSE, all_classes = NULL, ...) {
 
   if (is.null(all_classes)) {
     all_classes <- levels(factor(data[[response]]))

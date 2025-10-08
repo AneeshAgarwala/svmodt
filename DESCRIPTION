@@ -26,4 +26,8 @@ Imports:
     FSelectorRcpp,
     ggplot2,
     kernlab,
-    sparseSVM
+    sparseSVM,
+    tidyr,
+    patchwork,
+    gridExtra,
+    RColorBrewer

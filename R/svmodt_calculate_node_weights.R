@@ -1,5 +1,4 @@
 calculate_node_class_weights <- function(y, class_weights_method, custom_weights, verbose) {
-
   class_weights_method <- match.arg(class_weights_method, c("none", "balanced", "balanced_subsample", "custom"))
 
   # Get class distribution at this node
@@ -7,7 +6,7 @@ calculate_node_class_weights <- function(y, class_weights_method, custom_weights
   class_names <- names(class_counts)
 
   if (class_weights_method == "none") {
-    # No weighting - return NULL (e1071::svm will use default)
+    # No weighting - return NULL (equal weights)
     if (verbose) cat("Class weights: none (equal weights)\n")
     return(NULL)
   }
@@ -15,13 +14,13 @@ calculate_node_class_weights <- function(y, class_weights_method, custom_weights
   if (class_weights_method == "custom") {
     # Use user-provided custom weights
     if (is.null(custom_weights)) {
-      warning("class_weights='custom' but no custom_class_weights provided. Using 'balanced' instead.")
-      class_weights_method <- "balanced"
+      warning("class_weights='custom' but no custom_class_weights provided. Using 'none' instead.")
+      return(NULL)
     } else {
       # Validate custom weights
       if (!all(class_names %in% names(custom_weights))) {
-        warning("Custom weights missing some classes. Using 'balanced' instead.")
-        class_weights_method <- "balanced"
+        warning("Custom weights missing some classes. Using 'none' instead.")
+        return(NULL)
       } else {
         weights <- custom_weights[class_names]
         if (verbose) {
@@ -64,12 +63,11 @@ calculate_node_class_weights <- function(y, class_weights_method, custom_weights
   }
 }
 
-
+# Keep get_all_classes as is
 get_all_classes <- function(tree) {
   if (tree$is_leaf) {
     return(names(tree$class_prob))
   }
-
   classes <- character(0)
   if (!is.null(tree$left)) {
     classes <- c(classes, get_all_classes(tree$left))
@@ -77,6 +75,5 @@ get_all_classes <- function(tree) {
   if (!is.null(tree$right)) {
     classes <- c(classes, get_all_classes(tree$right))
   }
-
   return(unique(classes))
 }

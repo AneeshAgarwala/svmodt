@@ -8,3 +8,4 @@ rough-tests/
 R/svmodt_feature_testing.R
 R/svmodt_feature_helper.R
 data-raw/mimic_data_kaggle/
+slides/
