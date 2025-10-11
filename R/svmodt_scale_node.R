@@ -1,4 +1,11 @@
 scale_node <- function(df) {
+  if (ncol(df) == 0 || nrow(df) == 0) {
+    return(list(
+      train = data.frame(),
+      transform = function(newdata) data.frame()
+    ))
+  }
+
   # Identify and remove constant features
   constant_vars <- sapply(df, function(x) {
     if (is.numeric(x)) {
@@ -14,23 +21,30 @@ scale_node <- function(df) {
   }
 
   if (ncol(df) == 0) {
-    return(list(train = data.frame(), transform = function(newdata) data.frame()))
+    return(list(
+      train = data.frame(),
+      transform = function(newdata) data.frame()
+    ))
   }
 
   mu <- sapply(df, mean, na.rm = TRUE)
-  sdv <- sapply(df, sd, na.rm = TRUE)
+  sd_vals <- sapply(df, sd, na.rm = TRUE)
 
-  scaled <- sweep(sweep(df, 2, mu, "-"), 2, sdv, "/")
+  # FIXED: Handle zero standard deviation
+  sd_vals[sd_vals == 0] <- 1
+
+  scaled <- sweep(sweep(df, 2, mu, "-"), 2, sd_vals, "/")
 
   list(
     train = scaled,
     transform = function(newdata) {
-      # Handle case where newdata has constant features that training didn't have
+      if (ncol(newdata) == 0 || nrow(newdata) == 0) return(data.frame())
+
       common_cols <- intersect(names(newdata), names(mu))
       if (length(common_cols) == 0) return(data.frame())
 
       newdata_subset <- newdata[, common_cols, drop = FALSE]
-      sweep(sweep(newdata_subset, 2, mu[common_cols], "-"), 2, sdv[common_cols], "/")
+      sweep(sweep(newdata_subset, 2, mu[common_cols], "-"), 2, sd_vals[common_cols], "/")
     }
   )
 }

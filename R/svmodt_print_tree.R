@@ -1,9 +1,12 @@
-# Enhanced print function with new features information
+`%||%` <- function(a, b) {
+  if (is.null(a)) b else a
+}
+
+# FIXED: Better formatting and consistent parameter names
 print_svm_tree <- function(tree, indent = "", show_probabilities = FALSE,
                            show_feature_info = TRUE, show_penalties = TRUE) {
 
   if (tree$is_leaf) {
-    # Enhanced leaf information
     cat(indent, "🍃 Leaf: predict =", tree$prediction, "| n =", tree$n)
 
     if (show_probabilities && !is.null(tree$class_prob)) {
@@ -13,27 +16,23 @@ print_svm_tree <- function(tree, indent = "", show_probabilities = FALSE,
     }
 
     if (show_feature_info && length(tree$features) > 0) {
-      cat(" | leaf_features = [", paste(tree$features, collapse = ","), "]", sep = "")
+      cat(" | features = [", paste(tree$features, collapse = ","), "]", sep = "")
     }
 
     cat("\n")
-    return()
+    return(invisible())
   }
 
-  # Enhanced internal node information
   cat(indent, "🌳 Node: depth =", tree$depth, "| n =", tree$n)
 
-  # Show selected features
   if (show_feature_info) {
     cat(" | features = [", paste(tree$features, collapse = ","), "]", sep = "")
 
-    # Show dynamic max_features if available
     if (!is.null(tree$max_features_used)) {
       cat(" | max_feat =", tree$max_features_used)
     }
   }
 
-  # Show penalty information
   if (show_penalties && !is.null(tree$penalty_applied)) {
     penalty_symbol <- if (tree$penalty_applied) "⚠️" else "✓"
     cat(" | penalty =", penalty_symbol)
@@ -41,9 +40,7 @@ print_svm_tree <- function(tree, indent = "", show_probabilities = FALSE,
 
   cat("\n")
 
-  # Print branches with better formatting
   if (!is.null(tree$left) || !is.null(tree$right)) {
-
     cat(indent, "├─ Left branch (SVM > 0):\n")
     if (!is.null(tree$left)) {
       print_svm_tree(tree$left, paste0(indent, "│  "), show_probabilities,
@@ -61,7 +58,6 @@ print_svm_tree <- function(tree, indent = "", show_probabilities = FALSE,
     }
   }
 
-  # Add explicit invisible return to prevent NULL output
   invisible()
 }
 

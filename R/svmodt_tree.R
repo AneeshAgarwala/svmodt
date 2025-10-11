@@ -1,22 +1,28 @@
 svm_split <- function(data, response, depth = 1, max_depth = 3,
-                               min_samples = 5, max_features = NULL,
-                               feature_method = c("random", "mutual", "cor"),
+                      min_samples = 5, max_features = NULL,
+                      feature_method = c("random", "mutual", "cor"),
 
-                               max_features_strategy = c("constant", "random", "decrease"),
-                               max_features_decrease_rate = 0.8,  # Multiply by this each level
-                               max_features_random_range = c(0.3, 1.0),  # Min/max proportion
+                      max_features_strategy = c("constant", "random", "decrease"),
+                      max_features_decrease_rate = 0.8,
+                      max_features_random_range = c(0.3, 1.0),
 
-                               penalize_used_features = FALSE,
-                               feature_penalty_weight = 0.5,  # How much to penalize (0-1)
-                               used_features = character(0),  # Features used in parent nodes
+                      penalize_used_features = FALSE,
+                      feature_penalty_weight = 0.5,
+                      used_features = character(0),
 
-                               class_weights = c("none", "balanced", "balanced_subsample", "custom"),
-                      custom_class_weights = NULL,  # Named vector if class_weights="custom"
+                      class_weights = c("none", "balanced", "balanced_subsample", "custom"),
+                      custom_class_weights = NULL,
 
                       verbose = FALSE, all_classes = NULL, ...) {
 
+  # Initialize all_classes if NULL
   if (is.null(all_classes)) {
     all_classes <- levels(factor(data[[response]]))
+  }
+
+  # Validate inputs early
+  if (!response %in% names(data)) {
+    stop("Response variable '", response, "' not found in data")
   }
 
   if (verbose) {
@@ -48,7 +54,7 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
     y, class_weights, custom_class_weights, verbose
   )
 
-  # FEATURE 1: Dynamic max_features calculation
+  # Dynamic max_features calculation
   current_max_features <- calculate_dynamic_max_features(
     data, response, max_features, depth,
     max_features_strategy, max_features_decrease_rate, max_features_random_range,
@@ -80,6 +86,12 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
   scaler <- scale_node(data[features])
   X_scaled <- scaler$train
 
+  # Handle case where scaling fails
+  if (ncol(X_scaled) == 0) {
+    if (verbose) cat("Stopping: all features are constant\n")
+    return(leaf_node(y, nrow(data), all_classes, features, scaler))
+  }
+
   # Fit SVM with calculated class weights
   model <- fit_svm_with_weights(X_scaled, y, node_class_weights, verbose, ...)
   if (is.null(model)) {
@@ -88,9 +100,9 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
 
   # Decision boundary
   dec <- attr(predict(model, X_scaled, decision.values = TRUE), "decision.values")
-  dec_vals <- if (is.matrix(dec)) dec[, 1] else as.numeric(dec)
-  left_idx <- which(dec_vals > 0)
-  right_idx <- which(dec_vals <= 0)
+  decision_values <- if (is.matrix(dec)) dec[, 1] else as.numeric(dec)
+  left_idx <- which(decision_values > 0)
+  right_idx <- which(decision_values <= 0)
 
   if (verbose) cat("Left size:", length(left_idx), "Right size:", length(right_idx), "\n")
 
@@ -100,32 +112,38 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
     return(leaf_node(y, nrow(data), all_classes, features, scaler))
   }
 
-  # Small child handling
-  child_check <- handle_small_children(left_idx, right_idx, min_samples,
-                                       data, response, depth, max_depth,
-                                       current_max_features, feature_method,
-                                       features, scaler, verbose, ...)
+  # Pass ALL required parameters including class weights and all_classes
+  child_check <- handle_small_children(
+    left_idx, right_idx, min_samples,
+    data, response, depth, max_depth,
+    max_features, feature_method,
+    max_features_strategy, max_features_decrease_rate, max_features_random_range,
+    penalize_used_features, feature_penalty_weight, used_features,
+    class_weights, custom_class_weights,
+    features, scaler, all_classes, verbose, ...
+  )
+
   if (child_check$stop) return(child_check$node)
   if (!is.null(child_check$node)) {
     child_check$node$model <- model
     return(child_check$node)
   }
 
-  # Update used features for children (FEATURE 2: Feature penalty)
+  # Update used features for children
   updated_used_features <- if (penalize_used_features) {
     unique(c(used_features, features))
   } else {
     used_features
   }
 
-  # Recurse with enhanced parameters
+  # Recurse with all parameters
   left <- svm_split(
     data[left_idx, , drop = FALSE], response,
     depth + 1, max_depth, min_samples,
     max_features, feature_method,
     max_features_strategy, max_features_decrease_rate, max_features_random_range,
     penalize_used_features, feature_penalty_weight, updated_used_features,
-    class_weights, custom_class_weights,  # Pass class weights to children
+    class_weights, custom_class_weights,
     verbose = verbose, all_classes = all_classes, ...
   )
 
@@ -135,7 +153,7 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
     max_features, feature_method,
     max_features_strategy, max_features_decrease_rate, max_features_random_range,
     penalize_used_features, feature_penalty_weight, updated_used_features,
-    class_weights, custom_class_weights,  # Pass class weights to children
+    class_weights, custom_class_weights,
     verbose = verbose, all_classes = all_classes, ...
   )
 
@@ -149,8 +167,8 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
     right = right,
     depth = depth,
     n = nrow(data),
-    max_features_used = current_max_features,  # Track for analysis
+    max_features_used = current_max_features,
     penalty_applied = penalize_used_features && length(used_features) > 0,
-    class_weights_used = node_class_weights  # Track class weights used
+    class_weights_used = node_class_weights
   )
 }

@@ -1,14 +1,18 @@
-choose_features_with_penalty <- function(data, response, max_features, method,
-                                         penalize_used, penalty_weight, used_features,
+choose_features_with_penalty <- function(data, response, max_features,
+                                         method = c("random", "mutual", "cor"),
+                                         penalize_used = FALSE,
+                                         penalty_weight = 0.5,
+                                         used_features = character(0),
                                          verbose = FALSE) {
-
-  method <- match.arg(method, c("random", "mutual", "cor"))
+  method <- match.arg(method)
   predictors <- setdiff(names(data), response)
 
   if (length(predictors) <= max_features) return(predictors)
 
+  # FIXED: Validate and cap penalty weight
+  penalty_weight <- max(0, min(penalty_weight, 0.99))
+
   if (!penalize_used || length(used_features) == 0) {
-    # No penalty - use original method
     return(choose_features(data, response, max_features, method))
   }
 
@@ -18,10 +22,7 @@ choose_features_with_penalty <- function(data, response, max_features, method,
   }
 
   if (method == "random") {
-    # For random selection, reduce probability of selecting used features
     available_features <- intersect(predictors, names(data))
-
-    # Create weights: lower for used features
     weights <- rep(1, length(available_features))
     names(weights) <- available_features
 
@@ -30,13 +31,10 @@ choose_features_with_penalty <- function(data, response, max_features, method,
       weights[used_idx] <- weights[used_idx] * (1 - penalty_weight)
     }
 
-    # Sample with weights
-    set.seed(123)  # For reproducibility
     selected <- sample(available_features, max_features, prob = weights, replace = FALSE)
     return(selected)
   }
 
-  # For mutual info and correlation, modify scores
   if (method == "mutual") {
     if (!requireNamespace("FSelectorRcpp", quietly = TRUE)) {
       warning("FSelectorRcpp not available, falling back to correlation with penalty")
@@ -47,11 +45,9 @@ choose_features_with_penalty <- function(data, response, max_features, method,
           reformulate(predictors, response), data
         )
 
-        # Apply penalty to used features (cap penalty_weight at 0.99)
-        capped_penalty <- min(penalty_weight, 0.99)
         penalty_idx <- which(scores$attributes %in% used_features)
         if (length(penalty_idx) > 0) {
-          scores$importance[penalty_idx] <- scores$importance[penalty_idx] * (1 - capped_penalty)
+          scores$importance[penalty_idx] <- scores$importance[penalty_idx] * (1 - penalty_weight)
         }
 
         return(head(scores[order(-scores$importance), "attributes"], max_features))
@@ -63,24 +59,18 @@ choose_features_with_penalty <- function(data, response, max_features, method,
   }
 
   if (method == "cor") {
-    y <- data[[response]]
-    if (is.character(y)) y <- as.numeric(factor(y))
-    if (is.factor(y)) y <- as.numeric(y)
+    # FIXED: Use extracted helper function
+    cor_vals <- calculate_feature_associations(data, response, predictors)
 
-    cor_vals <- sapply(predictors, function(p) {
-      x <- data[[p]]
-      if (!is.numeric(x)) return(NA_real_)
-      suppressWarnings(abs(cor(x, y, use = "complete.obs")))
-    })
+    if (length(cor_vals) == 0) {
+      warning("No valid features for correlation, using random selection with penalty")
+      return(choose_features_with_penalty(data, response, max_features, "random",
+                                          penalize_used, penalty_weight, used_features, verbose))
+    }
 
-    cor_vals <- cor_vals[!is.na(cor_vals)]
-
-    # Apply penalty to used features (cap penalty_weight at 0.99)
-    capped_penalty <- min(penalty_weight, 0.99)
     penalty_idx <- which(names(cor_vals) %in% used_features)
     if (length(penalty_idx) > 0) {
-      cor_vals[penalty_idx] <- cor_vals[penalty_idx] * (1 - capped_penalty)
-
+      cor_vals[penalty_idx] <- cor_vals[penalty_idx] * (1 - penalty_weight)
       if (verbose) {
         cat("Penalized features:", paste(names(cor_vals)[penalty_idx], collapse = ", "), "\n")
       }

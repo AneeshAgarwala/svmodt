@@ -9,7 +9,6 @@ tree_stats <- function(tree) {
 
   traverse <- function(node, depth = 1) {
     if (is.null(node)) return()
-
     stats$n_nodes <<- stats$n_nodes + 1
     stats$max_depth <<- max(stats$max_depth, depth)
 
@@ -28,8 +27,8 @@ tree_stats <- function(tree) {
     stats$avg_samples_per_leaf <- stats$avg_samples_per_leaf / stats$n_leaves
   }
 
-  # Rough memory estimate
-  stats$memory_usage_mb <- object.size(tree) / (1024^2)
+  # Memory estimate
+  stats$memory_usage_mb <- as.numeric(object.size(tree)) / (1024^2)
 
   return(stats)
 }

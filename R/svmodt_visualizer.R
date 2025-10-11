@@ -94,8 +94,8 @@ plot_svm_boundary <- function(data, features, svm_model, scaler, title = "SVM De
          y = plot_features[2]) +
     theme_minimal() +
     theme(legend.position = "none",
-          plot.subtitle = element_text(size = 8))
-#    coord_fixed(ratio = 1)  # Fixed aspect ratio
+          plot.subtitle = element_text(size = 8),
+          aspect.ratio = 1)
 
   return(list(plot = p, grid_data = plot_data))
 }
