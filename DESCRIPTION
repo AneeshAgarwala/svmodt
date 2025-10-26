@@ -25,9 +25,5 @@ Imports:
     e1071,
     FSelectorRcpp,
     ggplot2,
-    kernlab,
-    sparseSVM,
     tidyr,
-    patchwork,
-    gridExtra,
-    RColorBrewer
+RoxygenNote: 7.3.3

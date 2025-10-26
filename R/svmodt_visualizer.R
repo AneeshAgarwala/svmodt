@@ -1,12 +1,6 @@
-library(ggplot2)
-library(gridExtra)
-library(RColorBrewer)
-library(dplyr)
-
-
 # Create a grid for decision boundary plotting
+#' @keywords internal
 create_decision_grid <- function(data, features, resolution = 50) {
-
   if (length(features) == 2) {
     # 2D grid
     x_range <- range(data[, features[1]], na.rm = TRUE)
@@ -23,13 +17,12 @@ create_decision_grid <- function(data, features, resolution = 50) {
     names(grid) <- features[1:2]
 
     return(grid)
-
   } else if (length(features) == 3) {
     # 3D grid - create 2D slices
     ranges <- sapply(features, function(f) range(data[, f], na.rm = TRUE))
 
-    x_seq <- seq(ranges[1,1], ranges[2,1], length.out = resolution)
-    y_seq <- seq(ranges[1,2], ranges[2,2], length.out = resolution)
+    x_seq <- seq(ranges[1, 1], ranges[2, 1], length.out = resolution)
+    y_seq <- seq(ranges[1, 2], ranges[2, 2], length.out = resolution)
     z_fixed <- median(data[, features[3]], na.rm = TRUE)
 
     grid <- expand.grid(x = x_seq, y = y_seq)
@@ -41,12 +34,12 @@ create_decision_grid <- function(data, features, resolution = 50) {
 }
 
 # Visualize a single SVM decision boundary
+#' @keywords internal
 plot_svm_boundary <- function(data, features, svm_model, scaler,
                               response_col = NULL,
                               title = "SVM Decision Boundary",
                               use_tree_prediction = FALSE,
                               tree = NULL) {
-
   if (length(features) < 2) {
     stop("Need at least 2 features for plotting")
   }
@@ -126,44 +119,88 @@ plot_svm_boundary <- function(data, features, svm_model, scaler,
   names(data_for_plot)[3] <- "response"
 
   # Create the plot
-  p <- ggplot() +
+  p <- ggplot2::ggplot() +
     # Decision boundary regions
-    geom_tile(data = plot_data,
-              aes(x = .data[[plot_features[1]]],
-                  y = .data[[plot_features[2]]],
-                  fill = boundary),
-              alpha = 0.3) +
+    ggplot2::geom_tile(
+      data = plot_data,
+      ggplot2::aes(
+        x = .data[[plot_features[1]]],
+        y = .data[[plot_features[2]]],
+        fill = boundary
+      ),
+      alpha = 0.3
+    ) +
     # Decision boundary line (where decision_value ≈ 0)
-    geom_contour(data = plot_data,
-                 aes(x = .data[[plot_features[1]]],
-                     y = .data[[plot_features[2]]],
-                     z = decision_value),
-                 breaks = 0, color = "black", linewidth = 1.5) +
+    ggplot2::geom_contour(
+      data = plot_data,
+      ggplot2::aes(
+        x = .data[[plot_features[1]]],
+        y = .data[[plot_features[2]]],
+        z = decision_value
+      ),
+      breaks = 0, color = "black", linewidth = 1.5
+    ) +
     # FIXED: Original data points with CORRECT response coloring
-    geom_point(data = data_for_plot,
-               aes(x = .data[[plot_features[1]]],
-                   y = .data[[plot_features[2]]],
-                   color = response),
-               size = 2, alpha = 0.8) +
-    scale_fill_manual(values = c("Left" = "lightblue", "Right" = "lightcoral"),
-                      name = "SVM Side") +
-    scale_color_brewer(palette = "Set1", name = "Actual Class") +
-    labs(title = title,
-         x = plot_features[1],
-         y = plot_features[2]) +
-    theme_minimal() +
-    theme(legend.position = "right",
-          plot.title = element_text(size = 10, face = "bold"),
-          aspect.ratio = 1)
+    ggplot2::geom_point(
+      data = data_for_plot,
+      ggplot2::aes(
+        x = .data[[plot_features[1]]],
+        y = .data[[plot_features[2]]],
+        color = response
+      ),
+      size = 2, alpha = 0.8
+    ) +
+    ggplot2::scale_fill_manual(
+      values = c("Left" = "lightblue", "Right" = "lightcoral"),
+      name = "SVM Side"
+    ) +
+    ggplot2::scale_color_brewer(palette = "Set1", name = "Actual Class") +
+    ggplot2::labs(
+      title = title,
+      x = plot_features[1],
+      y = plot_features[2]
+    ) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(
+      legend.position = "right",
+      plot.title = ggplot2::element_text(size = 10, face = "bold"),
+      aspect.ratio = 1
+    )
 
   return(list(plot = p, grid_data = plot_data, response_col = response_col))
 }
 
+
+#' Visualize a Decision Tree SVM
+#'
+#' Generates plots of SVM decision boundaries for each node in a decision tree SVM.
+#' Optionally, it can calculate accuracy at each node and return the data used for plotting.
+#'
+#' @param tree A decision tree SVM object created using `svm_split()`.
+#' @param original_data A data frame containing the original training data.
+#' @param features A character vector of feature names to be used for plotting.
+#' @param response_col Optional. Name of the response column. If `NULL`, it will be auto-detected.
+#' @param max_depth Optional. Maximum depth to visualize. If `NULL`, the entire tree is visualized.
+#' @param check_accuracy Logical. Whether to compute node-level accuracy for the original data.
+#'
+#' @return A list containing:
+#'   \item{plots}{A named list of ggplot2 objects for each node.}
+#'   \item{grid_data}{A named list of data frames used for plotting decision boundaries.}
+#'   \item{accuracy_info}{A named list of node-level accuracy information.}
+#'   \item{response_col}{The name of the response column used.}
+#'
+#' @examples
+#' \dontrun{
+#' # tree <- svm_split(train_data, response = "Class")
+#' viz <- visualize_dtsvm_tree(tree, train_data, features = c("X1", "X2"))
+#' viz$plots$depth_1_Root
+#' }
+#'
+#' @export
 visualize_dtsvm_tree <- function(tree, original_data, features,
                                  response_col = NULL,
                                  max_depth = NULL,
                                  check_accuracy = TRUE) {
-
   plots <- list()
   plot_data_list <- list()
   accuracy_info <- list()
@@ -171,8 +208,10 @@ visualize_dtsvm_tree <- function(tree, original_data, features,
   # Auto-detect response if not provided
   if (is.null(response_col)) {
     non_feature_cols <- setdiff(names(original_data), features)
-    factor_cols <- sapply(original_data[non_feature_cols],
-                          function(x) is.factor(x) || is.character(x))
+    factor_cols <- sapply(
+      original_data[non_feature_cols],
+      function(x) is.factor(x) || is.character(x)
+    )
     if (any(factor_cols)) {
       response_col <- non_feature_cols[factor_cols][1]
       cat("Using response column:", response_col, "\n")
@@ -181,29 +220,31 @@ visualize_dtsvm_tree <- function(tree, original_data, features,
 
   # Recursive function to traverse tree and create plots
   traverse_tree <- function(node, data_subset, depth = 1, path = "Root") {
-
     if (is.null(max_depth) || depth <= max_depth) {
-
       if (!node$is_leaf && !is.null(node$model)) {
-
         # Check accuracy at this node
         node_accuracy <- NA
         if (check_accuracy && !is.null(response_col) && response_col %in% names(data_subset)) {
           # Get predictions for this subset
-          subset_preds <- predict(node$model,
-                                  node$scaler$transform(data_subset[, node$features]))
+          subset_preds <- predict(
+            node$model,
+            node$scaler$transform(data_subset[, node$features])
+          )
           node_accuracy <- mean(subset_preds == data_subset[[response_col]])
         }
 
         # Create title with path and accuracy information
-        title <- paste0("Depth ", depth, " - ", path
-#                        "\nFeatures: ", paste(node$features, collapse = ", "),
-#                        "\nSamples: ", nrow(data_subset)
-)
+        title <- paste0(
+          "Depth ", depth, " - ", path
+          #                        "\nFeatures: ", paste(node$features, collapse = ", "),
+          #                        "\nSamples: ", nrow(data_subset)
+        )
 
         if (!is.na(node_accuracy)) {
-          title <- paste0(title, "\nNode Accuracy: ",
-                          round(node_accuracy * 100, 1), "%")
+          title <- paste0(
+            title, "\nNode Accuracy: ",
+            round(node_accuracy * 100, 1), "%"
+          )
         }
 
         # Create plot
@@ -231,13 +272,14 @@ visualize_dtsvm_tree <- function(tree, original_data, features,
 
         # Get decision values for the actual data to split it
         if (nrow(data_subset) > 0) {
-
           # Scale data using node's scaler
           X_scaled <- node$scaler$transform(data_subset[, node$features, drop = FALSE])
 
           # Get decision values
-          dec <- attr(predict(node$model, X_scaled, decision.values = TRUE),
-                      "decision.values")
+          dec <- attr(
+            predict(node$model, X_scaled, decision.values = TRUE),
+            "decision.values"
+          )
           decision_values <- if (is.matrix(dec)) dec[, 1] else as.numeric(dec)
 
           # CRITICAL: Use same split logic as predict_tree
@@ -246,13 +288,17 @@ visualize_dtsvm_tree <- function(tree, original_data, features,
 
           # Recurse to children
           if (!is.null(node$left) && length(left_idx) > 0) {
-            traverse_tree(node$left, data_subset[left_idx, , drop = FALSE],
-                          depth + 1, paste(path, "→ L"))
+            traverse_tree(
+              node$left, data_subset[left_idx, , drop = FALSE],
+              depth + 1, paste(path, "→ L")
+            )
           }
 
           if (!is.null(node$right) && length(right_idx) > 0) {
-            traverse_tree(node$right, data_subset[right_idx, , drop = FALSE],
-                          depth + 1, paste(path, "→ R"))
+            traverse_tree(
+              node$right, data_subset[right_idx, , drop = FALSE],
+              depth + 1, paste(path, "→ R")
+            )
           }
         }
       }

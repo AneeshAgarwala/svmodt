@@ -1,8 +1,20 @@
-`%||%` <- function(a, b) {
-  if (is.null(a)) b else a
-}
+# `%||%` <- function(a, b) {
+#   if (is.null(a)) b else a
+# }
 
-# FIXED: Better formatting and consistent parameter names
+#' Print an SVM Decision Tree
+#'
+#' Recursively prints the structure of an SVM-based decision tree.
+#'
+#' @param tree The tree object to print.
+#' @param indent String used for indentation (for recursive calls).
+#' @param show_probabilities Logical; whether to display class probabilities at leaf nodes.
+#' @param show_feature_info Logical; whether to show features used at nodes.
+#' @param show_penalties Logical; whether to show penalty flags at nodes.
+#' @return Invisibly returns NULL. Prints to console.
+#' @examples
+#' print_svm_tree(tree)
+#' @export
 print_svm_tree <- function(tree, indent = "", show_probabilities = FALSE,
                            show_feature_info = TRUE, show_penalties = TRUE) {
 
@@ -61,166 +73,19 @@ print_svm_tree <- function(tree, indent = "", show_probabilities = FALSE,
   invisible()
 }
 
-# Compact summary version
-print_svm_tree_compact <- function(tree) {
-  cat("=== SVM Tree Summary ===\n")
-  stats <- tree_stats(tree)
 
-  cat("Structure:", stats$n_nodes, "nodes,", stats$n_leaves, "leaves, max depth", stats$max_depth, "\n")
-  cat("Memory:", round(stats$memory_usage_mb, 2), "MB\n")
-
-  # Feature usage analysis
-  if (exists("analyze_feature_usage")) {
-    feature_analysis <- analyze_feature_usage(tree)
-    total_features <- sum(feature_analysis$total_usage > 0)
-    cat("Features: Using", total_features, "unique features, diversity =",
-        round(feature_analysis$diversity_score, 3), "\n")
-  }
-
-  cat("\nTree Structure:\n")
-  print_svm_tree(tree, show_probabilities = FALSE, show_feature_info = TRUE,
-                 show_penalties = TRUE)
-}
-
-# Feature-focused printing
-print_feature_usage <- function(tree, max_depth = NULL) {
-  cat("=== Feature Usage by Depth ===\n")
-
-  feature_by_depth <- list()
-  penalty_by_depth <- list()
-
-  collect_info <- function(node, depth = 1) {
-    if (is.null(max_depth) || depth <= max_depth) {
-      if (!node$is_leaf) {
-        # Collect features used at this depth
-        if (is.null(feature_by_depth[[depth]])) {
-          feature_by_depth[[depth]] <<- character(0)
-        }
-        feature_by_depth[[depth]] <<- c(feature_by_depth[[depth]], node$features)
-
-        # Collect penalty information
-        if (!is.null(node$penalty_applied) && node$penalty_applied) {
-          penalty_by_depth[[depth]] <<- c(penalty_by_depth[[depth]] %||% character(0),
-                                          paste0("Node_", node$n))
-        }
-
-        # Recurse
-        if (!is.null(node$left)) collect_info(node$left, depth + 1)
-        if (!is.null(node$right)) collect_info(node$right, depth + 1)
-      }
-    }
-  }
-
-  collect_info(tree)
-
-  for (depth in sort(as.numeric(names(feature_by_depth)))) {
-    features <- feature_by_depth[[depth]]
-    unique_features <- unique(features)
-    feature_counts <- table(features)
-
-    cat("Depth", depth, ":\n")
-    cat("  Features used:", paste(unique_features, collapse = ", "), "\n")
-    cat("  Usage counts:", paste(names(feature_counts), "(", feature_counts, ")",
-                                 collapse = ", "), "\n")
-
-    if (depth %in% names(penalty_by_depth)) {
-      cat("  Penalties applied:", length(penalty_by_depth[[depth]]), "nodes\n")
-    }
-
-    cat("\n")
-  }
-}
-
-# Comparative printing for multiple trees
-print_tree_comparison <- function(..., names = NULL) {
-  trees <- list(...)
-
-  if (is.null(names)) {
-    names <- paste("Tree", seq_along(trees))
-  }
-
-  cat("=== Tree Comparison ===\n")
-
-  # Create comparison table
-  comparison_data <- data.frame(
-    Tree = names,
-    Nodes = sapply(trees, function(t) tree_stats(t)$n_nodes),
-    Leaves = sapply(trees, function(t) tree_stats(t)$n_leaves),
-    Max_Depth = sapply(trees, function(t) tree_stats(t)$max_depth),
-    Memory_MB = sapply(trees, function(t) round(tree_stats(t)$memory_usage_mb, 2)),
-    stringsAsFactors = FALSE
-  )
-
-  # Add feature diversity if function exists
-  if (exists("analyze_feature_usage")) {
-    comparison_data$Feature_Diversity <- sapply(trees, function(t) {
-      round(analyze_feature_usage(t)$diversity_score, 3)
-    })
-    comparison_data$Unique_Features <- sapply(trees, function(t) {
-      analysis <- analyze_feature_usage(t)
-      sum(analysis$total_usage > 0)
-    })
-  }
-
-  print(comparison_data, row.names = FALSE)
-
-  cat("\nDetailed Structure:\n")
-  for (i in seq_along(trees)) {
-    cat("\n", rep("=", 50), "\n", sep = "")
-    cat(names[i], "\n")
-    cat(rep("=", 50), "\n")
-    print_svm_tree(trees[[i]], show_probabilities = FALSE,
-                   show_feature_info = TRUE, show_penalties = TRUE)
-  }
-}
-
-# Interactive tree explorer (for large trees)
-explore_tree <- function(tree, max_depth = 3) {
-  cat("=== Interactive Tree Explorer ===\n")
-  cat("Showing tree up to depth", max_depth, "\n")
-  cat("Use print_svm_tree(tree) to see full tree\n\n")
-
-  print_limited_depth <- function(node, current_depth = 1, indent = "") {
-    if (current_depth > max_depth) {
-      cat(indent, "... (depth limit reached, ",
-          count_nodes_below(node), " more nodes below)\n")
-      return()
-    }
-
-    if (node$is_leaf) {
-      cat(indent, "🍃 Leaf: predict =", node$prediction, "| n =", node$n, "\n")
-      return()
-    }
-
-    cat(indent, "🌳 Node: depth =", node$depth, "| n =", node$n,
-        "| features = [", paste(node$features, collapse = ","), "]\n")
-
-    if (!is.null(node$left)) {
-      cat(indent, "├─ Left:\n")
-      print_limited_depth(node$left, current_depth + 1, paste0(indent, "│  "))
-    }
-
-    if (!is.null(node$right)) {
-      cat(indent, "└─ Right:\n")
-      print_limited_depth(node$right, current_depth + 1, paste0(indent, "   "))
-    }
-  }
-
-  print_limited_depth(tree)
-}
-
-# Helper function to count nodes
-count_nodes_below <- function(node) {
-  if (node$is_leaf) return(1)
-
-  count <- 1
-  if (!is.null(node$left)) count <- count + count_nodes_below(node$left)
-  if (!is.null(node$right)) count <- count + count_nodes_below(node$right)
-
-  return(count)
-}
-
-# Path tracing for specific predictions
+#' Trace Prediction Path for a Sample
+#'
+#' Shows the path taken by a single sample through the SVM tree,
+#' including decision values, branches, and final prediction.
+#'
+#' @param tree The tree object.
+#' @param sample_data Data frame containing the sample(s).
+#' @param sample_idx Index of the sample to trace (default 1).
+#' @return The predicted class for the sample. Prints path to console.
+#' @examples
+#' trace_prediction_path(tree, test_data, sample_idx = 1)
+#' @export
 trace_prediction_path <- function(tree, sample_data, sample_idx = 1) {
   cat("=== Tracing Prediction Path ===\n")
   cat("Sample", sample_idx, ":\n")

@@ -5,7 +5,7 @@
 inst/doc
 TODO.txt
 rough-tests/
-R/svmodt_feature_testing.R
-R/svmodt_feature_helper.R
+R/svmodt_feature_selection_analyzer.R
+R/svmodt_info_gain.R
 data-raw/mimic_data_kaggle/
 slides/

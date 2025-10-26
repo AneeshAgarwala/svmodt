@@ -1,3 +1,40 @@
+#' @title Predict using a Support Vector Machine based Oblique Decision Tree
+#' @description
+#' Predicts class labels or class probabilities for new data using a tree
+#' constructed with SVM splits. Handles leaf nodes, internal nodes, recursive traversal,
+#' and fallback mechanisms when SVM predictions or scaling fail.
+#'
+#' @param tree A tree node object (leaf or internal) created by \code{svm_split}.
+#' @param newdata A data frame of new predictor values.
+#' @param return_probs Logical; if \code{TRUE}, returns both predictions and class probabilities.
+#' @param calibrate_probs Logical; if \code{TRUE}, converts decision values to probabilities
+#'   using logistic calibration when direct SVM probabilities are unavailable.
+#'
+#' @return If \code{return_probs = FALSE}, returns a character vector of predicted class labels.
+#'   If \code{return_probs = TRUE}, returns a list with elements:
+#'   \itemize{
+#'     \item \code{predictions}: Character vector of predicted class labels.
+#'     \item \code{probabilities}: Numeric matrix of class probabilities (rows = samples, columns = classes).
+#'   }
+#'
+#' @details
+#' - Leaf nodes return the majority class stored in the node, along with class probabilities.
+#' - Internal nodes scale features, compute SVM decision values, and traverse left/right children.
+#' - Supports binary and multiclass SVMs (one-vs-one decision values for multiclass).
+#' - If feature scaling fails or child nodes are missing, predictions are generated using:
+#'   1. SVM-provided probabilities.
+#'   2. Calibrated decision values (sigmoid/logistic conversion).
+#'   3. Training class distribution or uniform probabilities as a last resort.
+#' - Probabilities are normalized to sum to 1 for each sample.
+#'
+#' @examples
+#' \dontrun{
+#' # Assuming `tree` is trained via svm_split
+#' preds <- svm_predict_tree(tree, newdata = test_data)
+#' preds_with_probs <- svm_predict_tree(tree, newdata = test_data, return_probs = TRUE)
+#' }
+#'
+#' @export
 svm_predict_tree <- function(tree, newdata, return_probs = FALSE,
                              calibrate_probs = TRUE) {
 
@@ -83,7 +120,7 @@ svm_predict_tree <- function(tree, newdata, return_probs = FALSE,
     prob_matrix <- matrix(0, nrow = nrow(newdata), ncol = length(all_classes))
     colnames(prob_matrix) <- all_classes
 
-    # ========== LEFT BRANCH ==========
+    # ################# LEFT BRANCH #################
     if (!is.null(tree$left) && length(left_idx) > 0) {
       # Recursive prediction
       left_result <- svm_predict_tree(
@@ -110,7 +147,7 @@ svm_predict_tree <- function(tree, newdata, return_probs = FALSE,
       prob_matrix[left_idx, ] <- fallback_result$probabilities
     }
 
-    # ========== RIGHT BRANCH ==========
+    # ################# RIGHT BRANCH #################
     if (!is.null(tree$right) && length(right_idx) > 0) {
       # Recursive prediction
       right_result <- svm_predict_tree(
@@ -123,7 +160,6 @@ svm_predict_tree <- function(tree, newdata, return_probs = FALSE,
       prob_matrix[right_idx, ] <- right_result$probabilities
 
     } else if (length(right_idx) > 0) {
-      # FIXED: Pass correct subset of probabilities
       right_svm_probs <- if (!is.null(svm_probs)) svm_probs[right_idx, , drop = FALSE] else NULL
 
       fallback_result <- get_fallback_predictions(
@@ -141,7 +177,7 @@ svm_predict_tree <- function(tree, newdata, return_probs = FALSE,
     return(list(predictions = pred, probabilities = prob_matrix))
 
   } else {
-    # ========== PREDICTION ONLY (NO PROBABILITIES) ==========
+    ################# PREDICTION ONLY (NO PROBABILITIES) #################
 
     # Left branch
     if (!is.null(tree$left) && length(left_idx) > 0) {
@@ -165,7 +201,25 @@ svm_predict_tree <- function(tree, newdata, return_probs = FALSE,
   }
 }
 
-
+#' Fallback predictions for SVM decision tree nodes
+#'
+#' Generates class predictions and probabilities when SVM predictions are unavailable
+#' or insufficient. This function is intended for internal use within the SVM tree.
+#'
+#' @param model An \code{svm} object fitted with training data.
+#' @param X_scaled Scaled predictor matrix for the current node.
+#' @param decision_values Numeric vector of SVM decision values.
+#' @param svm_probs Optional SVM probability matrix (from \code{predict(..., probability=TRUE)}).
+#' @param all_classes Character vector of all possible classes.
+#' @param calibrate Logical; if \code{TRUE}, calibrates decision values into probabilities.
+#'
+#' @return A list with elements:
+#' \itemize{
+#'   \item \code{predictions}: Character vector of predicted classes.
+#'   \item \code{probabilities}: Matrix of class probabilities (rows = samples, columns = classes).
+#' }
+#'
+#' @keywords internal
 get_fallback_predictions <- function(model, X_scaled, decision_values,
                                      svm_probs = NULL, all_classes,
                                      calibrate = TRUE) {
@@ -183,7 +237,7 @@ get_fallback_predictions <- function(model, X_scaled, decision_values,
   prob_matrix <- matrix(0, nrow = n_samples, ncol = length(all_classes))
   colnames(prob_matrix) <- all_classes
 
-  # ========== OPTION 1: Use SVM's built-in probabilities ==========
+  # ################# OPTION 1: Use SVM's built-in probabilities #################
   if (!is.null(svm_probs) && is.matrix(svm_probs) && nrow(svm_probs) == n_samples) {
     svm_classes <- colnames(svm_probs)
 
@@ -239,7 +293,7 @@ get_fallback_predictions <- function(model, X_scaled, decision_values,
     return(list(predictions = pred_classes, probabilities = prob_matrix))
   }
 
-  # ========== OPTION 2: Calibrated decision values ==========
+  # ################# OPTION 2: Calibrated decision values #################
   if (calibrate && !is.null(model)) {
     probs <- convert_decision_to_probs(decision_values, model)
 
@@ -272,7 +326,7 @@ get_fallback_predictions <- function(model, X_scaled, decision_values,
     return(list(predictions = pred_classes, probabilities = prob_matrix))
   }
 
-  # ========== OPTION 3: Last resort - use training class proportions ==========
+  # ################# OPTION 3: Last resort - use training class proportions #################
   if (!is.null(model) && !is.null(model$fitted)) {
     fitted_table <- table(model$fitted)
     best_class <- names(which.max(fitted_table))
@@ -297,6 +351,19 @@ get_fallback_predictions <- function(model, X_scaled, decision_values,
   return(list(predictions = pred_classes, probabilities = prob_matrix))
 }
 
+#' Convert SVM decision values to probabilities
+#'
+#' Converts numeric SVM decision values into probabilities using a logistic/sigmoid
+#' transformation. Optionally uses the model's training decision values for calibration.
+#' Intended for internal use within the SVM tree prediction workflow.
+#'
+#' @param decision_values Numeric vector of decision values.
+#' @param model Optional \code{svm} object; if provided, training decision values
+#'   are used to calibrate scaling.
+#'
+#' @return Numeric vector of probabilities, clipped between 0.001 and 0.999.
+#'
+#' @keywords internal
 convert_decision_to_probs <- function(decision_values, model = NULL) {
 
 

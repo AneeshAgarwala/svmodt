@@ -1,3 +1,62 @@
+#' Build an Oblique Decision Tree Using SVM Splits
+#'
+#' Constructs a decision tree where each internal node uses a Support Vector
+#' Machine (SVM) to determine the split. Supports dynamic feature selection,
+#' feature penalization, scaling, and class weighting.
+#'
+#' @param data A data frame containing predictor variables and the response variable.
+#' @param response A string specifying the name of the response variable (target column).
+#' @param max_depth Maximum depth of the tree. Default is 3.
+#' @param min_samples Minimum number of samples required to split a node. Default is 5.
+#' @param max_features Maximum number of features to consider at each split.
+#' @param feature_method Feature selection method: "random", "mutual", or "cor".
+#' @param max_features_strategy Strategy for dynamic max_features: "constant", "random", or "decrease".
+#' @param max_features_decrease_rate Rate at which max_features decreases if using "decrease".
+#' @param max_features_random_range Range of fraction of features to sample if using "random" strategy.
+#' @param penalize_used_features Logical; if TRUE, previously used features are penalized.
+#' @param feature_penalty_weight Numeric; weight of the penalty applied to used features.
+#' @param class_weights Class weighting scheme: "none", "balanced", "balanced_subsample", or "custom".
+#' @param custom_class_weights Optional named vector of custom class weights.
+#' @param verbose Logical; if TRUE, prints progress and node information.
+#' @param ... Additional arguments passed to the underlying SVM fitting function.
+#'
+#' @return A nested list representing the decision tree. Each node contains:
+#' \describe{
+#'   \item{is_leaf}{Logical, TRUE if the node is a leaf.}
+#'   \item{model}{Fitted SVM model at the node (for internal nodes).}
+#'   \item{features}{Selected features at this node.}
+#'   \item{scaler}{Scaling information for the node.}
+#'   \item{left}{Left child node (decision > 0).}
+#'   \item{right}{Right child node (decision ≤ 0).}
+#'   \item{depth}{Depth of the node.}
+#'   \item{n}{Number of samples at the node.}
+#'   \item{max_features_used}{Maximum features used at this node.}
+#'   \item{penalty_applied}{Logical, whether feature penalties were applied.}
+#'   \item{class_weights_used}{Class weights applied at this node.}
+#' }
+#'
+#' @details
+#' This function recursively splits the dataset using an SVM at each node, stopping
+#' according to maximum depth, minimum samples, or pure nodes. Features can be
+#' selected randomly, by mutual information, or by correlation, and previously
+#' used features can be penalized to encourage diversity. The tree supports
+#' scaling of numeric features and flexible class weighting schemes.
+#'
+#' @examples
+#' \dontrun{
+#' data(iris)
+#' tree <- svm_split(
+#'   data = iris,
+#'   response = "Species",
+#'   max_depth = 3,
+#'   min_samples = 5,
+#'   feature_method = "random",
+#'   verbose = TRUE
+#' )
+#' print_svm_tree(tree)
+#' }
+#'
+#' @export
 svm_split <- function(data, response, depth = 1, max_depth = 3,
                       min_samples = 5, max_features = NULL,
                       feature_method = c("random", "mutual", "cor"),

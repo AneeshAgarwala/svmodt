@@ -1,3 +1,23 @@
+#' Scale Numeric Features for Tree Nodes
+#'
+#' Internal utility function to standardize numeric features (zero mean, unit variance)
+#' and remove constant columns. Returns both the scaled training data and a
+#' transformer function for applying the same scaling to new data.
+#'
+#' @param df A data frame containing numeric (or factor) features to be scaled.
+#'
+#' @return A list with two elements:
+#' \describe{
+#'   \item{train}{The scaled training data frame.}
+#'   \item{transform}{A function that applies the same scaling to a new data frame.}
+#' }
+#'
+#' @details
+#' - Constant features (zero variance or only one unique value) are automatically removed.
+#' - Standard deviation of zero is replaced with 1 to prevent division by zero.
+#' - Designed for internal use in SVM tree building and prediction pipelines.
+#'
+#' @keywords internal
 scale_node <- function(df) {
   if (ncol(df) == 0 || nrow(df) == 0) {
     return(list(

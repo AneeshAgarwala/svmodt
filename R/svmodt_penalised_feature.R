@@ -1,3 +1,29 @@
+#' @title Select features with optional penalty for previously used features
+#' @description
+#' Internal helper function to select a subset of features while optionally penalizing
+#' features that have been used in ancestor nodes. Supports random selection,
+#' mutual information, or correlation-based ranking.
+#'
+#' @param data A data frame containing predictors and the response.
+#' @param response Name of the response variable.
+#' @param max_features Maximum number of features to select.
+#' @param method Feature selection method; one of \code{"random"}, \code{"mutual"}, or \code{"cor"}.
+#' @param penalize_used Logical; if \code{TRUE}, previously used features are penalized.
+#' @param penalty_weight Numeric (0–0.99); fraction by which to reduce the score/weight of used features.
+#' @param used_features Character vector of features previously used in the tree.
+#' @param verbose Logical; if \code{TRUE}, prints information about penalties applied.
+#'
+#' @return Character vector of selected feature names.
+#'
+#' @details
+#' - Penalized features have their selection weight or score reduced by multiplying by \code{(1 - penalty_weight)}.
+#' - For \code{method = "random"}, the penalty reduces the probability of sampling a feature.
+#' - For \code{method = "mutual"} or \code{"cor"}, the penalty reduces feature importance or correlation.
+#' - If no valid features are available for correlation, the function falls back to random selection with penalty.
+#' - Ensures that no feature is entirely excluded; \code{penalty_weight} is capped below 1.
+#'
+#' @seealso \code{\link{choose_features}}, \code{\link{calculate_feature_associations}}
+#' @keywords internal
 choose_features_with_penalty <- function(data, response, max_features,
                                          method = c("random", "mutual", "cor"),
                                          penalize_used = FALSE,
@@ -9,7 +35,6 @@ choose_features_with_penalty <- function(data, response, max_features,
 
   if (length(predictors) <= max_features) return(predictors)
 
-  # FIXED: Validate and cap penalty weight
   penalty_weight <- max(0, min(penalty_weight, 0.99))
 
   if (!penalize_used || length(used_features) == 0) {
@@ -59,7 +84,6 @@ choose_features_with_penalty <- function(data, response, max_features,
   }
 
   if (method == "cor") {
-    # FIXED: Use extracted helper function
     cor_vals <- calculate_feature_associations(data, response, predictors)
 
     if (length(cor_vals) == 0) {
