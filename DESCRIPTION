@@ -11,7 +11,7 @@ Authors@R: c(
   )
 Description: More about what it does (maybe more than one line).
     Continuation lines should be indented.
-License: What license is it under?
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Suggests: 
@@ -21,9 +21,7 @@ VignetteBuilder: knitr
 Depends: 
     R (>= 3.5)
 Imports: 
-    dplyr,
     e1071,
     FSelectorRcpp,
     ggplot2,
-    tidyr,
 RoxygenNote: 7.3.3

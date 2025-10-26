@@ -13,7 +13,9 @@
 #' @param show_penalties Logical; whether to show penalty flags at nodes.
 #' @return Invisibly returns NULL. Prints to console.
 #' @examples
+#' \dontrun{
 #' print_svm_tree(tree)
+#' }
 #' @export
 print_svm_tree <- function(tree, indent = "", show_probabilities = FALSE,
                            show_feature_info = TRUE, show_penalties = TRUE) {
@@ -84,7 +86,9 @@ print_svm_tree <- function(tree, indent = "", show_probabilities = FALSE,
 #' @param sample_idx Index of the sample to trace (default 1).
 #' @return The predicted class for the sample. Prints path to console.
 #' @examples
+#' \dontrun{
 #' trace_prediction_path(tree, test_data, sample_idx = 1)
+#' }
 #' @export
 trace_prediction_path <- function(tree, sample_data, sample_idx = 1) {
   cat("=== Tracing Prediction Path ===\n")

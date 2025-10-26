@@ -21,5 +21,7 @@ Shows the path taken by a single sample through the SVM tree,
 including decision values, branches, and final prediction.
 }
 \examples{
+\dontrun{
 trace_prediction_path(tree, test_data, sample_idx = 1)
+}
 }

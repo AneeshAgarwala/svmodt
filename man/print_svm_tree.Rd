@@ -30,5 +30,7 @@ Invisibly returns NULL. Prints to console.
 Recursively prints the structure of an SVM-based decision tree.
 }
 \examples{
+\dontrun{
 print_svm_tree(tree)
+}
 }

@@ -66,18 +66,6 @@ calculate_feature_associations <- function(data, response, predictors) {
 #'   the function gracefully falls back to the correlation-based method.
 #' - The correlation method internally calls
 #'   \code{\link{calculate_feature_associations}}.
-#'
-#' @examples
-#' df <- data.frame(
-#'   y = rnorm(100),
-#'   x1 = rnorm(100),
-#'   x2 = runif(100),
-#'   x3 = sample(letters[1:3], 100, replace = TRUE)
-#' )
-#' choose_features(df, "y", max_features = 2, method = "cor")
-#' choose_features(df, "y", max_features = 2, method = "random")
-#'
-#' @seealso \code{\link{calculate_feature_associations}}
 #' @keywords internal
 choose_features <- function(data, response, max_features,
                             method = c("random", "mutual", "cor")) {
