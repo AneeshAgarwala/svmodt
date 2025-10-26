@@ -3,7 +3,7 @@
 \docType{data}
 \name{wdbc}
 \alias{wdbc}
-\title{Wisconsin Diagnostic Breast Cancer (WDBC) Dataset}
+\title{Wisconsin Diagnostic Breast Cancer Dataset}
 \format{
 A data frame with 569 rows and 31 columns:
 \describe{

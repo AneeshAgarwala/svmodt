@@ -1,4 +1,4 @@
-#' Wisconsin Diagnostic Breast Cancer (WDBC) Dataset
+#' Wisconsin Diagnostic Breast Cancer Dataset
 #'
 #' The WDBC dataset contains quantitative measurements from digitized images of
 #' fine needle aspirates (FNA) of breast masses. It is commonly used for
