@@ -1,6 +1,8 @@
 # Count leaves in a (sub)tree
 count_leaves <- function(node) {
-  if (is.null(node$split_feature)) return(1)
+  if (is.null(node$split_feature)) {
+    return(1)
+  }
   count_leaves(node$left) + count_leaves(node$right)
 }
 

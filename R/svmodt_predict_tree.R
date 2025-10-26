@@ -37,7 +37,6 @@
 #' @export
 svm_predict_tree <- function(tree, newdata, return_probs = FALSE,
                              calibrate_probs = TRUE) {
-
   # Handle leaf nodes
   if (tree$is_leaf) {
     pred <- rep(tree$prediction, nrow(newdata))
@@ -45,7 +44,8 @@ svm_predict_tree <- function(tree, newdata, return_probs = FALSE,
     if (return_probs) {
       # Vectorized probability matrix creation
       prob_matrix <- matrix(rep(tree$class_prob, nrow(newdata)),
-                            nrow = nrow(newdata), byrow = TRUE)
+        nrow = nrow(newdata), byrow = TRUE
+      )
       colnames(prob_matrix) <- names(tree$class_prob)
 
       return(list(predictions = pred, probabilities = prob_matrix))
@@ -58,8 +58,10 @@ svm_predict_tree <- function(tree, newdata, return_probs = FALSE,
       all_classes <- get_all_classes(tree)
       return(list(
         predictions = character(0),
-        probabilities = matrix(nrow = 0, ncol = length(all_classes),
-                               dimnames = list(NULL, all_classes))
+        probabilities = matrix(
+          nrow = 0, ncol = length(all_classes),
+          dimnames = list(NULL, all_classes)
+        )
       ))
     }
     return(character(0))
@@ -92,8 +94,10 @@ svm_predict_tree <- function(tree, newdata, return_probs = FALSE,
     return(pred)
   }
 
-  svm_result <- predict(tree$model, X_scaled, decision.values = TRUE,
-                        probability = TRUE)
+  svm_result <- predict(tree$model, X_scaled,
+    decision.values = TRUE,
+    probability = TRUE
+  )
   dec_values <- attr(svm_result, "decision.values")
 
   # For binary: use first column (or specified best_col)
@@ -110,7 +114,7 @@ svm_predict_tree <- function(tree, newdata, return_probs = FALSE,
   svm_probs <- attr(svm_result, "probabilities")
 
   # This MUST match the logic used during training in svm_split
-  left_idx  <- which(decision_values > 0)
+  left_idx <- which(decision_values > 0)
   right_idx <- which(decision_values <= 0)
 
   pred <- vector("character", nrow(newdata))
@@ -131,7 +135,6 @@ svm_predict_tree <- function(tree, newdata, return_probs = FALSE,
       )
       pred[left_idx] <- left_result$predictions
       prob_matrix[left_idx, ] <- left_result$probabilities
-
     } else if (length(left_idx) > 0) {
       left_svm_probs <- if (!is.null(svm_probs)) svm_probs[left_idx, , drop = FALSE] else NULL
 
@@ -158,7 +161,6 @@ svm_predict_tree <- function(tree, newdata, return_probs = FALSE,
       )
       pred[right_idx] <- right_result$predictions
       prob_matrix[right_idx, ] <- right_result$probabilities
-
     } else if (length(right_idx) > 0) {
       right_svm_probs <- if (!is.null(svm_probs)) svm_probs[right_idx, , drop = FALSE] else NULL
 
@@ -175,14 +177,14 @@ svm_predict_tree <- function(tree, newdata, return_probs = FALSE,
     }
 
     return(list(predictions = pred, probabilities = prob_matrix))
-
   } else {
     ################# PREDICTION ONLY (NO PROBABILITIES) #################
 
     # Left branch
     if (!is.null(tree$left) && length(left_idx) > 0) {
       pred[left_idx] <- svm_predict_tree(tree$left, newdata[left_idx, , drop = FALSE],
-                                         return_probs = FALSE, calibrate_probs)
+        return_probs = FALSE, calibrate_probs
+      )
     } else if (length(left_idx) > 0) {
       # Use majority class from model
       pred[left_idx] <- rep(names(which.max(table(tree$model$fitted))), length(left_idx))
@@ -191,7 +193,8 @@ svm_predict_tree <- function(tree, newdata, return_probs = FALSE,
     # Right branch
     if (!is.null(tree$right) && length(right_idx) > 0) {
       pred[right_idx] <- svm_predict_tree(tree$right, newdata[right_idx, , drop = FALSE],
-                                          return_probs = FALSE, calibrate_probs)
+        return_probs = FALSE, calibrate_probs
+      )
     } else if (length(right_idx) > 0) {
       # Use majority class from model
       pred[right_idx] <- rep(names(which.max(table(tree$model$fitted))), length(right_idx))
@@ -223,14 +226,15 @@ svm_predict_tree <- function(tree, newdata, return_probs = FALSE,
 get_fallback_predictions <- function(model, X_scaled, decision_values,
                                      svm_probs = NULL, all_classes,
                                      calibrate = TRUE) {
-
   n_samples <- length(decision_values)
 
   if (n_samples == 0) {
     return(list(
       predictions = character(0),
-      probabilities = matrix(0, nrow = 0, ncol = length(all_classes),
-                             dimnames = list(NULL, all_classes))
+      probabilities = matrix(0,
+        nrow = 0, ncol = length(all_classes),
+        dimnames = list(NULL, all_classes)
+      )
     ))
   }
 
@@ -242,42 +246,40 @@ get_fallback_predictions <- function(model, X_scaled, decision_values,
     svm_classes <- colnames(svm_probs)
 
     convert_decision_to_probs <- function(decision_values, model = NULL) {
-
-  if (length(decision_values) == 0) {
-    return(numeric(0))
-  }
-
-  # If we have the model, use training statistics for calibration
-  if (!is.null(model) && !is.null(model$decision.values)) {
-    train_dec <- as.numeric(model$decision.values)
-
-    train_dec <- train_dec[!is.na(train_dec)]
-
-    if (length(train_dec) > 0) {
-      dec_mean <- mean(train_dec)
-      dec_sd <- sd(train_dec)
-
-      if (is.na(dec_sd) || dec_sd == 0) {
-        dec_sd <- 1
+      if (length(decision_values) == 0) {
+        return(numeric(0))
       }
 
-      # Standardize decision values
-      scaled_dec <- (decision_values - dec_mean) / dec_sd
-      probs <- 1 / (1 + exp(-scaled_dec))
-    } else {
-      # Fallback if training data unavailable
-      probs <- 1 / (1 + exp(-decision_values))
+      # If we have the model, use training statistics for calibration
+      if (!is.null(model) && !is.null(model$decision.values)) {
+        train_dec <- as.numeric(model$decision.values)
+
+        train_dec <- train_dec[!is.na(train_dec)]
+
+        if (length(train_dec) > 0) {
+          dec_mean <- mean(train_dec)
+          dec_sd <- sd(train_dec)
+
+          if (is.na(dec_sd) || dec_sd == 0) {
+            dec_sd <- 1
+          }
+
+          # Standardize decision values
+          scaled_dec <- (decision_values - dec_mean) / dec_sd
+          probs <- 1 / (1 + exp(-scaled_dec))
+        } else {
+          # Fallback if training data unavailable
+          probs <- 1 / (1 + exp(-decision_values))
+        }
+      } else {
+        # Simple sigmoid without calibration
+        probs <- 1 / (1 + exp(-decision_values))
+      }
+
+      probs <- pmax(pmin(probs, 0.999), 0.001)
+
+      return(probs)
     }
-
-  } else {
-    # Simple sigmoid without calibration
-    probs <- 1 / (1 + exp(-decision_values))
-  }
-
-  probs <- pmax(pmin(probs, 0.999), 0.001)
-
-  return(probs)
-}
     for (cls in intersect(svm_classes, all_classes)) {
       prob_matrix[, cls] <- svm_probs[, cls]
     }
@@ -304,7 +306,6 @@ get_fallback_predictions <- function(model, X_scaled, decision_values,
       # Positive decision -> high probability for first class
       prob_matrix[, model_classes[1]] <- probs
       prob_matrix[, model_classes[2]] <- 1 - probs
-
     } else {
       # Use one-vs-rest approach with softmax
       # For now, distribute based on calibrated probability
@@ -341,7 +342,6 @@ get_fallback_predictions <- function(model, X_scaled, decision_values,
     }
 
     pred_classes <- rep(best_class, n_samples)
-
   } else {
     # Absolute fallback - uniform distribution
     prob_matrix[] <- 1 / length(all_classes)
@@ -365,8 +365,6 @@ get_fallback_predictions <- function(model, X_scaled, decision_values,
 #'
 #' @keywords internal
 convert_decision_to_probs <- function(decision_values, model = NULL) {
-
-
   if (length(decision_values) == 0) {
     return(numeric(0))
   }
@@ -394,7 +392,6 @@ convert_decision_to_probs <- function(decision_values, model = NULL) {
       # Fallback if training data unavailable
       probs <- 1 / (1 + exp(-decision_values))
     }
-
   } else {
     # Simple sigmoid without calibration
     probs <- 1 / (1 + exp(-decision_values))

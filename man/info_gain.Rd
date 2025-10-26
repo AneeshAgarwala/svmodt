@@ -2,29 +2,42 @@
 % Please edit documentation in R/svmodt_info_gain.R
 \name{info_gain}
 \alias{info_gain}
-\title{Calculate information gain of a feature}
+\title{Calculate Information Gain for a Feature Split}
 \usage{
 info_gain(feature, target, metric = c("entropy", "gini"))
 }
 \arguments{
-\item{feature}{A vector of categorical feature values.}
+\item{feature}{A vector representing the splitting feature (categorical or factor).}
 
-\item{target}{A vector of class labels corresponding to \code{feature}.}
+\item{target}{A vector of class labels for the target variable.}
 
-\item{metric}{Character; the impurity metric to use. One of \code{"entropy"} or \code{"gini"}.}
+\item{metric}{The impurity measure to use: either "entropy" or "gini".}
 }
 \value{
-Numeric value of information gain: the reduction in impurity from the split.
+A numeric value representing the information gain.
 }
 \description{
-Computes the information gain of splitting \code{target} using a categorical \code{feature}.
-The impurity metric can be entropy or Gini impurity. Used internally for decision tree splits.
+Computes the reduction in impurity (information gain) when splitting a target
+variable by a categorical feature.
 }
 \details{
-- Information gain is calculated as:
-\deqn{IG = I(parent) - \sum_{v \in levels(feature)} (n_v / n) \cdot I(child_v)}
-  where \(I(\cdot)\) is the chosen impurity metric, \(n_v\) is the number of samples
-  in child node \(v\), and \(n\) is the total number of samples.
-- Only levels with nonzero counts are considered to avoid numerical issues.
+Information gain is computed as:
+\deqn{
+  IG = H(parent) - \sum_{v \in Values} \frac{n_v}{n} H(child_v)
+}{
+  IG = H(parent) - sum_v (n_v / n) * H(child_v)
 }
-\keyword{internal}
+where:
+\itemize{
+  \item \eqn{H(parent)} is the impurity of the original target vector,
+  \item \eqn{H(child_v)} is the impurity of the subset of target where feature = v,
+  \item \eqn{n_v} is the number of samples where feature = v,
+  \item \eqn{n} is the total number of samples.
+}
+}
+\examples{
+feature <- factor(c("A", "A", "B", "B", "B"))
+target <- c("yes", "yes", "no", "no", "no")
+info_gain(feature, target, metric = "entropy")
+
+}

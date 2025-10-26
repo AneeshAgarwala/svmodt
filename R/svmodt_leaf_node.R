@@ -42,7 +42,7 @@ leaf_node <- function(y, n, all_classes = NULL, features = character(0), scaler 
 
   # FIXED: Better safety check
   if (sum(prob_vec) == 0 || any(is.na(prob_vec)) || all(prob_vec == 0)) {
-    prob_vec <- rep(1/length(all_classes), length(all_classes))
+    prob_vec <- rep(1 / length(all_classes), length(all_classes))
     names(prob_vec) <- all_classes
   }
 

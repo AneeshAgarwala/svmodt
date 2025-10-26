@@ -8,7 +8,9 @@ tree_stats <- function(tree) {
   )
 
   traverse <- function(node, depth = 1) {
-    if (is.null(node)) return()
+    if (is.null(node)) {
+      return()
+    }
     stats$n_nodes <<- stats$n_nodes + 1
     stats$max_depth <<- max(stats$max_depth, depth)
 

@@ -33,7 +33,9 @@ choose_features_with_penalty <- function(data, response, max_features,
   method <- match.arg(method)
   predictors <- setdiff(names(data), response)
 
-  if (length(predictors) <= max_features) return(predictors)
+  if (length(predictors) <= max_features) {
+    return(predictors)
+  }
 
   penalty_weight <- max(0, min(penalty_weight, 0.99))
 
@@ -42,8 +44,10 @@ choose_features_with_penalty <- function(data, response, max_features,
   }
 
   if (verbose) {
-    cat("Applying feature penalty (weight =", penalty_weight,
-        ") to:", paste(used_features, collapse = ", "), "\n")
+    cat(
+      "Applying feature penalty (weight =", penalty_weight,
+      ") to:", paste(used_features, collapse = ", "), "\n"
+    )
   }
 
   if (method == "random") {
@@ -65,21 +69,24 @@ choose_features_with_penalty <- function(data, response, max_features,
       warning("FSelectorRcpp not available, falling back to correlation with penalty")
       method <- "cor"
     } else {
-      tryCatch({
-        scores <- FSelectorRcpp::information_gain(
-          reformulate(predictors, response), data
-        )
+      tryCatch(
+        {
+          scores <- FSelectorRcpp::information_gain(
+            reformulate(predictors, response), data
+          )
 
-        penalty_idx <- which(scores$attributes %in% used_features)
-        if (length(penalty_idx) > 0) {
-          scores$importance[penalty_idx] <- scores$importance[penalty_idx] * (1 - penalty_weight)
+          penalty_idx <- which(scores$attributes %in% used_features)
+          if (length(penalty_idx) > 0) {
+            scores$importance[penalty_idx] <- scores$importance[penalty_idx] * (1 - penalty_weight)
+          }
+
+          return(head(scores[order(-scores$importance), "attributes"], max_features))
+        },
+        error = function(e) {
+          warning("Mutual information with penalty failed, using correlation: ", e$message)
+          method <- "cor"
         }
-
-        return(head(scores[order(-scores$importance), "attributes"], max_features))
-      }, error = function(e) {
-        warning("Mutual information with penalty failed, using correlation: ", e$message)
-        method <- "cor"
-      })
+      )
     }
   }
 
@@ -88,8 +95,10 @@ choose_features_with_penalty <- function(data, response, max_features,
 
     if (length(cor_vals) == 0) {
       warning("No valid features for correlation, using random selection with penalty")
-      return(choose_features_with_penalty(data, response, max_features, "random",
-                                          penalize_used, penalty_weight, used_features, verbose))
+      return(choose_features_with_penalty(
+        data, response, max_features, "random",
+        penalize_used, penalty_weight, used_features, verbose
+      ))
     }
 
     penalty_idx <- which(names(cor_vals) %in% used_features)

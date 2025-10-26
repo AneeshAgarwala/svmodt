@@ -19,13 +19,13 @@
 #' @export
 print_svm_tree <- function(tree, indent = "", show_probabilities = FALSE,
                            show_feature_info = TRUE, show_penalties = TRUE) {
-
   if (tree$is_leaf) {
-    cat(indent, "🍃 Leaf: predict =", tree$prediction, "| n =", tree$n)
+    cat(indent, "\uD83C\uDF43 Leaf: predict =", tree$prediction, "| n =", tree$n)
 
     if (show_probabilities && !is.null(tree$class_prob)) {
       probs <- paste(names(tree$class_prob), "=", round(tree$class_prob, 3),
-                     collapse = ", ")
+        collapse = ", "
+      )
       cat(" | probs = [", probs, "]", sep = "")
     }
 
@@ -37,7 +37,7 @@ print_svm_tree <- function(tree, indent = "", show_probabilities = FALSE,
     return(invisible())
   }
 
-  cat(indent, "🌳 Node: depth =", tree$depth, "| n =", tree$n)
+  cat(indent, "\u1F333 Node: depth =", tree$depth, "| n =", tree$n)
 
   if (show_feature_info) {
     cat(" | features = [", paste(tree$features, collapse = ","), "]", sep = "")
@@ -48,25 +48,29 @@ print_svm_tree <- function(tree, indent = "", show_probabilities = FALSE,
   }
 
   if (show_penalties && !is.null(tree$penalty_applied)) {
-    penalty_symbol <- if (tree$penalty_applied) "⚠️" else "✓"
+    penalty_symbol <- if (tree$penalty_applied) "\u26A0" else "\u2713"
     cat(" | penalty =", penalty_symbol)
   }
 
   cat("\n")
 
   if (!is.null(tree$left) || !is.null(tree$right)) {
-    cat(indent, "├─ Left branch (SVM > 0):\n")
+    cat(indent, "\u251C Left branch (SVM > 0):\n")
     if (!is.null(tree$left)) {
-      print_svm_tree(tree$left, paste0(indent, "│  "), show_probabilities,
-                     show_feature_info, show_penalties)
+      print_svm_tree(
+        tree$left, paste0(indent, "\u2502  "), show_probabilities,
+        show_feature_info, show_penalties
+      )
     } else {
-      cat(indent, "│  (no left child)\n")
+      cat(indent, "\u2502  (no left child)\n")
     }
 
-    cat(indent, "└─ Right branch (SVM ≤ 0):\n")
+    cat(indent, "\u2514 Right branch (SVM \u2264 0):\n")
     if (!is.null(tree$right)) {
-      print_svm_tree(tree$right, paste0(indent, "   "), show_probabilities,
-                     show_feature_info, show_penalties)
+      print_svm_tree(
+        tree$right, paste0(indent, "   "), show_probabilities,
+        show_feature_info, show_penalties
+      )
     } else {
       cat(indent, "   (no right child)\n")
     }
@@ -105,31 +109,37 @@ trace_prediction_path <- function(tree, sample_data, sample_idx = 1) {
     indent <- paste(rep("  ", depth - 1), collapse = "")
 
     if (node$is_leaf) {
-      cat(indent, "🍃 FINAL: Predict", node$prediction,
-          "(n =", node$n, ")\n")
-      cat(indent, "Path taken:", paste(path, collapse = " → "), "\n")
+      cat(
+        indent, "\uD83C\uDF43 FINAL: Predict", node$prediction,
+        "(n =", node$n, ")\n"
+      )
+      cat(indent, "Path taken:", paste(path, collapse = " \u2192 "), "\n")
       return(node$prediction)
     }
 
-    cat(indent, "🌳 Node", depth, ": features =",
-        paste(node$features, collapse = ","), "\n")
+    cat(
+      indent, "\u1F333 Node", depth, ": features =",
+      paste(node$features, collapse = ","), "\n"
+    )
 
     # Apply scaling and get decision
     X_scaled <- apply_scaler(sample[, node$features, drop = FALSE], node$scaler)
-    dec <- attr(predict(node$model, X_scaled, decision.values = TRUE),
-                "decision.values")
+    dec <- attr(
+      predict(node$model, X_scaled, decision.values = TRUE),
+      "decision.values"
+    )
     dec_val <- if (is.matrix(dec)) dec[1, 1] else as.numeric(dec)[1]
 
     cat(indent, "  SVM decision value:", round(dec_val, 4), "\n")
 
     if (dec_val > 0 && !is.null(node$left)) {
-      cat(indent, "  → Going LEFT (decision > 0)\n")
+      cat(indent, "  \u2192 Going LEFT (decision > 0)\n")
       return(trace_path(node$left, sample, c(path, "LEFT"), depth + 1))
     } else if (dec_val <= 0 && !is.null(node$right)) {
-      cat(indent, "  → Going RIGHT (decision ≤ 0)\n")
+      cat(indent, "  \u2192 Going RIGHT (decision \u2264 0)\n")
       return(trace_path(node$right, sample, c(path, "RIGHT"), depth + 1))
     } else {
-      cat(indent, "  ⚠️  No valid child node - using fallback\n")
+      cat(indent, "  \u26A0  No valid child node - using fallback\n")
       # Fallback logic here
       return("UNKNOWN")
     }

@@ -69,8 +69,10 @@ data <- data.frame(
   x3 = rnorm(100),
   y = sample(c("A", "B"), 100, TRUE)
 )
-calculate_dynamic_max_features(data, response = "y", base_max_features = 3,
-                               depth = 2, strategy = "decrease", verbose = TRUE)
+calculate_dynamic_max_features(data,
+  response = "y", base_max_features = 3,
+  depth = 2, strategy = "decrease", verbose = TRUE
+)
 }
 
 }

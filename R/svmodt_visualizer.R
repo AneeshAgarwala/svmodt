@@ -130,7 +130,7 @@ plot_svm_boundary <- function(data, features, svm_model, scaler,
       ),
       alpha = 0.3
     ) +
-    # Decision boundary line (where decision_value ≈ 0)
+    # Decision boundary line (where decision_value = 0)
     ggplot2::geom_contour(
       data = plot_data,
       ggplot2::aes(
@@ -290,14 +290,14 @@ visualize_dtsvm_tree <- function(tree, original_data, features,
           if (!is.null(node$left) && length(left_idx) > 0) {
             traverse_tree(
               node$left, data_subset[left_idx, , drop = FALSE],
-              depth + 1, paste(path, "→ L")
+              depth + 1, paste(path, "\u2192 L")
             )
           }
 
           if (!is.null(node$right) && length(right_idx) > 0) {
             traverse_tree(
               node$right, data_subset[right_idx, , drop = FALSE],
-              depth + 1, paste(path, "→ R")
+              depth + 1, paste(path, "\u2192 R")
             )
           }
         }

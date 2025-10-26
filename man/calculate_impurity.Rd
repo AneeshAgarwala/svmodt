@@ -4,27 +4,38 @@
 \alias{calculate_impurity}
 \title{Calculate node impurity}
 \usage{
-calculate_impurity(y, metric = c("entropy", "gini"))
+calculate_impurity(y, method = c("gini", "entropy"))
 }
 \arguments{
-\item{y}{A vector of class labels.}
+\item{y}{A vector of class labels for the node.}
 
-\item{metric}{Character; the impurity metric to use. One of:
-\itemize{
-  \item \code{"entropy"} – Shannon entropy
-  \item \code{"gini"} – Gini impurity
-}}
+\item{method}{A string specifying the impurity measure: either "gini" or "entropy".}
 }
 \value{
-Numeric value representing the impurity of \code{y}.
+A numeric value representing the impurity of the node.
 }
 \description{
-Computes the impurity of a set of target values using either entropy or Gini impurity.
-Used internally for evaluating splits in decision trees.
+Computes the impurity of a node using either Gini impurity or entropy.
 }
 \details{
-- **Entropy:** \( -\sum_i p_i \log_2(p_i) \), where \(p_i\) is the proportion of class \(i\).
-- **Gini impurity:** \( 1 - \sum_i p_i^2 \).
-- Zeros in class proportions are removed to ensure numerical stability.
+If \code{method = "gini"}, the impurity is calculated as:
+\deqn{
+  G = 1 - \sum_i p_i^2
+}{
+  G = 1 - sum_i p_i^2
 }
-\keyword{internal}
+where \eqn{p_i} is the proportion of samples in class \eqn{i} in the node.
+
+If \code{method = "entropy"}, the impurity is calculated as:
+\deqn{
+  H = - \sum_i p_i \log(p_i)
+}{
+  H = - sum_i p_i * log(p_i)
+}
+}
+\examples{
+y <- c("A", "A", "B", "B", "B")
+calculate_impurity(y, method = "gini")
+calculate_impurity(y, method = "entropy")
+
+}

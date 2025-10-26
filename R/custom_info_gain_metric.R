@@ -3,8 +3,9 @@ info_gain_metric <- function(feature, target, metric = c("entropy", "gini")) {
 
   # Choose impurity function
   impurity_fun <- switch(metric,
-                         "entropy" = entropy,
-                         "gini" = gini)
+    "entropy" = entropy,
+    "gini" = gini
+  )
 
   # Parent impurity
   total_impurity <- impurity_fun(target)

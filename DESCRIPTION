@@ -21,6 +21,7 @@ VignetteBuilder: knitr
 Depends: 
     R (>= 3.5)
 Imports: 
+    rlang,
     e1071,
     FSelectorRcpp,
     ggplot2,

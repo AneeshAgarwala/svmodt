@@ -26,35 +26,41 @@ svm_split(
 )
 }
 \arguments{
-\item{data}{A data frame containing predictor variables and the response variable.}
+\item{data}{A data frame containing predictors and response.}
 
-\item{response}{A string specifying the name of the response variable (target column).}
+\item{response}{A string specifying the response column name in `data`.}
 
-\item{max_depth}{Maximum depth of the tree. Default is 3.}
+\item{depth}{Integer, current recursion depth (used internally).}
 
-\item{min_samples}{Minimum number of samples required to split a node. Default is 5.}
+\item{max_depth}{Maximum depth of the tree.}
 
-\item{max_features}{Maximum number of features to consider at each split.}
+\item{min_samples}{Minimum number of samples required to split a node.}
+
+\item{max_features}{Maximum number of features to consider at a split.}
 
 \item{feature_method}{Feature selection method: "random", "mutual", or "cor".}
 
-\item{max_features_strategy}{Strategy for dynamic max_features: "constant", "random", or "decrease".}
+\item{max_features_strategy}{Strategy to adjust max features: "constant", "random", "decrease".}
 
-\item{max_features_decrease_rate}{Rate at which max_features decreases if using "decrease".}
+\item{max_features_decrease_rate}{Decrease rate if `max_features_strategy = "decrease"`.}
 
-\item{max_features_random_range}{Range of fraction of features to sample if using "random" strategy.}
+\item{max_features_random_range}{Numeric vector, min and max fraction if `max_features_strategy = "random"`.}
 
-\item{penalize_used_features}{Logical; if TRUE, previously used features are penalized.}
+\item{penalize_used_features}{Logical; if TRUE, penalize features used in ancestor nodes.}
 
-\item{feature_penalty_weight}{Numeric; weight of the penalty applied to used features.}
+\item{feature_penalty_weight}{Numeric weight for penalization (0–1).}
 
-\item{class_weights}{Class weighting scheme: "none", "balanced", "balanced_subsample", or "custom".}
+\item{used_features}{Character vector of features already used in ancestor nodes (internal use).}
+
+\item{class_weights}{How to handle class imbalance: "none", "balanced", "balanced_subsample", "custom".}
 
 \item{custom_class_weights}{Optional named vector of custom class weights.}
 
-\item{verbose}{Logical; if TRUE, prints progress and node information.}
+\item{verbose}{Logical; if TRUE, prints node info during recursion.}
 
-\item{...}{Additional arguments passed to the underlying SVM fitting function.}
+\item{all_classes}{Optional character vector of all possible response classes (internal use).}
+
+\item{...}{Additional arguments passed to underlying SVM fitting function.}
 }
 \value{
 A nested list representing the decision tree. Each node contains:

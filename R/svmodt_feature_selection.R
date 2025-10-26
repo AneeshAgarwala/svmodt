@@ -26,11 +26,14 @@ calculate_feature_associations <- function(data, response, predictors) {
     if (!is.numeric(x)) {
       # Handle categorical variables
       if (is.factor(x) || is.character(x)) {
-        tryCatch({
-          model <- lm(y ~ x)
-          anova_result <- anova(model)
-          sqrt(anova_result$`Sum Sq`[1] / sum(anova_result$`Sum Sq`))
-        }, error = function(e) NA_real_)
+        tryCatch(
+          {
+            model <- lm(y ~ x)
+            anova_result <- anova(model)
+            sqrt(anova_result$`Sum Sq`[1] / sum(anova_result$`Sum Sq`))
+          },
+          error = function(e) NA_real_
+        )
       } else {
         NA_real_
       }
@@ -72,7 +75,9 @@ choose_features <- function(data, response, max_features,
   method <- match.arg(method)
   predictors <- setdiff(names(data), response)
 
-  if (length(predictors) <= max_features) return(predictors)
+  if (length(predictors) <= max_features) {
+    return(predictors)
+  }
 
   if (method == "random") {
     return(sample(predictors, max_features))
@@ -83,15 +88,18 @@ choose_features <- function(data, response, max_features,
       warning("FSelectorRcpp not available, falling back to correlation method")
       method <- "cor"
     } else {
-      tryCatch({
-        scores <- FSelectorRcpp::information_gain(
-          reformulate(predictors, response), data
-        )
-        return(head(scores[order(-scores$importance), "attributes"], max_features))
-      }, error = function(e) {
-        warning("Mutual information calculation failed, using correlation: ", e$message)
-        method <- "cor"
-      })
+      tryCatch(
+        {
+          scores <- FSelectorRcpp::information_gain(
+            reformulate(predictors, response), data
+          )
+          return(head(scores[order(-scores$importance), "attributes"], max_features))
+        },
+        error = function(e) {
+          warning("Mutual information calculation failed, using correlation: ", e$message)
+          method <- "cor"
+        }
+      )
     }
   }
 

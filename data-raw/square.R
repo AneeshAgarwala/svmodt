@@ -9,7 +9,7 @@ make_square <- function(n = 2000, side = 2, noise = 0.05) {
 df <- make_square(n = 5000, side = 1, noise = 0.02)
 
 df <- df |>
-  dplyr::mutate(feature = ifelse(x<0 & y <0, "A", "B")) |>
+  dplyr::mutate(feature = ifelse(x < 0 & y < 0, "A", "B")) |>
   dplyr::mutate(feature = as.factor(feature))
 
 
@@ -17,9 +17,14 @@ df <- df |>
 
 rotate_2d <- function(df, angle) {
   # Rotation matrix
-  R <- matrix(c(cos(angle), -sin(angle),
-                sin(angle),  cos(angle)),
-              2, 2, byrow = TRUE)
+  R <- matrix(
+    c(
+      cos(angle), -sin(angle),
+      sin(angle), cos(angle)
+    ),
+    2, 2,
+    byrow = TRUE
+  )
 
   # Apply rotation and keep column names
   coords <- as.matrix(df) %*% t(R)
@@ -28,7 +33,7 @@ rotate_2d <- function(df, angle) {
 }
 
 # Rotate the square
-rotated_coords <- rotate_2d(df[, c("x", "y")], -pi/4)
+rotated_coords <- rotate_2d(df[, c("x", "y")], -pi / 4)
 
 # Bind rotated coordinates with feature
 square <- cbind(df["feature"], rotated_coords)

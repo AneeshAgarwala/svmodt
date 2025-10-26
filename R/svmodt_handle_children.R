@@ -51,7 +51,6 @@ handle_small_children <- function(left_idx, right_idx, min_samples,
                                   used_features,
                                   class_weights, custom_class_weights,
                                   features, scaler, all_classes, verbose, ...) {
-
   # Both children too small
   if (length(left_idx) < min_samples && length(right_idx) < min_samples) {
     if (verbose) cat("Stopping: both child nodes too small\n")

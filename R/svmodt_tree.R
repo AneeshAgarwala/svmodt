@@ -4,21 +4,24 @@
 #' Machine (SVM) to determine the split. Supports dynamic feature selection,
 #' feature penalization, scaling, and class weighting.
 #'
-#' @param data A data frame containing predictor variables and the response variable.
-#' @param response A string specifying the name of the response variable (target column).
-#' @param max_depth Maximum depth of the tree. Default is 3.
-#' @param min_samples Minimum number of samples required to split a node. Default is 5.
-#' @param max_features Maximum number of features to consider at each split.
+#' @param data A data frame containing predictors and response.
+#' @param response A string specifying the response column name in `data`.
+#' @param depth Integer, current recursion depth (used internally).
+#' @param max_depth Maximum depth of the tree.
+#' @param min_samples Minimum number of samples required to split a node.
+#' @param max_features Maximum number of features to consider at a split.
 #' @param feature_method Feature selection method: "random", "mutual", or "cor".
-#' @param max_features_strategy Strategy for dynamic max_features: "constant", "random", or "decrease".
-#' @param max_features_decrease_rate Rate at which max_features decreases if using "decrease".
-#' @param max_features_random_range Range of fraction of features to sample if using "random" strategy.
-#' @param penalize_used_features Logical; if TRUE, previously used features are penalized.
-#' @param feature_penalty_weight Numeric; weight of the penalty applied to used features.
-#' @param class_weights Class weighting scheme: "none", "balanced", "balanced_subsample", or "custom".
+#' @param max_features_strategy Strategy to adjust max features: "constant", "random", "decrease".
+#' @param max_features_decrease_rate Decrease rate if `max_features_strategy = "decrease"`.
+#' @param max_features_random_range Numeric vector, min and max fraction if `max_features_strategy = "random"`.
+#' @param penalize_used_features Logical; if TRUE, penalize features used in ancestor nodes.
+#' @param feature_penalty_weight Numeric weight for penalization (0–1).
+#' @param used_features Character vector of features already used in ancestor nodes (internal use).
+#' @param class_weights How to handle class imbalance: "none", "balanced", "balanced_subsample", "custom".
 #' @param custom_class_weights Optional named vector of custom class weights.
-#' @param verbose Logical; if TRUE, prints progress and node information.
-#' @param ... Additional arguments passed to the underlying SVM fitting function.
+#' @param all_classes Optional character vector of all possible response classes (internal use).
+#' @param verbose Logical; if TRUE, prints node info during recursion.
+#' @param ... Additional arguments passed to underlying SVM fitting function.
 #'
 #' @return A nested list representing the decision tree. Each node contains:
 #' \describe{
@@ -60,20 +63,15 @@
 svm_split <- function(data, response, depth = 1, max_depth = 3,
                       min_samples = 5, max_features = NULL,
                       feature_method = c("random", "mutual", "cor"),
-
                       max_features_strategy = c("constant", "random", "decrease"),
                       max_features_decrease_rate = 0.8,
                       max_features_random_range = c(0.3, 1.0),
-
                       penalize_used_features = FALSE,
                       feature_penalty_weight = 0.5,
                       used_features = character(0),
-
                       class_weights = c("none", "balanced", "balanced_subsample", "custom"),
                       custom_class_weights = NULL,
-
                       verbose = FALSE, all_classes = NULL, ...) {
-
   # Initialize all_classes if NULL
   if (is.null(all_classes)) {
     all_classes <- levels(factor(data[[response]]))
@@ -182,7 +180,9 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
     features, scaler, all_classes, verbose, ...
   )
 
-  if (child_check$stop) return(child_check$node)
+  if (child_check$stop) {
+    return(child_check$node)
+  }
   if (!is.null(child_check$node)) {
     child_check$node$model <- model
     return(child_check$node)

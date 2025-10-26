@@ -1,13 +1,17 @@
 ## Gini Impurity for Variable Selection
 # Impurity measures
 gini <- function(labels) {
-  if (length(labels) == 0) return(0)
+  if (length(labels) == 0) {
+    return(0)
+  }
   p <- prop.table(table(labels))
   1 - sum(p * p)
 }
 
 entropy <- function(labels) {
-  if (length(labels) == 0) return(0)
+  if (length(labels) == 0) {
+    return(0)
+  }
   p <- prop.table(table(labels))
   -sum(p[p > 0] * log2(p[p > 0]))
 }
@@ -34,7 +38,9 @@ gain_ratio <- function(target, feature_factor) {
   # Intrinsic information of the split variable
   p <- prop.table(table(feature_factor))
   si <- if (length(p)) -sum(p[p > 0] * log2(p[p > 0])) else 0
-  if (si == 0) return(0)
+  if (si == 0) {
+    return(0)
+  }
   ig / si
 }
 
@@ -50,14 +56,16 @@ gain_ratio <- function(target, feature_factor) {
   right <- !left
 
   # skip invalid splits that create empty child
-  if (sum(left) == 0 || sum(right) == 0) return(-Inf)
+  if (sum(left) == 0 || sum(right) == 0) {
+    return(-Inf)
+  }
 
-  split_factor <- factor(ifelse(left, "left", "right"), levels = c("left","right"))
+  split_factor <- factor(ifelse(left, "left", "right"), levels = c("left", "right"))
 
   if (criteria_type == "gini") {
-    wl <- (sum(left) / length(target))  * gini(target[left])
+    wl <- (sum(left) / length(target)) * gini(target[left])
     wr <- (sum(right) / length(target)) * gini(target[right])
-    score <- -(wl + wr)  # minimize impurity (negate)
+    score <- -(wl + wr) # minimize impurity (negate)
   } else if (criteria_type == "info_gain") {
     score <- info_gain(split_factor, target, metric = ig_metric)
   } else { # gain_ratio
@@ -69,8 +77,8 @@ gain_ratio <- function(target, feature_factor) {
 
 # Choose best feature and split point/level
 feature_selector <- function(target, features,
-                             criteria_type = c("gini","info_gain","gain_ratio"),
-                             ig_metric = c("gini","entropy")) {
+                             criteria_type = c("gini", "info_gain", "gain_ratio"),
+                             ig_metric = c("gini", "entropy")) {
   criteria_type <- match.arg(criteria_type)
   if (missing(ig_metric)) ig_metric <- "gini"
   ig_metric <- match.arg(ig_metric)
@@ -105,7 +113,6 @@ feature_selector <- function(target, features,
           }
         }
       }
-
     } else {
       lvls <- levels(factor(f))
       if (length(lvls) <= 1) next

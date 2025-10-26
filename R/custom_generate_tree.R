@@ -1,9 +1,8 @@
 generate_tree <- function(target, features,
-                                 criteria_type = c("gini","info_gain","gain_ratio"),
-                                 ig_metric = c("gini","entropy"),
-                                 depth = 1, max_depth = 10,
-                                 all_levels = NULL, alpha = 0.0) {
-
+                          criteria_type = c("gini", "info_gain", "gain_ratio"),
+                          ig_metric = c("gini", "entropy"),
+                          depth = 1, max_depth = 10,
+                          all_levels = NULL, alpha = 0.0) {
   criteria_type <- match.arg(criteria_type)
   ig_metric <- match.arg(ig_metric)
 
