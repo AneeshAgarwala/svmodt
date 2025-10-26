@@ -1,5 +1,17 @@
+---
+output: github_document
+---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
 
 # SVODT: Support Vector Machine based Oblique Decision Trees
 
@@ -7,17 +19,11 @@
 
 <!-- badges: end -->
 
-**SVODT** (Support Vector Machine Oblique Decision Trees) implements a
-hybrid classifier combining oblique decision trees with Support Vector
-Machines. Unlike traditional decision trees that use axis-parallel
-splits, SVMODT uses linear SVM hyperplanes at each node, creating
-oblique decision boundaries that aim to better capture complex patterns
-in data.
+**SVODT** (Support Vector Machine Oblique Decision Trees) implements a hybrid classifier combining oblique decision trees with Support Vector Machines. Unlike traditional decision trees that use axis-parallel splits, SVMODT uses linear SVM hyperplanes at each node, creating oblique decision boundaries that aim to better capture complex patterns in data.
 
 ## Installation
 
-You can install the development version of svodt from
-[GitHub](https://github.com/) with:
+You can install the development version of svodt from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
@@ -26,24 +32,19 @@ devtools::install_github("AneeshAgarwala/svodt")
 
 ## Key Features
 
-- **Linear SVM splits** for simple decision boundaries
+-   **Linear SVM splits** for simple decision boundaries
 
-- **Binary classification**; currently only limited to data with binary
-  response variable
+-   **Binary classification**; currently only limited to data with binary response variable
 
-- **Flexible feature selection** (random, mutual information,
-  correlation)
+-   **Flexible feature selection** (random, mutual information, correlation)
 
-- **Penalized Feature selection** applies to penalty to used features at
-  ancestor nodes for diversified feature selection
+-   **Penalized Feature selection** applies to penalty to used features at ancestor nodes for diversified feature selection
 
-- **Dynamic Feature Selection** allows user to either randomize or
-  decrease the number of features in child nodes
+-   **Dynamic Feature Selection** allows user to either randomize or decrease the number of features in child nodes
 
-- **Class weight support** for imbalanced data (balanced, balanced
-  sub-sample, custom weights)
+-   **Class weight support** for imbalanced data (balanced, balanced sub-sample, custom weights)
 
-- **Node-specific scaling** for improved performance
+-   **Node-specific scaling** for improved performance
 
 ## Examples
 
@@ -89,8 +90,7 @@ viz <- visualize_svm_tree(
 ### Advanced Usage
 
 #### Feature Selection with Penalties
-
-``` r
+```r
 # Penalize previously used features to promote diversity
 tree <- svm_split(
   data = train_data,
@@ -104,8 +104,7 @@ tree <- svm_split(
 ```
 
 #### Dynamic Feature Selection
-
-``` r
+```r
 # Decrease number of features at deeper levels
 tree <- svm_split(
   data = train_data,
@@ -126,8 +125,7 @@ tree <- svm_split(
 ```
 
 #### Handle Imbalanced Data
-
-``` r
+```r
 # Balanced class weights
 tree <- svm_split(
   data = train_data,

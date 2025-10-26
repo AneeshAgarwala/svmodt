@@ -197,7 +197,7 @@ plot_svm_boundary <- function(data, features, svm_model, scaler,
 #' }
 #'
 #' @export
-visualize_dtsvm_tree <- function(tree, original_data, features,
+visualize_svm_tree <- function(tree, original_data, features,
                                  response_col = NULL,
                                  max_depth = NULL,
                                  check_accuracy = TRUE) {
