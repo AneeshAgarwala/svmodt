@@ -17,9 +17,10 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 
+[![R-CMD-check](https://github.com/AneeshAgarwala/project-svodt/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/AneeshAgarwala/project-svodt/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-**SVODT** (Support Vector Machine Oblique Decision Trees) implements a hybrid classifier combining oblique decision trees with Support Vector Machines. Unlike traditional decision trees that use axis-parallel splits, SVMODT uses linear SVM hyperplanes at each node, creating oblique decision boundaries that aim to better capture complex patterns in data.
+The **svmodt** package in R implements recursive oblique decision trees, leveraging linear Support Vector Machines (SVMs) to define oblique splits at each node. While traditional decision trees are valued for their interpretability due to axis-aligned splits, oblique decision trees introduce complexity by using linear combinations of features, making optimal split determination more challenging. SVMs, however, offer a principled approach to splitting by identifying hyperplanes that maximize the margin between classes.
 
 ## Installation
 
@@ -27,7 +28,7 @@ You can install the development version of svodt from [GitHub](https://github.co
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("AneeshAgarwala/svodt")
+devtools::install_github("AneeshAgarwala/svmodt")
 ```
 
 ## Key Features
@@ -49,7 +50,7 @@ devtools::install_github("AneeshAgarwala/svodt")
 ## Examples
 
 ``` r
-library(SVMODT)
+library(svmodt)
 
 # Load data
 data(wdbc)  # Assuming you have this dataset
@@ -62,7 +63,7 @@ train_data <- wdbc[train_idx, ]
 test_data <- wdbc[-train_idx, ]
 ```
 
-### SVODT Tree Workflow
+### SVMODT Tree Workflow
 
 ``` r
 # Train with class weights

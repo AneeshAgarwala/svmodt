@@ -11,3 +11,7 @@ R/square.R
 R/svmodt_info_gain.R
 data-raw/mimic_data_kaggle/
 slides/
+/doc/
+/Meta/
+R/custom*
+R/svmodt_tree_stats.R

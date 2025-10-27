@@ -1,0 +1,257 @@
+---
+title: "Constructing Oblique Trees with svmodt"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Constructing Oblique Trees with svmodt}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This vignette demonstrates how to:
+
+1.  Train SVMODT models on binary classification data
+2.  Make predictions and evaluate performance
+3.  Visualize decision boundaries
+
+We'll use two datasets:
+
+-   **Palmer Penguins**: Ecological data for species classification
+-   **Wisconsin Breast Cancer**: Medical diagnosis data
+
+```{r setup, message=FALSE, warning=FALSE}
+library(rpart)
+library(e1071)
+library(dplyr)
+library(tidyr)
+library(svmodt)
+library(rsample)
+library(patchwork)
+library(kableExtra)
+library(palmerpenguins)
+```
+
+## Example 1: Palmer Penguins Classification
+The Palmer Penguins dataset contains measurements of three penguin species from Antarctica. We'll build a classifier to distinguish between **Adelie** and **Chinstrap** penguins.
+
+```{r}
+data(penguins)
+
+# Adelie vs Chinstrap
+penguins_data <- penguins |>
+  filter(species %in% c("Adelie", "Chinstrap")) |>
+  select(species, bill_length_mm, bill_depth_mm, 
+         flipper_length_mm, body_mass_g) |>
+  na.omit() |>
+  mutate(species = droplevels(species))
+
+set.seed(234)
+
+split_data <- initial_split(penguins_data, prop = 0.8, strata = species)
+
+train_penguins <- training(split_data)
+test_penguins <- testing(split_data)
+```
+
+### Train SVMODT Model
+```{r penguins-train}
+# Train basic SVMODT
+tree_penguins <- svm_split(
+  data = train_penguins,
+  response = "species",
+  max_depth = 3,
+  max_features = 2,
+  feature_method = "mutual",
+  verbose = FALSE
+)
+```
+
+### Examine Tree Structure
+```{r penguins-structure}
+# Print tree structure
+print_svm_tree(tree_penguins, 
+               show_probabilities = TRUE, 
+               show_feature_info = TRUE)
+```
+
+### Make Predictions
+```{r penguins-predict}
+# Predict classes only
+predictions <- svm_predict_tree(tree_penguins, test_penguins)
+
+# Predict with probabilities
+predictions_prob <- svm_predict_tree(tree_penguins, test_penguins, 
+                                     return_probs = TRUE)
+
+# View first few predictions
+head(data.frame(
+  Actual = test_penguins$species,
+  Predicted = predictions_prob$predictions,
+  Prob_Adelie = round(predictions_prob$probabilities[, "Adelie"], 3),
+  Prob_Chinstrap = round(predictions_prob$probabilities[, "Chinstrap"], 3)
+), 10)
+```
+
+### Evaluate Performance
+
+### Visualize Decision Boundaries
+
+```{r penguins-viz, fig.height=6, fig.width=8}
+# Visualize tree decision boundaries
+viz_penguins <- visualize_svm_tree(
+  tree = tree_penguins,
+  original_data = train_penguins,
+  response_col = "species",
+  max_depth = 3
+)
+
+viz_penguins$plots$depth_1_Root
+
+viz_penguins$plots$`depth_2_Root_→_L` + viz_penguins$plots$`depth_2_Root_→_R`
+```
+
+### Trace Prediction Path
+```{r penguins-trace}
+trace_prediction_path(tree_penguins, test_penguins, sample_idx = 1)
+```
+## Example 2: Wisconsin Breast Cancer Diagnosis
+
+### About the Data
+
+The Wisconsin Breast Cancer dataset contains features computed from digitized images of fine needle aspirate (FNA) of breast masses. The task is to classify tumors as **Benign (B)** or **Malignant (M)**.
+
+### Load and Prepare Data
+
+```{r wdbc-prep}
+set.seed(234)
+
+split_data <- initial_split(wdbc, prop = 0.8, strata = diagnosis)
+
+train_wdbc <- training(split_data)
+test_wdbc <- testing(split_data)
+```
+
+### Train with Class Weights
+```{r wdbc-train}
+tree_wdbc <- svm_split(
+  data = train_wdbc,
+  response = "diagnosis",
+  max_depth = 4,
+  min_samples = 10,
+  max_features = 2,
+  feature_method = "mutual",
+  class_weights = "balanced",  # For Class Imbalance
+  verbose = FALSE
+)
+```
+
+### Advanced Features
+
+#### Feature Selection with Penalties
+
+svmodt promotes feature diversity by penalizing previously used features in ancestor nodes.
+
+```{r feature-penalty}
+# Train with feature penalty
+tree_penalty <- svm_split(
+  data = train_penguins,
+  response = "species",
+  max_depth = 4,
+  max_features = 2,
+  feature_method = "cor",
+  penalize_used_features = TRUE,
+  feature_penalty_weight = 0.6,
+  verbose = FALSE
+)
+```
+
+### Dynamic Feature Selection
+
+The package also allows user to either randomize or decrease the number of features in child nodes 
+
+```{r dynamic-features}
+# Decrease features with depth
+tree_decrease <- svm_split(
+  data = train_wdbc,
+  response = "diagnosis",
+  max_depth = 5,
+  max_features = 10,
+  max_features_strategy = "decrease",
+  max_features_decrease_rate = 0.7,
+  verbose = FALSE
+)
+
+# Random feature selection
+tree_random <- svm_split(
+  data = train_wdbc,
+  response = "diagnosis",
+  max_depth = 4,
+  max_features_strategy = "random",
+  max_features_random_range = c(0.3, 0.8),
+  verbose = FALSE
+)
+```
+
+### Custom Class Weights
+
+Specify custom weights for domain-specific costs:
+
+```{r custom-weights}
+# Give malignant cases higher weight
+custom_weights <- c("B" = 1, "M" = 3)
+
+tree_custom <- svm_split(
+  data = train_wdbc,
+  response = "diagnosis",
+  max_depth = 4,
+  max_features = 8,
+  class_weights = "custom",
+  custom_class_weights = custom_weights,
+  verbose = FALSE
+)
+```
+
+------------------------------------------------------------------------
+
+## Model Comparison
+
+### Compare SVMODT with Other Methods
+
+```{r comparison}
+# RPART decision tree
+tree_rpart <- rpart(diagnosis ~ ., data = train_wdbc,
+                   control = rpart.control(maxdepth = 4, cp = 0.01))
+pred_rpart <- predict(tree_rpart, test_wdbc, type = "class")
+
+tree_wdbc <- svm_split(data = train_wdbc,
+                               response = "diagnosis", 
+                               max_depth = 2, 
+                               feature_method = "mutual", 
+                               penalize_used_features = TRUE)
+
+# Standard SVM
+model_svm <- svm(diagnosis ~ ., data = train_wdbc, probability = TRUE)
+pred_svm <- predict(model_svm, test_wdbc)
+
+# Get SVMODT predictions
+pred_svmodt <- svm_predict_tree(tree_wdbc, test_wdbc)
+
+# Compare accuracies
+results <- data.frame(
+  Model = c("SVMODT", "RPART", "Linear SVM"),
+  Accuracy = c(
+    mean(pred_svmodt == test_wdbc$diagnosis),
+    mean(pred_rpart == test_wdbc$diagnosis),
+    mean(pred_svm == test_wdbc$diagnosis)
+  )) 
+
+results |> kable()
+
+```
+

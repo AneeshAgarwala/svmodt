@@ -1,6 +1,6 @@
-Package: svodt
+Package: svmodt
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Linear SVM-Based Recursive Decision Trees
 Version: 0.1.0
 Authors@R: c(
     person(
@@ -9,8 +9,14 @@ Authors@R: c(
       role = c("aut", "cre")
     )
   )
-Description: More about what it does (maybe more than one line).
-    Continuation lines should be indented.
+Description: Implements Support Vector Machine Oblique Decision Trees (SVMODT), a hybrid 
+    classifier combining decision tree interpretability with Support Vector Machine 
+    robustness. Recursively builds classification trees using linear SVM hyperplanes 
+    at each node instead of axis-parallel splits, creating oblique decision boundaries 
+    that better capture complex patterns. Features include multiple feature selection 
+    methods (random, mutual information, correlation-based), dynamic feature subset 
+    strategies, class weight support for imbalanced datasets, node-specific feature 
+    scaling.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
@@ -25,4 +31,10 @@ Imports:
     e1071,
     FSelectorRcpp,
     ggplot2,
+    rpart,
+    rsample,
+    patchwork,
+    tidyr,
+    kableExtra,
+    palmerpenguins
 RoxygenNote: 7.3.3
