@@ -4,9 +4,19 @@ Title: Linear SVM-Based Recursive Decision Trees
 Version: 0.1.0
 Authors@R: c(
     person(
-      "Jane", "Doe",
-      email = "jane@example.com",
+      "Aneesh", "Agarwal",
+      email = "aaga0022@student.monash.edu",
       role = c("aut", "cre")
+    ),
+    person(
+      "Jack", "Jewson",
+      email = "Jack.Jewson@monash.edu",
+      role = c("aut", "ths")
+    ),
+    person(
+      "Erik", "Sverdrup",
+      email = "Erik.Sverdrup@monash.edu",
+      role = c("aut", "ths")
     )
   )
 Description: Implements Support Vector Machine Oblique Decision Trees (SVMODT), a hybrid 
@@ -36,5 +46,6 @@ Imports:
     patchwork,
     tidyr,
     kableExtra,
-    palmerpenguins
+    palmerpenguins,
+    dplyr
 RoxygenNote: 7.3.3

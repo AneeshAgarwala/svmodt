@@ -48,20 +48,7 @@ where \eqn{p_i} is the proportion of times feature \eqn{i} is used in all splits
 
 This metric provides insight into feature balance and can help identify potential
 over-reliance on specific predictors.
-}
-\examples{
-\dontrun{
-tree <- list(
-  is_leaf = FALSE,
-  features = c("x1"),
-  penalty_applied = TRUE,
-  left = list(is_leaf = TRUE, features = "x2"),
-  right = list(is_leaf = TRUE, features = "x3")
-)
 
 analyze_feature_usage(tree)
 }
-}
-\seealso{
-\code{\link{get_all_features_from_tree}}
-}
+\keyword{internal}

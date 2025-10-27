@@ -27,12 +27,6 @@
 #' The function caps computed class weights at 10 to avoid excessively large
 #' scaling factors.
 #'
-#' @examples
-#' \dontrun{
-#' y <- c("A", "A", "B", "B", "B", "C")
-#' calculate_node_class_weights(y, class_weights = "balanced", verbose = TRUE)
-#' }
-#'
 #' @keywords internal
 calculate_node_class_weights <- function(y, class_weights = "none",
                                          custom_class_weights = NULL,

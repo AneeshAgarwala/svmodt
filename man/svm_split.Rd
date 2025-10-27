@@ -91,7 +91,6 @@ used features can be penalized to encourage diversity. The tree supports
 scaling of numeric features and flexible class weighting schemes.
 }
 \examples{
-\dontrun{
 data(iris)
 tree <- svm_split(
   data = iris,
@@ -101,7 +100,5 @@ tree <- svm_split(
   feature_method = "random",
   verbose = TRUE
 )
-print_svm_tree(tree)
-}
 
 }

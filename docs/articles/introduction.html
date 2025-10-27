@@ -209,15 +209,11 @@ species from Antarctica. We’ll build a classifier to distinguish between
 <span></span>
 <span><span class="va">viz_penguins</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">depth_1_Root</span></span></code></pre></div>
 <p><img src="introduction_files/figure-html/penguins-viz-1.png" width="768"></p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="va">viz_penguins</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">`depth_2_Root_→_L`</span> <span class="op">+</span> <span class="va">viz_penguins</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">`depth_2_Root_→_R`</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/penguins-viz-2.png" width="768"></p>
 </div>
 <div class="section level3">
 <h3 id="trace-prediction-path">Trace Prediction Path<a class="anchor" aria-label="anchor" href="#trace-prediction-path"></a>
 </h3>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/trace_prediction_path.html">trace_prediction_path</a></span><span class="op">(</span><span class="va">tree_penguins</span>, <span class="va">test_penguins</span>, sample_idx <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="co">#&gt; === Tracing Prediction Path ===</span></span>
 <span><span class="co">#&gt; Sample 1 :</span></span>
@@ -254,7 +250,7 @@ task is to classify tumors as <strong>Benign (B)</strong> or
 <div class="section level3">
 <h3 id="load-and-prepare-data">Load and Prepare Data<a class="anchor" aria-label="anchor" href="#load-and-prepare-data"></a>
 </h3>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">234</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">split_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rsample.tidymodels.org/reference/initial_split.html" class="external-link">initial_split</a></span><span class="op">(</span><span class="va">wdbc</span>, prop <span class="op">=</span> <span class="fl">0.8</span>, strata <span class="op">=</span> <span class="va">diagnosis</span><span class="op">)</span></span>
@@ -265,7 +261,7 @@ task is to classify tumors as <strong>Benign (B)</strong> or
 <div class="section level3">
 <h3 id="train-with-class-weights">Train with Class Weights<a class="anchor" aria-label="anchor" href="#train-with-class-weights"></a>
 </h3>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tree_wdbc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/svm_split.html">svm_split</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">train_wdbc</span>,</span>
 <span>  response <span class="op">=</span> <span class="st">"diagnosis"</span>,</span>
@@ -285,7 +281,7 @@ task is to classify tumors as <strong>Benign (B)</strong> or
 </h4>
 <p>svmodt promotes feature diversity by penalizing previously used
 features in ancestor nodes.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Train with feature penalty</span></span>
 <span><span class="va">tree_penalty</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/svm_split.html">svm_split</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">train_penguins</span>,</span>
@@ -304,7 +300,7 @@ features in ancestor nodes.</p>
 </h3>
 <p>The package also allows user to either randomize or decrease the
 number of features in child nodes</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Decrease features with depth</span></span>
 <span><span class="va">tree_decrease</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/svm_split.html">svm_split</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">train_wdbc</span>,</span>
@@ -330,7 +326,7 @@ number of features in child nodes</p>
 <h3 id="custom-class-weights">Custom Class Weights<a class="anchor" aria-label="anchor" href="#custom-class-weights"></a>
 </h3>
 <p>Specify custom weights for domain-specific costs:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Give malignant cases higher weight</span></span>
 <span><span class="va">custom_weights</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B"</span> <span class="op">=</span> <span class="fl">1</span>, <span class="st">"M"</span> <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span></span>
@@ -352,7 +348,7 @@ number of features in child nodes</p>
 <div class="section level3">
 <h3 id="compare-svmodt-with-other-methods">Compare SVMODT with Other Methods<a class="anchor" aria-label="anchor" href="#compare-svmodt-with-other-methods"></a>
 </h3>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># RPART decision tree</span></span>
 <span><span class="va">tree_rpart</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/rpart/man/rpart.html" class="external-link">rpart</a></span><span class="op">(</span><span class="va">diagnosis</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">train_wdbc</span>,</span>
 <span>                   control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/rpart/man/rpart.control.html" class="external-link">rpart.control</a></span><span class="op">(</span>maxdepth <span class="op">=</span> <span class="fl">4</span>, cp <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span><span class="op">)</span></span>
@@ -415,7 +411,7 @@ number of features in child nodes</p>
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by Jane Doe.</p>
+<p>Developed by Aneesh Agarwal, Jack Jewson, Erik Sverdrup.</p>
 </div>
 
 <div class="pkgdown">

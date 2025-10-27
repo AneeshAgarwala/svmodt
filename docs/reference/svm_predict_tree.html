@@ -103,11 +103,8 @@ using logistic calibration when direct SVM probabilities are unavailable.</p></d
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="co"># Assuming `tree` is trained via svm_split</span></span></span>
-<span class="r-in"><span><span class="va">preds</span> <span class="op">&lt;-</span> <span class="fu">svm_predict_tree</span><span class="op">(</span><span class="va">tree</span>, newdata <span class="op">=</span> <span class="va">test_data</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">preds_with_probs</span> <span class="op">&lt;-</span> <span class="fu">svm_predict_tree</span><span class="op">(</span><span class="va">tree</span>, newdata <span class="op">=</span> <span class="va">test_data</span>, return_probs <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">preds</span> <span class="op">&lt;-</span> <span class="fu">svm_predict_tree</span><span class="op">(</span><span class="va">tree</span>, newdata <span class="op">=</span> <span class="va">test_data</span>, return_probs <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
-<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -118,7 +115,7 @@ using logistic calibration when direct SVM probabilities are unavailable.</p></d
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Jane Doe.</p>
+  <p></p><p>Developed by Aneesh Agarwal, Jack Jewson, Erik Sverdrup.</p>
 </div>
 
 <div class="pkgdown">

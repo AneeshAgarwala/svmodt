@@ -13,14 +13,6 @@
 #' This function is intended for internal use within the package and is not exported.
 #' It wraps the scaler's `transform()` call in error handling to prevent failures
 #' from interrupting higher-level processes.
-#'
-#' @examples
-#' \dontrun{
-#' scaler <- list(transform = function(x) scale(x))
-#' df <- data.frame(a = 1:5, b = 6:10)
-#' apply_scaler(df, scaler)
-#' }
-#'
 #' @keywords internal
 apply_scaler <- function(df, scaler) {
   if (is.null(df) || nrow(df) == 0) {

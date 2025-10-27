@@ -30,7 +30,13 @@ Invisibly returns NULL. Prints to console.
 Recursively prints the structure of an SVM-based decision tree.
 }
 \examples{
-\dontrun{
+tree <- svm_split(
+  data = iris,
+  response = "Species",
+  max_depth = 3,
+  min_samples = 5,
+  feature_method = "random",
+  verbose = TRUE
+)
 print_svm_tree(tree)
-}
 }

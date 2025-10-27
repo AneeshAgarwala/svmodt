@@ -100,27 +100,9 @@ Shannon entropy:</p>
 - A **lower score** means a few features dominate the tree’s splits.</p>
 <p>This metric provides insight into feature balance and can help identify potential
 over-reliance on specific predictors.</p>
-    </div>
-    <div id="see-also">
-    <h2>See also</h2>
-    <div class="dont-index"><p><code><a href="get_all_features_from_tree.html">get_all_features_from_tree</a></code></p></div>
+<p>analyze_feature_usage(tree)</p>
     </div>
 
-    <div id="ref-examples">
-    <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="va">tree</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  is_leaf <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x1"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  penalty_applied <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>  left <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>is_leaf <span class="op">=</span> <span class="cn">TRUE</span>, features <span class="op">=</span> <span class="st">"x2"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  right <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>is_leaf <span class="op">=</span> <span class="cn">TRUE</span>, features <span class="op">=</span> <span class="st">"x3"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">analyze_feature_usage</span><span class="op">(</span><span class="va">tree</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
-</code></pre></div>
-    </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top"><h2 data-toc-skip>Contents</h2>
@@ -129,7 +111,7 @@ over-reliance on specific predictors.</p>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Jane Doe.</p>
+  <p></p><p>Developed by Aneesh Agarwal, Jack Jewson, Erik Sverdrup.</p>
 </div>
 
 <div class="pkgdown">

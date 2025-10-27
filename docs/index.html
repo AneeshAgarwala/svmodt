@@ -71,15 +71,15 @@
 <div class="page-header"><h1 id="svodt-support-vector-machine-based-oblique-decision-trees">SVODT: Support Vector Machine based Oblique Decision Trees<a class="anchor" aria-label="anchor" href="#svodt-support-vector-machine-based-oblique-decision-trees"></a>
 </h1></div>
 <!-- badges: start -->
-<!-- badges: end -->
-<p><strong>SVODT</strong> (Support Vector Machine Oblique Decision Trees) implements a hybrid classifier combining oblique decision trees with Support Vector Machines. Unlike traditional decision trees that use axis-parallel splits, SVMODT uses linear SVM hyperplanes at each node, creating oblique decision boundaries that aim to better capture complex patterns in data.</p>
+
+<p>The <strong>svmodt</strong> package in R implements recursive oblique decision trees, leveraging linear Support Vector Machines (SVMs) to define oblique splits at each node. While traditional decision trees are valued for their interpretability due to axis-aligned splits, oblique decision trees introduce complexity by using linear combinations of features, making optimal split determination more challenging. SVMs, however, offer a principled approach to splitting by identifying hyperplanes that maximize the margin between classes.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <p>You can install the development version of svodt from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"AneeshAgarwala/svodt"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"AneeshAgarwala/svmodt"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="key-features">Key Features<a class="anchor" aria-label="anchor" href="#key-features"></a>
@@ -98,7 +98,7 @@
 <h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">SVMODT</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">svmodt</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Load data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">wdbc</span><span class="op">)</span>  <span class="co"># Assuming you have this dataset</span></span>
@@ -110,7 +110,7 @@
 <span><span class="va">train_data</span> <span class="op">&lt;-</span> <span class="va">wdbc</span><span class="op">[</span><span class="va">train_idx</span>, <span class="op">]</span></span>
 <span><span class="va">test_data</span> <span class="op">&lt;-</span> <span class="va">wdbc</span><span class="op">[</span><span class="op">-</span><span class="va">train_idx</span>, <span class="op">]</span></span></code></pre></div>
 <div class="section level3">
-<h3 id="svodt-tree-workflow">SVODT Tree Workflow<a class="anchor" aria-label="anchor" href="#svodt-tree-workflow"></a>
+<h3 id="svmodt-tree-workflow">SVMODT Tree Workflow<a class="anchor" aria-label="anchor" href="#svmodt-tree-workflow"></a>
 </h3>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Train with class weights</span></span>
@@ -219,11 +219,18 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Jane Doe <br><small class="roles"> Author, maintainer </small>   </li>
+<li>Aneesh Agarwal <br><small class="roles"> Author, maintainer </small>   </li>
+<li>Jack Jewson <br><small class="roles"> Author, thesis advisor </small>   </li>
+<li>Erik Sverdrup <br><small class="roles"> Author, thesis advisor </small>   </li>
 </ul>
 </div>
 
-
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/AneeshAgarwala/project-svodt/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/AneeshAgarwala/project-svodt/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+</ul>
+</div>
 
   </div>
 </div>
@@ -231,7 +238,7 @@
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by Jane Doe.</p>
+<p>Developed by Aneesh Agarwal, Jack Jewson, Erik Sverdrup.</p>
 </div>
 
 <div class="pkgdown">

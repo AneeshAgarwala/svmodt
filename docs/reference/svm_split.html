@@ -204,8 +204,7 @@ scaling of numeric features and flexible class weighting schemes.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">iris</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">iris</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">tree</span> <span class="op">&lt;-</span> <span class="fu">svm_split</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  data <span class="op">=</span> <span class="va">iris</span>,</span></span>
 <span class="r-in"><span>  response <span class="op">=</span> <span class="st">"Species"</span>,</span></span>
@@ -214,8 +213,59 @@ scaling of numeric features and flexible class weighting schemes.</p>
 <span class="r-in"><span>  feature_method <span class="op">=</span> <span class="st">"random"</span>,</span></span>
 <span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="print_svm_tree.html">print_svm_tree</a></span><span class="op">(</span><span class="va">tree</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> --- Node at depth 1 ---</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Rows: 150 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Response distribution:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     setosa versicolor  virginica </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         50         50         50 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Class weights: none (equal weights)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Dynamic max_features: 4 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Selected features: Sepal.Length, Sepal.Width, Petal.Length, Petal.Width </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> SVM fitting with equal weights</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Left size: 50 Right size: 100 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> --- Node at depth 2 ---</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Rows: 50 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Response distribution:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     setosa versicolor  virginica </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         50          0          0 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Stopping at depth 2 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> --- Node at depth 2 ---</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Rows: 100 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Response distribution:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     setosa versicolor  virginica </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          0         50         50 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Class weights: none (equal weights)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Dynamic max_features: 4 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Selected features: Sepal.Length, Sepal.Width, Petal.Length, Petal.Width </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> SVM fitting with equal weights</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Left size: 46 Right size: 54 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> --- Node at depth 3 ---</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Rows: 46 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Response distribution:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     setosa versicolor  virginica </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          0         46          0 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Stopping at depth 3 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> --- Node at depth 3 ---</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Rows: 54 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Response distribution:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     setosa versicolor  virginica </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          0          4         50 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Class weights: none (equal weights)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Dynamic max_features: 4 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Selected features: Sepal.Length, Sepal.Width, Petal.Length, Petal.Width </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> SVM fitting with equal weights</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Left size: 0 Right size: 54 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Stopping: ineffective split (all points on one side)</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -227,7 +277,7 @@ scaling of numeric features and flexible class weighting schemes.</p>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Jane Doe.</p>
+  <p></p><p>Developed by Aneesh Agarwal, Jack Jewson, Erik Sverdrup.</p>
 </div>
 
 <div class="pkgdown">

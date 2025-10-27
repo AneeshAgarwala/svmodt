@@ -46,7 +46,6 @@
 #' scaling of numeric features and flexible class weighting schemes.
 #'
 #' @examples
-#' \dontrun{
 #' data(iris)
 #' tree <- svm_split(
 #'   data = iris,
@@ -56,8 +55,6 @@
 #'   feature_method = "random",
 #'   verbose = TRUE
 #' )
-#' print_svm_tree(tree)
-#' }
 #'
 #' @export
 svm_split <- function(data, response, depth = 1, max_depth = 3,

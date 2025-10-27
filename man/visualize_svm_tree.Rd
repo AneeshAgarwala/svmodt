@@ -41,7 +41,5 @@ Optionally, it can calculate accuracy at each node and return the data used for 
 \dontrun{
 # tree <- svm_split(train_data, response = "Class")
 viz <- visualize_svm_tree(tree, train_data, features = c("X1", "X2"))
-viz$plots$depth_1_Root
 }
-
 }

@@ -44,11 +44,4 @@ custom weighting schemes, with optional verbosity for diagnostic output.
 The function caps computed class weights at 10 to avoid excessively large
 scaling factors.
 }
-\examples{
-\dontrun{
-y <- c("A", "A", "B", "B", "B", "C")
-calculate_node_class_weights(y, class_weights = "balanced", verbose = TRUE)
-}
-
-}
 \keyword{internal}

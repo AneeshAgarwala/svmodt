@@ -22,16 +22,4 @@ Recursively collects all unique feature names used across a decision tree.
 This function is typically used to support tree interpretation and feature
 analysis tasks.
 }
-\examples{
-tree <- list(
-  is_leaf = FALSE,
-  features = c("x1"),
-  left = list(is_leaf = TRUE, features = "x2"),
-  right = list(is_leaf = TRUE, features = "x3")
-)
-get_all_features_from_tree(tree)
-
-}
-\seealso{
-\code{\link{analyze_feature_usage}}
-}
+\keyword{internal}

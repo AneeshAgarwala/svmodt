@@ -33,9 +33,4 @@ If \code{method = "entropy"}, the impurity is calculated as:
   H = - sum_i p_i * log(p_i)
 }
 }
-\examples{
-y <- c("A", "A", "B", "B", "B")
-calculate_impurity(y, method = "gini")
-calculate_impurity(y, method = "entropy")
-
-}
+\keyword{internal}

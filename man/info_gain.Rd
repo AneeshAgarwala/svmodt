@@ -35,9 +35,4 @@ where:
   \item \eqn{n} is the total number of samples.
 }
 }
-\examples{
-feature <- factor(c("A", "A", "B", "B", "B"))
-target <- c("yes", "yes", "no", "no", "no")
-info_gain(feature, target, metric = "entropy")
-
-}
+\keyword{internal}

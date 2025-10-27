@@ -35,21 +35,6 @@
 #'
 #' Input parameters are validated to ensure sensible defaults. The result is capped
 #' to avoid exceeding the total number of available features.
-#'
-#' @examples
-#' \dontrun{
-#' data <- data.frame(
-#'   x1 = rnorm(100),
-#'   x2 = rnorm(100),
-#'   x3 = rnorm(100),
-#'   y = sample(c("A", "B"), 100, TRUE)
-#' )
-#' calculate_dynamic_max_features(data,
-#'   response = "y", base_max_features = 3,
-#'   depth = 2, strategy = "decrease", verbose = TRUE
-#' )
-#' }
-#'
 #' @keywords internal
 calculate_dynamic_max_features <- function(data, response, base_max_features, depth,
                                            strategy = "constant",

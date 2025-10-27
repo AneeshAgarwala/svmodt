@@ -193,9 +193,7 @@ plot_svm_boundary <- function(data, features, svm_model, scaler,
 #' \dontrun{
 #' # tree <- svm_split(train_data, response = "Class")
 #' viz <- visualize_svm_tree(tree, train_data, features = c("X1", "X2"))
-#' viz$plots$depth_1_Root
-#' }
-#'
+#'}
 #' @export
 visualize_svm_tree <- function(tree, original_data, features,
                                  response_col = NULL,

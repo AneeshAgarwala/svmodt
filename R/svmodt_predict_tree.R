@@ -29,11 +29,8 @@
 #'
 #' @examples
 #' \dontrun{
-#' # Assuming `tree` is trained via svm_split
-#' preds <- svm_predict_tree(tree, newdata = test_data)
-#' preds_with_probs <- svm_predict_tree(tree, newdata = test_data, return_probs = TRUE)
+#' preds <- svm_predict_tree(tree, newdata = test_data, return_probs = TRUE)
 #' }
-#'
 #' @export
 svm_predict_tree <- function(tree, newdata, return_probs = FALSE,
                              calibrate_probs = TRUE) {

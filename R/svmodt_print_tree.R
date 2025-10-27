@@ -13,9 +13,15 @@
 #' @param show_penalties Logical; whether to show penalty flags at nodes.
 #' @return Invisibly returns NULL. Prints to console.
 #' @examples
-#' \dontrun{
+#' tree <- svm_split(
+#'   data = iris,
+#'   response = "Species",
+#'   max_depth = 3,
+#'   min_samples = 5,
+#'   feature_method = "random",
+#'   verbose = TRUE
+#' )
 #' print_svm_tree(tree)
-#' }
 #' @export
 print_svm_tree <- function(tree, indent = "", show_probabilities = FALSE,
                            show_feature_info = TRUE, show_penalties = TRUE) {
