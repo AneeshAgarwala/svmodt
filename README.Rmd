@@ -24,7 +24,7 @@ The **svmodt** package in R implements recursive oblique decision trees, leverag
 
 ## Installation
 
-You can install the development version of svodt from [GitHub](https://github.com/) with:
+You can install the development version of svmodt from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")

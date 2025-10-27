@@ -26,37 +26,41 @@ We'll use two datasets:
 -   **Wisconsin Breast Cancer**: Medical diagnosis data
 
 ```{r setup, message=FALSE, warning=FALSE}
-library(rpart)
-library(e1071)
-library(dplyr)
-library(tidyr)
+
+# Packages required for this vignette
+pkgs <- c(
+  "rpart", "e1071", "dplyr", "tidyr",
+  "rsample", "gridExtra", "kableExtra", "palmerpenguins"
+)
+
+# Load each package quietly if available
+invisible(lapply(pkgs, function(pkg) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    stop(sprintf("Package '%s' is required to run this vignette.", pkg))
+  }
+}))
+
 library(svmodt)
-library(rsample)
-library(patchwork)
-library(kableExtra)
-library(palmerpenguins)
 ```
 
 ## Example 1: Palmer Penguins Classification
 The Palmer Penguins dataset contains measurements of three penguin species from Antarctica. We'll build a classifier to distinguish between **Adelie** and **Chinstrap** penguins.
 
 ```{r}
-data(penguins)
-
 # Adelie vs Chinstrap
-penguins_data <- penguins |>
-  filter(species %in% c("Adelie", "Chinstrap")) |>
-  select(species, bill_length_mm, bill_depth_mm, 
+penguins_data <- palmerpenguins::penguins |>
+  dplyr::filter(species %in% c("Adelie", "Chinstrap")) |>
+  dplyr::select(species, bill_length_mm, bill_depth_mm, 
          flipper_length_mm, body_mass_g) |>
   na.omit() |>
-  mutate(species = droplevels(species))
+  dplyr::mutate(species = droplevels(species))
 
 set.seed(234)
 
-split_data <- initial_split(penguins_data, prop = 0.8, strata = species)
+split_data <- rsample::initial_split(penguins_data, prop = 0.8, strata = species)
 
-train_penguins <- training(split_data)
-test_penguins <- testing(split_data)
+train_penguins <- rsample::training(split_data)
+test_penguins <- rsample::testing(split_data)
 ```
 
 ### Train SVMODT Model
@@ -95,7 +99,7 @@ head(data.frame(
   Predicted = predictions_prob$predictions,
   Prob_Adelie = round(predictions_prob$probabilities[, "Adelie"], 3),
   Prob_Chinstrap = round(predictions_prob$probabilities[, "Chinstrap"], 3)
-), 10)
+), 10) |> kableExtra::kable(align = "lccc")
 ```
 
 ### Evaluate Performance
@@ -114,8 +118,8 @@ viz_penguins <- visualize_svm_tree(
 viz_penguins$plots$depth_1_Root
 ```
 
-```{r, include=FALSE}
-viz_penguins$plots$`depth_2_Root_→_L` + viz_penguins$plots$`depth_2_Root_→_R`
+```{r, include=FALSE, eval=TRUE}
+gridExtra::grid.arrange(viz_penguins$plots$`depth_2_Root_→_L`, viz_penguins$plots$`depth_2_Root_→_R`, ncol = 2)
 ```
 
 ### Trace Prediction Path
@@ -133,10 +137,10 @@ The Wisconsin Breast Cancer dataset contains features computed from digitized im
 ```{r wdbc-prep}
 set.seed(234)
 
-split_data <- initial_split(wdbc, prop = 0.8, strata = diagnosis)
+split_data <- rsample::initial_split(wdbc, prop = 0.8, strata = diagnosis)
 
-train_wdbc <- training(split_data)
-test_wdbc <- testing(split_data)
+train_wdbc <- rsample::training(split_data)
+test_wdbc <- rsample::testing(split_data)
 ```
 
 ### Train with Class Weights
@@ -227,8 +231,8 @@ tree_custom <- svm_split(
 
 ```{r comparison}
 # RPART decision tree
-tree_rpart <- rpart(diagnosis ~ ., data = train_wdbc,
-                   control = rpart.control(maxdepth = 4, cp = 0.01))
+tree_rpart <- rpart::rpart(diagnosis ~ ., data = train_wdbc,
+                   control = rpart::rpart.control(maxdepth = 4, cp = 0.01))
 pred_rpart <- predict(tree_rpart, test_wdbc, type = "class")
 
 tree_wdbc <- svm_split(data = train_wdbc,
@@ -238,7 +242,7 @@ tree_wdbc <- svm_split(data = train_wdbc,
                                penalize_used_features = TRUE)
 
 # Standard SVM
-model_svm <- svm(diagnosis ~ ., data = train_wdbc, probability = TRUE)
+model_svm <- e1071::svm(diagnosis ~ ., data = train_wdbc, probability = TRUE)
 pred_svm <- predict(model_svm, test_wdbc)
 
 # Get SVMODT predictions
@@ -253,7 +257,7 @@ results <- data.frame(
     mean(pred_svm == test_wdbc$diagnosis)
   )) 
 
-results |> kable()
+results |> kableExtra::kable(align = "lc")
 
 ```
 

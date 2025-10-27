@@ -19,7 +19,7 @@ maximize the margin between classes.
 
 ## Installation
 
-You can install the development version of svodt from
+You can install the development version of svmodt from
 [GitHub](https://github.com/) with:
 
 ``` r

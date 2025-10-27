@@ -5,11 +5,9 @@
 <url><loc>/authors.html</loc></url>
 <url><loc>/index.html</loc></url>
 <url><loc>/LICENSE.html</loc></url>
-<url><loc>/reference/analyze_feature_usage.html</loc></url>
 <url><loc>/reference/apply_scaler.html</loc></url>
 <url><loc>/reference/calculate_dynamic_max_features.html</loc></url>
 <url><loc>/reference/calculate_feature_associations.html</loc></url>
-<url><loc>/reference/calculate_impurity.html</loc></url>
 <url><loc>/reference/calculate_node_class_weights.html</loc></url>
 <url><loc>/reference/choose_features.html</loc></url>
 <url><loc>/reference/choose_features_with_penalty.html</loc></url>
@@ -17,11 +15,9 @@
 <url><loc>/reference/cube.html</loc></url>
 <url><loc>/reference/fit_svm_with_weights.html</loc></url>
 <url><loc>/reference/get_all_classes.html</loc></url>
-<url><loc>/reference/get_all_features_from_tree.html</loc></url>
 <url><loc>/reference/get_fallback_predictions.html</loc></url>
 <url><loc>/reference/handle_small_children.html</loc></url>
 <url><loc>/reference/index.html</loc></url>
-<url><loc>/reference/info_gain.html</loc></url>
 <url><loc>/reference/leaf_node.html</loc></url>
 <url><loc>/reference/print_svm_tree.html</loc></url>
 <url><loc>/reference/scale_node.html</loc></url>

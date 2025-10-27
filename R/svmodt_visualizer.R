@@ -1,3 +1,5 @@
+utils::globalVariables(c("boundary", "decision_value", "response"))
+
 # Create a grid for decision boundary plotting
 #' @keywords internal
 create_decision_grid <- function(data, features, resolution = 50) {

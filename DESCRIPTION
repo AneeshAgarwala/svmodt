@@ -33,7 +33,14 @@ LazyData: true
 Suggests: 
     knitr,
     rmarkdown,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    rpart,
+    rsample,
+    gridExtra,
+    tidyr,
+    kableExtra,
+    palmerpenguins,
+    dplyr
 VignetteBuilder: knitr
 Depends: 
     R (>= 3.5)
@@ -41,13 +48,6 @@ Imports:
     rlang,
     e1071,
     FSelectorRcpp,
-    ggplot2,
-    rpart,
-    rsample,
-    patchwork,
-    tidyr,
-    kableExtra,
-    palmerpenguins,
-    dplyr
+    ggplot2
 RoxygenNote: 7.3.3
 Config/testthat/edition: 3
