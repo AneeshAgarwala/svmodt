@@ -8,3 +8,5 @@
 ^doc$
 ^Meta$
 ^\.github$
+^docs/.nojekyll$
+^data/pptree-data$

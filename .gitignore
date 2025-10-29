@@ -13,3 +13,4 @@ slides/
 /Meta/
 R/custom*
 R/svmodt_tree_stats.R
+data/pptree-data
