@@ -5,8 +5,9 @@
 ^data-raw$
 ^LICENSE\.md$
 ^README\.Rmd$
-^doc$
+^docs$
 ^Meta$
 ^\.github$
-^docs/.nojekyll$
 ^data/pptree-data$
+^rough-tests$
+^slides$
