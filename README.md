@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# SVODT: Support Vector Machine based Oblique Decision Trees
+# SVMODT: Support Vector Machine based Oblique Decision Trees
 
 <!-- badges: start -->
 

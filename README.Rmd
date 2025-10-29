@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# SVODT: Support Vector Machine based Oblique Decision Trees
+# SVMODT: Support Vector Machine based Oblique Decision Trees
 
 <!-- badges: start -->
 
