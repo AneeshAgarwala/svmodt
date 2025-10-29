@@ -101,7 +101,7 @@ svm_predict_tree <- function(tree, newdata, return_probs = FALSE,
   # For multiclass: use one-vs-rest approach
   if (is.matrix(dec_values)) {
     # Multiple decision values (one-vs-one for multiclass)
-    best_col <- tree$best_col %||% 1
+    best_col <- purrr::`%||%`(tree$best_col, 1)
     if (best_col > ncol(dec_values)) best_col <- 1
     decision_values <- dec_values[, best_col]
   } else {

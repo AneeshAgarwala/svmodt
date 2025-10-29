@@ -48,6 +48,7 @@ Imports:
     rlang,
     e1071,
     FSelectorRcpp,
-    ggplot2
+    ggplot2,
+    purrr
 RoxygenNote: 7.3.3
 Config/testthat/edition: 3
