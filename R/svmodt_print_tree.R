@@ -43,7 +43,7 @@ print_svm_tree <- function(tree, indent = "", show_probabilities = FALSE,
     return(invisible())
   }
 
-  cat(indent, "\u1F333 Node: depth =", tree$depth, "| n =", tree$n)
+  cat(indent, "Node: depth =", tree$depth, "| n =", tree$n)
 
   if (show_feature_info) {
     cat(" | features = [", paste(tree$features, collapse = ","), "]", sep = "")

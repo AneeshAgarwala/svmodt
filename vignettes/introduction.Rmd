@@ -118,7 +118,7 @@ viz_penguins <- visualize_svm_tree(
 viz_penguins$plots$depth_1_Root
 ```
 
-```{r, include=FALSE, eval=TRUE}
+```{r}
 gridExtra::grid.arrange(viz_penguins$plots$`depth_2_Root_→_L`, viz_penguins$plots$`depth_2_Root_→_R`, ncol = 2)
 ```
 
