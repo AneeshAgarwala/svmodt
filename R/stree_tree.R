@@ -126,8 +126,9 @@ stree_split <- function(data, response, depth = 1, max_depth = 5,
     return(list(
       is_leaf = FALSE,
       model = result$model,
-      features = selected_features,
-      hyperplane_class = NULL,  # Not applicable for binary
+      features = result$used_features,
+      scaling_params = result$scaling_params,
+      hyperplane_class = NULL,
       left = left_child,
       right = right_child,
       depth = depth,
@@ -145,6 +146,7 @@ stree_split <- function(data, response, depth = 1, max_depth = 5,
   best_left_idx <- NULL
   best_right_idx <- NULL
   best_class <- NULL
+  best_scaling_params <- NULL
 
   impurity_func <- if (impurity_measure == "entropy") entropy else gini
 
@@ -191,6 +193,8 @@ stree_split <- function(data, response, depth = 1, max_depth = 5,
       best_left_idx <- left_idx
       best_right_idx <- right_idx
       best_class <- target_class
+      best_used_features <- result$used_features
+      best_scaling_params <- result$scaling_params
     }
   }
 
@@ -221,8 +225,9 @@ stree_split <- function(data, response, depth = 1, max_depth = 5,
   return(list(
     is_leaf = FALSE,
     model = best_model,
-    features = selected_features,
-    hyperplane_class = best_class,  # Store which class was selected
+    features = best_used_features,
+    scaling_params = best_scaling_params,  # NEW
+    hyperplane_class = best_class,
     left = left_child,
     right = right_child,
     depth = depth,

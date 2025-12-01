@@ -40,7 +40,22 @@ stree_predict <- function(tree, newdata, return_probs = FALSE) {
     }
   }
 
+  # Get the features that were actually used in training
   newdata_subset <- newdata[, tree$features, drop = FALSE]
+
+  # Convert factors to numeric (same as training)
+  for (col in names(newdata_subset)) {
+    if (is.factor(newdata_subset[[col]])) {
+      newdata_subset[[col]] <- as.numeric(newdata_subset[[col]])
+    } else if (is.character(newdata_subset[[col]])) {
+      newdata_subset[[col]] <- as.numeric(as.factor(newdata_subset[[col]]))
+    }
+  }
+
+  # Apply the same scaling used during training
+  if (!is.null(tree$scaling_params)) {
+    newdata_subset <- standard_scaler(newdata_subset, params = tree$scaling_params)
+  }
 
   # Internal node: compute decision value
   dec_value <- attr(
