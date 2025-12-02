@@ -80,36 +80,42 @@
 #' )
 #'
 #' @export
-svm_split <- function(data, response, depth = 1, max_depth = 3,
-                      min_samples = 5, max_features = NULL,
-                      feature_method = c("random", "mutual", "cor"),
-                      max_features_strategy = c("constant", "random", "decrease"),
-                      max_features_decrease_rate = 0.8,
-                      max_features_random_range = c(0.3, 1.0),
-                      penalize_used_features = FALSE,
-                      feature_penalty_weight = 0.5,
-                      used_features = character(0),
-                      class_weights = c("none", "balanced", "balanced_subsample", "custom"),
-                      custom_class_weights = NULL,
-                      verbose = FALSE, all_classes = NULL, ...) {
+svm_split_ovr <- function(data, response, depth = 1, max_depth = 3,
+                          min_samples = 5, max_features = NULL,
+                          feature_method = c("random", "mutual", "cor"),
+                          impurity_measure = c("entropy", "gini"),
+                          max_features_strategy = c("constant", "random", "decrease"),
+                          max_features_decrease_rate = 0.8,
+                          max_features_random_range = c(0.3, 1.0),
+                          penalize_used_features = FALSE,
+                          feature_penalty_weight = 0.5,
+                          used_features = character(0),
+                          class_weights = c("none", "balanced", "balanced_subsample", "custom"),
+                          custom_class_weights = NULL,
+                          verbose = FALSE,
+                          all_classes = NULL, ...) {
+
+  # Match arguments
+  feature_method <- match.arg(feature_method)
+  impurity_measure <- match.arg(impurity_measure)
+  max_features_strategy <- match.arg(max_features_strategy)
+  class_weights <- match.arg(class_weights)
+
   # Initialize all_classes if NULL
   if (is.null(all_classes)) {
     all_classes <- levels(factor(data[[response]]))
   }
 
-  # Validate inputs early
+  # Validate inputs
   if (!response %in% names(data)) {
     stop("Response variable '", response, "' not found in data")
   }
 
   if (verbose) {
-    cat("\n--- Node at depth", depth, "---\n")
-    cat("Rows:", nrow(data), "\n")
-    cat("Response distribution:\n")
+    cat("\n--- OVR Node at depth", depth, "---\n")
+    cat("Samples:", nrow(data), "\n")
+    cat("Class distribution:\n")
     print(table(data[[response]]))
-    if (length(used_features) > 0) {
-      cat("Used features in ancestors:", paste(used_features, collapse = ", "), "\n")
-    }
   }
 
   # Handle NA rows
@@ -119,23 +125,25 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
   }
 
   y <- data[[response]]
+  n <- nrow(data)
 
-  # Stopping rules
-  if (depth > max_depth || length(unique(y)) == 1 || nrow(data) < min_samples) {
-    if (verbose) cat("Stopping at depth", depth, "\n")
-    return(leaf_node(y, nrow(data), all_classes))
+  # Stopping conditions
+  if (depth > max_depth || length(unique(y)) == 1 || n < min_samples) {
+    if (verbose) cat("Creating leaf node\n")
+    return(leaf_node(y, n, all_classes))
   }
 
-  # Calculate class weights for this node
-  node_class_weights <- calculate_node_class_weights(
-    y, class_weights, custom_class_weights, verbose
-  )
+  # Get unique classes at this node
+  present_classes <- unique(as.character(y))
+  k <- length(present_classes)
 
-  # Dynamic max_features calculation
+  if (verbose) cat("Number of classes at node:", k, "\n")
+
+  # Calculate dynamic max_features
   current_max_features <- calculate_dynamic_max_features(
     data, response, max_features, depth,
-    max_features_strategy, max_features_decrease_rate, max_features_random_range,
-    verbose
+    max_features_strategy, max_features_decrease_rate,
+    max_features_random_range, verbose
   )
 
   # Feature selection with penalties
@@ -151,11 +159,10 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
 
   if (length(features) == 0) {
     if (verbose) cat("Stopping: no usable features\n")
-    return(leaf_node(y, nrow(data), all_classes))
+    return(leaf_node(y, n, all_classes))
   }
 
   if (verbose) {
-    cat("Dynamic max_features:", current_max_features, "\n")
     cat("Selected features:", paste(features, collapse = ", "), "\n")
   }
 
@@ -163,91 +170,258 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
   scaler <- scale_node(data[features])
   X_scaled <- scaler$train
 
-  # Handle case where scaling fails
   if (ncol(X_scaled) == 0) {
     if (verbose) cat("Stopping: all features are constant\n")
-    return(leaf_node(y, nrow(data), all_classes, features, scaler))
+    return(leaf_node(y, n, all_classes, features, scaler))
   }
 
-  # Fit SVM with calculated class weights
-  model <- fit_svm_with_weights(X_scaled, y, node_class_weights, verbose, ...)
-  if (is.null(model)) {
-    return(leaf_node(y, nrow(data), all_classes, features, scaler))
+  # BINARY CASE: k = 2
+  if (k == 2) {
+    if (verbose) cat("Binary classification case\n")
+
+    # Calculate class weights for binary case
+    node_class_weights <- calculate_node_class_weights(
+      y, class_weights, custom_class_weights, verbose
+    )
+
+    # Fit binary SVM
+    model <- fit_svm_with_weights(X_scaled, y, node_class_weights, verbose, ...)
+
+    if (is.null(model)) {
+      return(leaf_node(y, n, all_classes, features, scaler))
+    }
+
+    # Get decision values
+    dec <- attr(predict(model, X_scaled, decision.values = TRUE), "decision.values")
+    decision_values <- if (is.matrix(dec)) dec[, 1] else as.numeric(dec)
+
+    left_idx <- which(decision_values > 0)
+    right_idx <- which(decision_values <= 0)
+
+    if (length(left_idx) == 0 || length(right_idx) == 0) {
+      return(leaf_node(y, n, all_classes, features, scaler))
+    }
+
+    # Check child sizes
+    if (length(left_idx) < min_samples || length(right_idx) < min_samples) {
+      child_check <- handle_small_children(
+        left_idx, right_idx, min_samples,
+        data, response, depth, max_depth,
+        max_features, feature_method,
+        max_features_strategy, max_features_decrease_rate,
+        max_features_random_range,
+        penalize_used_features, feature_penalty_weight, used_features,
+        class_weights, custom_class_weights,
+        features, scaler, all_classes, verbose, ...
+      )
+
+      if (child_check$stop) {
+        return(child_check$node)
+      }
+      if (!is.null(child_check$node)) {
+        child_check$node$model <- model
+        return(child_check$node)
+      }
+    }
+
+    # Update used features
+    updated_used_features <- if (penalize_used_features) {
+      unique(c(used_features, features))
+    } else {
+      used_features
+    }
+
+    # Recursive calls for binary case
+    left_child <- svm_split_ovr(
+      data[left_idx, , drop = FALSE], response,
+      depth + 1, max_depth, min_samples,
+      max_features, feature_method, impurity_measure,
+      max_features_strategy, max_features_decrease_rate,
+      max_features_random_range,
+      penalize_used_features, feature_penalty_weight, updated_used_features,
+      class_weights, custom_class_weights,
+      verbose = verbose, all_classes = all_classes, ...
+    )
+
+    right_child <- svm_split_ovr(
+      data[right_idx, , drop = FALSE], response,
+      depth + 1, max_depth, min_samples,
+      max_features, feature_method, impurity_measure,
+      max_features_strategy, max_features_decrease_rate,
+      max_features_random_range,
+      penalize_used_features, feature_penalty_weight, updated_used_features,
+      class_weights, custom_class_weights,
+      verbose = verbose, all_classes = all_classes, ...
+    )
+
+    return(list(
+      is_leaf = FALSE,
+      model = model,
+      features = features,
+      scaler = scaler,
+      hyperplane_class = NULL,  # Not applicable for binary
+      best_col = 1,
+      left = left_child,
+      right = right_child,
+      depth = depth,
+      n = n,
+      max_features_used = current_max_features,
+      penalty_applied = penalize_used_features && length(used_features) > 0,
+      class_weights_used = node_class_weights
+    ))
   }
 
-  # Decision boundary
-  dec <- attr(predict(model, X_scaled, decision.values = TRUE), "decision.values")
-  decision_values <- if (is.matrix(dec)) dec[, 1] else as.numeric(dec)
-  left_idx <- which(decision_values > 0)
-  right_idx <- which(decision_values <= 0)
+  # MULTICLASS CASE: k > 2
+  # Try all k one-vs-rest cases
+  if (verbose) cat("Multi-class case: trying", k, "one-vs-rest splits\n")
 
-  if (verbose) cat("Left size:", length(left_idx), "Right size:", length(right_idx), "\n")
+  best_impurity <- Inf
+  best_model <- NULL
+  best_left_idx <- NULL
+  best_right_idx <- NULL
+  best_class <- NULL
+  best_class_weights <- NULL
 
-  # No effective split
-  if (length(left_idx) == 0 || length(right_idx) == 0) {
-    if (verbose) cat("Stopping: ineffective split (all points on one side)\n")
-    return(leaf_node(y, nrow(data), all_classes, features, scaler))
+  # Select impurity function
+  impurity_func <- if (impurity_measure == "entropy") entropy else gini
+
+  for (target_class in present_classes) {
+    # Create binary labels: target_class vs rest
+    y_binary <- factor(
+      ifelse(y == target_class, "positive", "negative"),
+      levels = c("positive", "negative")
+    )
+
+    if (verbose) cat("  Trying:", target_class, "vs rest\n")
+
+    # Calculate class weights for this binary problem
+    node_class_weights <- calculate_node_class_weights(
+      y_binary, class_weights, custom_class_weights, verbose = FALSE
+    )
+
+    # Fit SVM for this one-vs-rest split
+    model <- fit_svm_with_weights(X_scaled, y_binary, node_class_weights,
+                                  verbose = FALSE, ...)
+
+    if (is.null(model)) {
+      next
+    }
+
+    # Get decision values
+    dec <- attr(predict(model, X_scaled, decision.values = TRUE), "decision.values")
+    decision_values <- if (is.matrix(dec)) dec[, 1] else as.numeric(dec)
+
+    left_idx <- which(decision_values > 0)
+    right_idx <- which(decision_values <= 0)
+
+    # Skip if split creates empty partition
+    if (length(left_idx) == 0 || length(right_idx) == 0) {
+      next
+    }
+
+    # Calculate weighted impurity on ORIGINAL labels
+    y_left <- y[left_idx]
+    y_right <- y[right_idx]
+
+    impurity_left <- impurity_func(y_left)
+    impurity_right <- impurity_func(y_right)
+
+    weighted_impurity <- (length(left_idx) / n) * impurity_left +
+      (length(right_idx) / n) * impurity_right
+
+    if (verbose) {
+      cat("    Weighted impurity:", round(weighted_impurity, 4), "\n")
+    }
+
+    # Update best split if better
+    if (weighted_impurity < best_impurity) {
+      best_impurity <- weighted_impurity
+      best_model <- model
+      best_left_idx <- left_idx
+      best_right_idx <- right_idx
+      best_class <- target_class
+      best_class_weights <- node_class_weights
+    }
   }
 
-  # Pass ALL required parameters including class weights and all_classes
-  child_check <- handle_small_children(
-    left_idx, right_idx, min_samples,
-    data, response, depth, max_depth,
-    max_features, feature_method,
-    max_features_strategy, max_features_decrease_rate, max_features_random_range,
-    penalize_used_features, feature_penalty_weight, used_features,
-    class_weights, custom_class_weights,
-    features, scaler, all_classes, verbose, ...
-  )
-
-  if (child_check$stop) {
-    return(child_check$node)
-  }
-  if (!is.null(child_check$node)) {
-    child_check$node$model <- model
-    return(child_check$node)
+  # Check if we found a valid split
+  if (is.null(best_model)) {
+    if (verbose) cat("No valid split found, creating leaf\n")
+    return(leaf_node(y, n, all_classes, features, scaler))
   }
 
-  # Update used features for children
+  if (verbose) {
+    cat("Best split: class", best_class, "vs rest\n")
+    cat("Best impurity:", round(best_impurity, 4), "\n")
+  }
+
+  # Check child sizes
+  if (length(best_left_idx) < min_samples || length(best_right_idx) < min_samples) {
+    child_check <- handle_small_children(
+      best_left_idx, best_right_idx, min_samples,
+      data, response, depth, max_depth,
+      max_features, feature_method,
+      max_features_strategy, max_features_decrease_rate,
+      max_features_random_range,
+      penalize_used_features, feature_penalty_weight, used_features,
+      class_weights, custom_class_weights,
+      features, scaler, all_classes, verbose, ...
+    )
+
+    if (child_check$stop) {
+      return(child_check$node)
+    }
+    if (!is.null(child_check$node)) {
+      child_check$node$model <- best_model
+      child_check$node$hyperplane_class <- best_class
+      return(child_check$node)
+    }
+  }
+
+  # Update used features
   updated_used_features <- if (penalize_used_features) {
     unique(c(used_features, features))
   } else {
     used_features
   }
 
-  # Recurse with all parameters
-  left <- svm_split(
-    data[left_idx, , drop = FALSE], response,
+  # Recursive calls with best split
+  left_child <- svm_split_ovr(
+    data[best_left_idx, , drop = FALSE], response,
     depth + 1, max_depth, min_samples,
-    max_features, feature_method,
-    max_features_strategy, max_features_decrease_rate, max_features_random_range,
+    max_features, feature_method, impurity_measure,
+    max_features_strategy, max_features_decrease_rate,
+    max_features_random_range,
     penalize_used_features, feature_penalty_weight, updated_used_features,
     class_weights, custom_class_weights,
     verbose = verbose, all_classes = all_classes, ...
   )
 
-  right <- svm_split(
-    data[right_idx, , drop = FALSE], response,
+  right_child <- svm_split_ovr(
+    data[best_right_idx, , drop = FALSE], response,
     depth + 1, max_depth, min_samples,
-    max_features, feature_method,
-    max_features_strategy, max_features_decrease_rate, max_features_random_range,
+    max_features, feature_method, impurity_measure,
+    max_features_strategy, max_features_decrease_rate,
+    max_features_random_range,
     penalize_used_features, feature_penalty_weight, updated_used_features,
     class_weights, custom_class_weights,
     verbose = verbose, all_classes = all_classes, ...
   )
 
-  list(
+  return(list(
     is_leaf = FALSE,
-    model = model,
+    model = best_model,
     features = features,
     scaler = scaler,
+    hyperplane_class = best_class,  # Store which class was selected
     best_col = 1,
-    left = left,
-    right = right,
+    left = left_child,
+    right = right_child,
     depth = depth,
-    n = nrow(data),
+    n = n,
+    impurity = best_impurity,
     max_features_used = current_max_features,
     penalty_applied = penalize_used_features && length(used_features) > 0,
-    class_weights_used = node_class_weights
-  )
+    class_weights_used = best_class_weights
+  ))
 }

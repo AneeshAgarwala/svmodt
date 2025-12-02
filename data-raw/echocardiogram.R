@@ -15,7 +15,8 @@ echocardiogram <- read.csv("D:/SVMODT/project-svodt/data-raw/echocardiogram.data
                              "alive_at_1"
                              ), na.strings = "?") |>
   dplyr::select(-name, -group, -alive_at_1, -survival) |>
-  na.omit(still_alive)
+  na.omit(still_alive) |>
+  mutate(still_alive = as.factor(still_alive))
 
 usethis::use_data(echocardiogram, overwrite = TRUE)
 

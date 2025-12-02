@@ -1,14 +1,49 @@
 library(rsample)
 library(dplyr)
 library(purrr)
+library(reticulate)
 
-# Preprocess data
-ctg3 <- ctg |> dplyr::select(-CLASS) |>
-  mutate(across(where(is.numeric), scale))
-ctg10 <- ctg |> dplyr::select(-NSP)  |>
-  mutate(across(where(is.numeric), scale))
+stree <- import("stree")
+sklearn_svm <- import("sklearn.svm")
+
+stree_args <- list(
+  C = 1,
+  tol = 0.0001,
+  kernel = "linear",
+  max_iter = 10000000L
+)
+
+ctg3 <- ctg |>
+  dplyr::select(-CLASS) |>
+  standard_scaler()
+
+ctg10 <- ctg |>
+  dplyr::select(-NSP) |>
+  standard_scaler()
+
 australian_credit <- australian_credit |>
-  mutate(across(where(is.numeric), scale))
+  standard_scaler()
+
+wdbc <- wdbc |>
+  standard_scaler()
+
+iris <- iris |>
+  standard_scaler()
+
+echocardiogram <- svmodt::echocardiogram |>
+  mutate(across(!still_alive, standard_scaler))
+
+fertility <- fertility |>
+  standard_scaler()
+
+wine <- wine |>
+  standard_scaler()
+
+ionosphere <- ionosphere |>
+  standard_scaler()
+
+dermatology <- dermatology |>
+  standard_scaler()
 
 
 # Generic 5-fold CV function
@@ -27,7 +62,7 @@ run_kfold_cv <- function(data, response, k = 5, train_fun, predict_fun) {
     model <- train_fun(train_data, response)
 
     # Predict (user-defined)
-    preds <- predict_fun(model, test_data)
+    preds <- predict_fun(model, test_data, response)
 
     # Accuracy
     tibble(
@@ -53,11 +88,24 @@ train_stree_default <- function(data, response) {
   )
 }
 
+# Default SVMODT
 train_svmodt_default <- function(data, response){
   svmodt::svm_split(
     data = data,
     response = response,
     feature_method = "mutual")
+}
+
+# Default Python STree
+train_python_stree <- function(data, response) {
+
+  y <- data[[response]]
+  X <- data |> dplyr::select(-all_of(response))
+
+  py_model <- do.call(stree$Stree, stree_args)
+  py_model$fit(X,y)
+
+  return(py_model)
 }
 
 # Optimized STree for each dataset
@@ -183,7 +231,7 @@ train_stree_aus_credit <- function(data, response) {
 }
 
 # Prediction function
-predict_stree <- function(model, newdata) {
+predict_stree <- function(model, newdata, response) {
   stree_predict(model, newdata)
 }
 
@@ -191,6 +239,15 @@ predict_svmodt <- function(model, newdata){
   svm_predict_tree(model, newdata)
 }
 
+
+predict_python_stree <- function(model, test_data, response) {
+
+  X_test <- test_data |> dplyr::select(-all_of(response))
+
+  preds <- model$predict(X_test)
+
+  return(py_to_r(preds))
+}
 
 # RUN 1: DEFAULT ARGUMENTS
 stat_wdbc <- rep(NA, 10)
@@ -574,6 +631,170 @@ for(i in 1:10){
   )
   stat_svmodt_aus_credit[i] <- mean(cv_aus_credit$accuracy)
 }
+
+
+# RUN4: PYTHON STREE WITH RETICULATE
+py_stree_wdbc <- rep(NA, 10)
+py_stree_iris <- rep(NA, 10)
+py_stree_echocardiogram <- rep(NA, 10)
+py_stree_fertility <- rep(NA, 10)
+py_stree_wine <- rep(NA, 10)
+py_stree_ctg3 <- rep(NA, 10)
+py_stree_ctg10 <- rep(NA, 10)
+py_stree_ionosphere <- rep(NA, 10)
+py_stree_dermatology <- rep(NA, 10)
+py_stree_aus_credit <- rep(NA, 10)
+
+for(i in 1:10){
+  cat("Iteration", i, "- Default\n")
+
+  set.seed(seed_list[i])
+  ## WDBC
+  cv_wdbc <- run_kfold_cv(
+    data = wdbc,
+    response = "diagnosis",
+    k = 5,
+    train_fun = train_python_stree,
+    predict_fun = predict_python_stree
+  )
+  py_stree_wdbc[i] <- mean(cv_wdbc$accuracy)
+
+  ## IRIS
+  cv_iris <- run_kfold_cv(
+    data = iris,
+    response = "Species",
+    k = 5,
+    train_fun = train_python_stree,
+    predict_fun = predict_python_stree
+  )
+  py_stree_iris[i] <- mean(cv_iris$accuracy)
+
+  ## ECHOCARDIOGRAM
+  cv_echo <- run_kfold_cv(
+    data = echocardiogram,
+    response = "still_alive",
+    k = 5,
+    train_fun = train_python_stree,
+    predict_fun = predict_python_stree
+  )
+  py_stree_echocardiogram[i] <- mean(cv_echo$accuracy)
+
+  ## FERTILITY
+  cv_fert <- run_kfold_cv(
+    data = fertility,
+    response = "diagnosis",
+    k = 5,
+    train_fun = train_python_stree,
+    predict_fun = predict_python_stree
+  )
+  py_stree_fertility[i] <- mean(cv_fert$accuracy)
+
+  ## WINE
+  cv_wine <- run_kfold_cv(
+    data = wine,
+    response = "class",
+    k = 5,
+    train_fun = train_python_stree,
+    predict_fun = predict_python_stree
+  )
+  py_stree_wine[i] <- mean(cv_wine$accuracy)
+
+  ## CTG3
+  cv_ctg3 <- run_kfold_cv(
+    data = ctg3,
+    response = "NSP",
+    k = 5,
+    train_fun = train_python_stree,
+    predict_fun = predict_python_stree
+  )
+  py_stree_ctg3[i] <- mean(cv_ctg3$accuracy)
+
+  ## CTG10
+  cv_ctg10 <- run_kfold_cv(
+    data = ctg10,
+    response = "CLASS",
+    k = 5,
+    train_fun = train_python_stree,
+    predict_fun = predict_python_stree
+  )
+  py_stree_ctg10[i] <- mean(cv_ctg10$accuracy)
+
+  ## IONOSPHERE
+  cv_ionosphere <- run_kfold_cv(
+    data = ionosphere,
+    response = "Class",
+    k = 5,
+    train_fun = train_python_stree,
+    predict_fun = predict_python_stree
+  )
+  py_stree_ionosphere[i] <- mean(cv_ionosphere$accuracy)
+
+  ## DERMATOLOGY
+  cv_dermatology <- run_kfold_cv(
+    data = dermatology,
+    response = "class",
+    k = 5,
+    train_fun = train_python_stree,
+    predict_fun = predict_python_stree
+  )
+  py_stree_dermatology[i] <- mean(cv_dermatology$accuracy)
+
+  ## AUSTRALIAN CREDIT
+  cv_aus_credit <- run_kfold_cv(
+    data = australian_credit,
+    response = "A15",
+    k = 5,
+    train_fun = train_python_stree,
+    predict_fun = predict_python_stree
+  )
+  py_stree_aus_credit[i] <- mean(cv_aus_credit$accuracy)
+}
+
+
+# Results with Reticulate Python Stree
+cat("\n========== OPTIMIZED ARGUMENTS RESULTS ==========\n")
+cat("WDBC:           ", round(mean(py_stree_wdbc), 4), "\n")
+cat("Iris:           ", round(mean(py_stree_iris), 4), "\n")
+cat("Echocardiogram: ", round(mean(py_stree_echocardiogram), 4), "\n")
+cat("Fertility:      ", round(mean(py_stree_fertility), 4), "\n")
+cat("Wine:           ", round(mean(py_stree_wine), 4), "\n")
+cat("CTG3:           ", round(mean(py_stree_ctg3), 4), "\n")
+cat("CTG10:          ", round(mean(py_stree_ctg10), 4), "\n")
+cat("Ionosphere:     ", round(mean(py_stree_ionosphere), 4), "\n")
+cat("Dermatology:    ", round(mean(py_stree_dermatology), 4), "\n")
+cat("Aus Credit:     ", round(mean(py_stree_aus_credit), 4), "\n")
+
+
+
+svmodt_results <- data.frame(
+  Dataset = c("WDBC", "Iris", "Echocardiogram", "Fertility", "Wine",
+              "CTG3", "CTG10", "Ionosphere", "Dermatology", "Aus Credit"),
+  R = c(mean(stat_wdbc),
+        mean(stat_iris),
+        mean(stat_echocardiogram),
+        mean(stat_fertility),
+        mean(stat_wine),
+        mean(stat_ctg3),
+        mean(stat_ctg10),
+        mean(stat_ionosphere),
+        mean(stat_dermatology),
+        mean(stat_aus_credit)
+        ),
+  Python = c(
+    mean(py_stree_wdbc),
+    mean(py_stree_iris),
+    mean(py_stree_echocardiogram),
+    mean(py_stree_fertility),
+    mean(py_stree_wine),
+    mean(py_stree_ctg3),
+    mean(py_stree_ctg10),
+    mean(py_stree_ionosphere),
+    mean(py_stree_dermatology),
+    mean(py_stree_aus_credit)
+  )
+  )
+
+svmodt_results
 
 # ------------------------------------------------------
 # COMPARISON TABLE
