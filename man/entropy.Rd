@@ -4,7 +4,7 @@
 \alias{entropy}
 \title{Entropy}
 \usage{
-entropy(labels)
+entropy(y)
 }
 \arguments{
 \item{labels}{A vector of class labels.}

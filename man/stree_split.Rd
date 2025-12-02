@@ -10,11 +10,13 @@ stree_split(
   depth = 1,
   max_depth = 5,
   min_samples = 5,
-  kernel = c("linear", "polynomial", "radial"),
-  impurity_measure = c("entropy", "gini"),
+  kernel = "linear",
+  impurity_measure = "entropy",
+  cost = 1,
   verbose = FALSE,
   all_classes = NULL,
-  max_features = NULL,
+  class_order_method = "natural",
+  tie_break_method = "first",
   ...
 )
 }

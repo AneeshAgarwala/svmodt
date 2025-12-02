@@ -18,109 +18,82 @@
 #'
 #' @export
 stree_split <- function(data, response, depth = 1, max_depth = 5,
-                        min_samples = 5, kernel = c("linear", "polynomial", "radial"),
-                        impurity_measure = c("entropy", "gini"),
-                        verbose = FALSE, all_classes = NULL, max_features = NULL, ...) {
-
-  kernel <- match.arg(kernel)
-  impurity_measure <- match.arg(impurity_measure)
+                                min_samples = 5, kernel = "linear",
+                                impurity_measure = "entropy",
+                                cost = 1, verbose = FALSE,
+                                all_classes = NULL,
+                                class_order_method = "natural",
+                                tie_break_method = "first", ...) {
 
   # Initialize all_classes if NULL
   if (is.null(all_classes)) {
-    all_classes <- levels(factor(data[[response]]))
+    all_classes <- get_consistent_class_order(data[[response]], class_order_method)
   }
 
-  # Validate inputs
-  if (!response %in% names(data)) {
-    stop("Response variable '", response, "' not found in data")
+  if (verbose) {
+    cat("\n--- STree Node at depth", depth, "---\n")
+    cat("Samples:", nrow(data), "\n")
+    cat("Class distribution:\n")
+    print(table(data[[response]]))
+  }
+
+  # Handle NA rows
+  if (anyNA(data)) {
+    if (verbose) cat("Warning: NA values detected! Stopping here.\n")
+    return(leaf_node(data[[response]], nrow(data), all_classes))
   }
 
   y <- data[[response]]
   n <- nrow(data)
 
-  # Determine features
-  feature_names <- setdiff(names(data), response)
-  n_features <- length(feature_names)
-
-
-  # Compute max_features based on user specification
-  if (is.null(max_features)) {
-    m_features <- n_features
-  } else if (is.character(max_features)) {
-    if (max_features %in% c("auto", "sqrt")) {
-      m_features <- max(1, floor(sqrt(n_features)))
-    } else if (max_features == "log2") {
-      m_features <- max(1, floor(log2(n_features)))
-    } else {
-      stop("Invalid max_features string option")
-    }
-  } else if (is.numeric(max_features)) {
-    if (max_features > 1) {
-      m_features <- min(n_features, as.integer(max_features))
-    } else if (max_features > 0 && max_features <= 1) {
-      m_features <- max(1, as.integer(max_features * n_features))
-    } else {
-      stop("Invalid numeric max_features value")
-    }
-  } else {
-    stop("Invalid max_features argument")
-  }
-
-  # Randomly sample selected features
-  selected_features <- sample(feature_names, m_features)
-
-  if (verbose) {
-    cat("\n--- STree Node at depth", depth, "---\n")
-    cat("Samples:", n, "\n")
-    cat("Class distribution:\n")
-    print(table(y))
-  }
-
   # Stopping conditions
-  if (depth >= max_depth || n < min_samples || length(unique(y)) == 1) {
+  if (depth > max_depth || length(unique(y)) == 1 || n < min_samples) {
     if (verbose) cat("Creating leaf node\n")
-    return(stree_leaf_node(y, n, all_classes))
+    return(leaf_node(y, n, all_classes))
   }
 
-  # Get unique classes in current node
-  present_classes <- unique(as.character(y))
+  # Get unique classes at this node (maintain order)
+  present_classes <- intersect(all_classes, unique(as.character(y)))
   k <- length(present_classes)
 
   if (verbose) cat("Number of classes at node:", k, "\n")
 
-  # Prepare feature matrix (exclude response)
-  feature_names <- setdiff(names(data), response)
-  X <- data[, selected_features, drop = FALSE]
+  # Prepare features
+  features <- setdiff(names(data), response)
+  X <- data[features]
 
-  # Binary case: k = 2
+  # Binary case
   if (k == 2) {
     if (verbose) cat("Binary classification case\n")
 
-    result <- stree_fit_binary_svm(X, y, kernel, verbose, ...)
+    result <- stree_fit_binary_svm(
+      X, factor(y), kernel, verbose = verbose,
+      use_scaling = TRUE, cost = cost, ...
+    )
 
     if (is.null(result$model)) {
-      return(stree_leaf_node(y, n, all_classes))
+      return(leaf_node(y, n, all_classes))
     }
 
-    # Split data based on SVM decision
     left_idx <- result$left_idx
     right_idx <- result$right_idx
 
-    if (length(left_idx) == 0 || length(right_idx) == 0) {
-      return(stree_leaf_node(y, n, all_classes))
+    if (length(left_idx) == 0 || length(right_idx) == 0 ||
+        length(left_idx) < min_samples || length(right_idx) < min_samples) {
+      return(leaf_node(y, n, all_classes))
     }
 
     # Recursive calls
     left_child <- stree_split(
-      data[left_idx, , drop = FALSE], response,
-      depth + 1, max_depth, min_samples, kernel,
-      impurity_measure, verbose, all_classes, max_features,...
+      data[left_idx, ], response, depth + 1, max_depth, min_samples,
+      kernel, impurity_measure, cost, verbose, all_classes,
+      class_order_method, tie_break_method, ...
     )
 
     right_child <- stree_split(
-      data[right_idx, , drop = FALSE], response,
-      depth + 1, max_depth, min_samples, kernel,
-      impurity_measure, verbose, all_classes,  max_features,...
+      data[right_idx, ], response, depth + 1, max_depth, min_samples,
+      kernel, impurity_measure, cost, verbose, all_classes,
+      class_order_method, tie_break_method, ...
     )
 
     return(list(
@@ -137,38 +110,35 @@ stree_split <- function(data, response, depth = 1, max_depth = 5,
     ))
   }
 
-  # Multi-class case: k > 2
-  # Try all k one-vs-rest cases
+  # Multiclass case
   if (verbose) cat("Multi-class case: trying", k, "one-vs-rest splits\n")
 
-  best_impurity <- Inf
-  best_model <- NULL
-  best_left_idx <- NULL
-  best_right_idx <- NULL
-  best_class <- NULL
-  best_scaling_params <- NULL
-
   impurity_func <- if (impurity_measure == "entropy") entropy else gini
+  impurities_list <- list()
 
   for (target_class in present_classes) {
-    # Create binary labels: target_class vs rest
-    y_binary <- factor(ifelse(y == target_class, "positive", "negative"),
-                       levels = c("positive", "negative"))
+    y_binary <- factor(
+      ifelse(y == target_class, "positive", "negative"),
+      levels = c("positive", "negative")
+    )
 
     if (verbose) cat("  Trying:", target_class, "vs rest\n")
 
-    # Fit SVM
-    result <- stree_fit_binary_svm(X, y_binary, kernel, verbose = FALSE, ...)
+    result <- stree_fit_binary_svm(
+      X, y_binary, kernel, verbose = FALSE,
+      use_scaling = TRUE, cost = cost, ...
+    )
 
     if (is.null(result$model)) {
+      impurities_list[[target_class]] <- list(impurity = NA)
       next
     }
 
     left_idx <- result$left_idx
     right_idx <- result$right_idx
 
-    # Skip if split creates empty partition
     if (length(left_idx) == 0 || length(right_idx) == 0) {
+      impurities_list[[target_class]] <- list(impurity = NA)
       next
     }
 
@@ -186,53 +156,89 @@ stree_split <- function(data, response, depth = 1, max_depth = 5,
       cat("    Weighted impurity:", round(weighted_impurity, 4), "\n")
     }
 
-    # Update best split if better
-    if (weighted_impurity < best_impurity) {
-      best_impurity <- weighted_impurity
-      best_model <- result$model
-      best_left_idx <- left_idx
-      best_right_idx <- right_idx
-      best_class <- target_class
-      best_used_features <- result$used_features
-      best_scaling_params <- result$scaling_params
-    }
+    impurities_list[[target_class]] <- list(
+      impurity = weighted_impurity,
+      model = result$model,
+      left_idx = left_idx,
+      right_idx = right_idx,
+      scaling_params = result$scaling_params,
+      used_features = result$used_features
+    )
   }
 
-  # Check if we found a valid split
-  if (is.null(best_model)) {
+  # Select best split with tie-breaking
+  best_class <- select_best_ovr_split(impurities_list, tie_break_method)
+
+  if (is.null(best_class)) {
     if (verbose) cat("No valid split found, creating leaf\n")
-    return(stree_leaf_node(y, n, all_classes))
+    return(leaf_node(y, n, all_classes))
   }
+
+  best_result <- impurities_list[[best_class]]
 
   if (verbose) {
     cat("Best split: class", best_class, "vs rest\n")
-    cat("Best impurity:", round(best_impurity, 4), "\n")
+    cat("Best impurity:", round(best_result$impurity, 4), "\n")
   }
 
-  # Recursive calls with best split
+  # Check child sizes
+  if (length(best_result$left_idx) < min_samples ||
+      length(best_result$right_idx) < min_samples) {
+    return(leaf_node(y, n, all_classes))
+  }
+
+  # Recursive calls
   left_child <- stree_split(
-    data[best_left_idx, , drop = FALSE], response,
-    depth + 1, max_depth, min_samples, kernel,
-    impurity_measure, verbose, all_classes,  max_features,...
+    data[best_result$left_idx, ], response, depth + 1, max_depth, min_samples,
+    kernel, impurity_measure, cost, verbose, all_classes,
+    class_order_method, tie_break_method, ...
   )
 
   right_child <- stree_split(
-    data[best_right_idx, , drop = FALSE], response,
-    depth + 1, max_depth, min_samples, kernel,
-    impurity_measure, verbose, all_classes,  max_features,...
+    data[best_result$right_idx, ], response, depth + 1, max_depth, min_samples,
+    kernel, impurity_measure, cost, verbose, all_classes,
+    class_order_method, tie_break_method, ...
   )
 
   return(list(
     is_leaf = FALSE,
-    model = best_model,
-    features = best_used_features,
-    scaling_params = best_scaling_params,  # NEW
+    model = best_result$model,
+    features = best_result$used_features,
+    scaling_params = best_result$scaling_params,
     hyperplane_class = best_class,
     left = left_child,
     right = right_child,
     depth = depth,
     n = n,
-    kernel = kernel,
-    impurity = best_impurity
+    impurity = best_result$impurity,
+    kernel = kernel
   ))
+}
+
+# Helper functions
+entropy <- function(y) {
+  if (length(y) == 0) return(0)
+  probs <- table(y) / length(y)
+  probs <- probs[probs > 0]
+  -sum(probs * log2(probs))
+}
+
+gini <- function(y) {
+  if (length(y) == 0) return(0)
+  probs <- table(y) / length(y)
+  1 - sum(probs^2)
+}
+
+leaf_node <- function(y, n, all_classes) {
+  freq <- table(factor(y, levels = all_classes))
+  probs <- freq / n
+  prediction <- names(which.max(freq))
+
+  list(
+    is_leaf = TRUE,
+    prediction = prediction,
+    class_prob = as.vector(probs),
+    class_names = all_classes,
+    n = n
+  )
 }

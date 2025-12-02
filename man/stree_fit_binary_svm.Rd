@@ -4,7 +4,15 @@
 \alias{stree_fit_binary_svm}
 \title{Fit Binary SVM for STree}
 \usage{
-stree_fit_binary_svm(X, y, kernel, verbose = FALSE, ...)
+stree_fit_binary_svm(
+  X,
+  y,
+  kernel,
+  verbose = FALSE,
+  use_scaling = TRUE,
+  scaling_params = NULL,
+  ...
+)
 }
 \description{
 Fit Binary SVM for STree
