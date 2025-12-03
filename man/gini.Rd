@@ -4,7 +4,7 @@
 \alias{gini}
 \title{Gini Impurity}
 \usage{
-gini(y)
+gini(labels)
 }
 \arguments{
 \item{labels}{A vector of class labels.}

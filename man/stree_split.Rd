@@ -12,6 +12,7 @@ stree_split(
   min_samples = 5,
   kernel = "linear",
   impurity_measure = "entropy",
+  split_criteria = "impurity",
   cost = 1,
   verbose = FALSE,
   all_classes = NULL,
