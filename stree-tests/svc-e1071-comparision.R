@@ -14,17 +14,22 @@ scaled_ctg10 <- standard_scaler(ctg10)
 scaled_australian_credit <- standard_scaler(australian_credit)
 scaled_fertility <- standard_scaler(fertility)
 scaled_wdbc <- standard_scaler(wdbc)
+scaled_iris <- iris |>
+  dplyr::mutate(Species = as.factor(Species)) |>
+  standard_scaler()
 
-split_data <- initial_split(scaled_ctg10, prop = 0.8, strata = CLASS)
+set.seed(23)
+
+split_data <- initial_split(scaled_dermatology, prop = 0.8, strata = class)
 train_data <- training(split_data)
 test_data <- testing(split_data)
 
-x_train <- train_data[, 1:21]
-y_train <- train_data$CLASS
-x_test <- test_data[, 1:21]
-y_test <- test_data$CLASS
+x_train <- train_data[, 1:34]
+y_train <- train_data$class
+x_test <- test_data[, 1:34]
+y_test <- test_data$class
 
-# Python SVM
+# Python STREE
 stree <- import("stree")
 sklearn_svm <- import("sklearn.svm")
 
@@ -37,29 +42,29 @@ svc_args <- list(
 svc_model <- do.call(stree$Stree, svc_args)
 svc_model$fit(x_train, y_train)
 py_pred <- svc_model$predict(x_test)
+DiagrammeR::grViz(svc_model$graph())
 
-# R E1071 - FIX: Train on train_data only, not entire dataset
-r_model <- svm(CLASS ~ .,
-               data = train_data,
-               cost = 1,
-               tolerance = 0.0001,
-               kernel = "linear",
-               scale = FALSE)
 
-r_stree_model <- stree_split(data = train_data, response = "CLASS", kernel = "linear", verbose = TRUE)
-
+# R STREE
+r_stree_model <- stree_split(data = train_data, response = "class", kernel = "linear", verbose = TRUE)
 r_stree_preds <- stree_predict(r_stree_model, test_data)
+print_stree(r_stree_model)
 
+
+# SVMODT TREE
+r_svmodt_model <- svm_split(data = train_data, response = "class", impurity_measure = "entropy", verbose = TRUE)
+r_svmodt_preds <- svm_predict_tree(tree = r_svmodt_model, newdata = test_data)
+print_svm_tree(tree = r_svmodt_model, show_feature_info = FALSE)
+
+
+
+# Prediction Accuracy
 mean(r_stree_preds == y_test)
+mean(py_pred == y_test)
+mean(r_svmodt_preds == y_test)
 
 
-r_pred <- predict(r_model, test_data)
+table(r_stree_preds, py_pred)
 
-# Compare predictions
-table(py_pred == r_pred)
-
-# Check accuracies
-py_accuracy <- mean(py_pred == y_test)
-r_accuracy <- mean(r_pred == y_test)
 
 

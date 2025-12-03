@@ -92,7 +92,7 @@ handle_small_children <- function(left_idx, right_idx, min_samples,
     left_child <- svm_split(
       data[left_idx, , drop = FALSE], response,
       depth + 1, max_depth, min_samples,
-      max_features, feature_method,
+      max_features, feature_method,,
       max_features_strategy, max_features_decrease_rate, max_features_random_range,
       penalize_used_features, feature_penalty_weight, used_features,
       class_weights, custom_class_weights,

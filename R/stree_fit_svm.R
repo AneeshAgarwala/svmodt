@@ -1,7 +1,7 @@
 #' @title Fit Binary SVM for STree
 #' @keywords internal
 stree_fit_binary_svm <- function(X, y, kernel, verbose = FALSE,
-                                 use_scaling = TRUE, scaling_params = NULL, ...) {
+                                use_scaling = TRUE, scaling_params = NULL, ...) {
 
   if (nrow(X) == 0 || length(y) == 0) {
     if (verbose) cat("Empty data, cannot fit SVM\n")
@@ -33,21 +33,14 @@ stree_fit_binary_svm <- function(X, y, kernel, verbose = FALSE,
 
   X_filtered <- X_processed[, non_constant_cols, drop = FALSE]
 
-  if (verbose && sum(!non_constant_cols) > 0) {
-    cat("Removed", sum(!non_constant_cols), "constant feature(s):",
-        paste(names(X_processed)[!non_constant_cols], collapse = ", "), "\n")
-  }
-
   # Apply custom scaling (matches sklearn)
   if (use_scaling) {
     if (is.null(scaling_params)) {
-      # Training: compute and store scaling parameters
       scaled_result <- standard_scaler(X_filtered, center = TRUE,
                                        scale_var = TRUE, return_params = TRUE)
       X_scaled <- scaled_result$data
       scaling_params <- scaled_result$params
     } else {
-      # Prediction: use existing scaling parameters
       X_scaled <- standard_scaler(X_filtered, params = scaling_params)
     }
   } else {
@@ -60,17 +53,16 @@ stree_fit_binary_svm <- function(X, y, kernel, verbose = FALSE,
                        "linear" = "linear",
                        "polynomial" = "polynomial",
                        "radial" = "radial",
-                       "linear"
-  )
+                       "linear")
 
-  # Fit SVM (with scale = FALSE since we already scaled)
+  # Fit SVM
   model <- tryCatch(
     {
       e1071::svm(
         x = X_scaled,
         y = y,
         kernel = svm_kernel,
-        scale = FALSE,  # We handle scaling ourselves
+        scale = FALSE,
         decision.values = TRUE,
         tolerance = 0.001,
         ...
@@ -99,9 +91,8 @@ stree_fit_binary_svm <- function(X, y, kernel, verbose = FALSE,
     dec_values <- as.numeric(dec_values)
   }
 
-  # Split based on distance to hyperplane
-  left_idx <- which(dec_values >= 0)
-  right_idx <- which(dec_values < 0)
+  left_idx <- which(dec_values > 0)
+  right_idx <- which(dec_values <= 0)
 
   return(list(
     model = model,

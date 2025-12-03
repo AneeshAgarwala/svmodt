@@ -80,7 +80,7 @@
 #' )
 #'
 #' @export
-svm_split_ovr <- function(data, response, depth = 1, max_depth = 3,
+svm_split <- function(data, response, depth = 1, max_depth = 3,
                           min_samples = 5, max_features = NULL,
                           feature_method = c("random", "mutual", "cor"),
                           impurity_measure = c("entropy", "gini"),
@@ -232,7 +232,7 @@ svm_split_ovr <- function(data, response, depth = 1, max_depth = 3,
     }
 
     # Recursive calls for binary case
-    left_child <- svm_split_ovr(
+    left_child <- svm_split(
       data[left_idx, , drop = FALSE], response,
       depth + 1, max_depth, min_samples,
       max_features, feature_method, impurity_measure,
@@ -243,7 +243,7 @@ svm_split_ovr <- function(data, response, depth = 1, max_depth = 3,
       verbose = verbose, all_classes = all_classes, ...
     )
 
-    right_child <- svm_split_ovr(
+    right_child <- svm_split(
       data[right_idx, , drop = FALSE], response,
       depth + 1, max_depth, min_samples,
       max_features, feature_method, impurity_measure,
@@ -358,7 +358,7 @@ svm_split_ovr <- function(data, response, depth = 1, max_depth = 3,
   # Check child sizes
   if (length(best_left_idx) < min_samples || length(best_right_idx) < min_samples) {
     child_check <- handle_small_children(
-      best_left_idx, best_right_idx, min_samples,
+      best_left_idx, best_right_idx, min_samples, impurity_measure,
       data, response, depth, max_depth,
       max_features, feature_method,
       max_features_strategy, max_features_decrease_rate,
@@ -386,7 +386,7 @@ svm_split_ovr <- function(data, response, depth = 1, max_depth = 3,
   }
 
   # Recursive calls with best split
-  left_child <- svm_split_ovr(
+  left_child <- svm_split(
     data[best_left_idx, , drop = FALSE], response,
     depth + 1, max_depth, min_samples,
     max_features, feature_method, impurity_measure,
@@ -397,7 +397,7 @@ svm_split_ovr <- function(data, response, depth = 1, max_depth = 3,
     verbose = verbose, all_classes = all_classes, ...
   )
 
-  right_child <- svm_split_ovr(
+  right_child <- svm_split(
     data[best_right_idx, , drop = FALSE], response,
     depth + 1, max_depth, min_samples,
     max_features, feature_method, impurity_measure,

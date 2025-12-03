@@ -40,9 +40,11 @@ stree_predict <- function(tree, newdata, return_probs = FALSE) {
     }
   }
 
-  # Get the features that were actually used in training
+  # Internal node: prepare data
+  # *** CRITICAL: Only select features that were used in training ***
   newdata_subset <- newdata[, tree$features, drop = FALSE]
 
+  # *** CRITICAL: Apply same preprocessing as training ***
   # Convert factors to numeric (same as training)
   for (col in names(newdata_subset)) {
     if (is.factor(newdata_subset[[col]])) {
@@ -52,25 +54,31 @@ stree_predict <- function(tree, newdata, return_probs = FALSE) {
     }
   }
 
-  # Apply the same scaling used during training
+  # *** CRITICAL FIX: Apply the EXACT same scaling used during training ***
   if (!is.null(tree$scaling_params)) {
+    # Ensure we're scaling exactly the same features
     newdata_subset <- standard_scaler(newdata_subset, params = tree$scaling_params)
   }
 
-  # Internal node: compute decision value
-  dec_value <- attr(
-    predict(tree$model, newdata_subset, decision.values = TRUE),
-    "decision.values"
-  )
+  # Get decision value from SVM
+  dec_value <- tryCatch({
+    pred_result <- predict(tree$model, newdata_subset, decision.values = TRUE)
+    attr(pred_result, "decision.values")
+  }, error = function(e) {
+    warning("Prediction failed: ", e$message)
+    return(0)  # Default to 0 if prediction fails
+  })
 
+  # Extract scalar value
   if (is.matrix(dec_value)) {
     dec_value <- dec_value[1, 1]
   } else {
     dec_value <- as.numeric(dec_value)[1]
   }
 
-  # Traverse tree based on distance to hyperplane
-  if (dec_value >= 0) {
+  # *** CRITICAL FIX: Use > instead of >= to match Python (line 772) ***
+  # Python: self._up = data > 0
+  if (dec_value > 0) {  # Changed from >= to >
     return(stree_predict(tree$left, newdata, return_probs))
   } else {
     return(stree_predict(tree$right, newdata, return_probs))

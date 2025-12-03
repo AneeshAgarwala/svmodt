@@ -18,12 +18,13 @@
 #'
 #' @export
 stree_split <- function(data, response, depth = 1, max_depth = 5,
-                                min_samples = 5, kernel = "linear",
-                                impurity_measure = "entropy",
-                                cost = 1, verbose = FALSE,
-                                all_classes = NULL,
-                                class_order_method = "natural",
-                                tie_break_method = "first", ...) {
+                              min_samples = 5, kernel = "linear",
+                              impurity_measure = "entropy",
+                              split_criteria = "impurity",  # Added parameter
+                              cost = 1, verbose = FALSE,
+                              all_classes = NULL,
+                              class_order_method = "natural",
+                              tie_break_method = "first", ...) {
 
   # Initialize all_classes if NULL
   if (is.null(all_classes)) {
@@ -52,7 +53,7 @@ stree_split <- function(data, response, depth = 1, max_depth = 5,
     return(leaf_node(y, n, all_classes))
   }
 
-  # Get unique classes at this node (maintain order)
+  # Get unique classes at this node
   present_classes <- intersect(all_classes, unique(as.character(y)))
   k <- length(present_classes)
 
@@ -62,11 +63,11 @@ stree_split <- function(data, response, depth = 1, max_depth = 5,
   features <- setdiff(names(data), response)
   X <- data[features]
 
-  # Binary case
+  # Binary case - same as before
   if (k == 2) {
     if (verbose) cat("Binary classification case\n")
 
-    result <- stree_fit_binary_svm(
+    result <- stree_fit_binary_svm(  # Use fixed version
       X, factor(y), kernel, verbose = verbose,
       use_scaling = TRUE, cost = cost, ...
     )
@@ -86,13 +87,13 @@ stree_split <- function(data, response, depth = 1, max_depth = 5,
     # Recursive calls
     left_child <- stree_split(
       data[left_idx, ], response, depth + 1, max_depth, min_samples,
-      kernel, impurity_measure, cost, verbose, all_classes,
+      kernel, impurity_measure, split_criteria, cost, verbose, all_classes,
       class_order_method, tie_break_method, ...
     )
 
     right_child <- stree_split(
       data[right_idx, ], response, depth + 1, max_depth, min_samples,
-      kernel, impurity_measure, cost, verbose, all_classes,
+      kernel, impurity_measure, split_criteria, cost, verbose, all_classes,
       class_order_method, tie_break_method, ...
     )
 
@@ -102,6 +103,7 @@ stree_split <- function(data, response, depth = 1, max_depth = 5,
       features = result$used_features,
       scaling_params = result$scaling_params,
       hyperplane_class = NULL,
+      partition_column = 1,  # Store for prediction
       left = left_child,
       right = right_child,
       depth = depth,
@@ -110,7 +112,7 @@ stree_split <- function(data, response, depth = 1, max_depth = 5,
     ))
   }
 
-  # Multiclass case
+  # Multiclass case with improved OVR
   if (verbose) cat("Multi-class case: trying", k, "one-vs-rest splits\n")
 
   impurity_func <- if (impurity_measure == "entropy") entropy else gini
@@ -124,7 +126,7 @@ stree_split <- function(data, response, depth = 1, max_depth = 5,
 
     if (verbose) cat("  Trying:", target_class, "vs rest\n")
 
-    result <- stree_fit_binary_svm(
+    result <- stree_fit_binary_svm(  # Use fixed version
       X, y_binary, kernel, verbose = FALSE,
       use_scaling = TRUE, cost = cost, ...
     )
@@ -166,7 +168,7 @@ stree_split <- function(data, response, depth = 1, max_depth = 5,
     )
   }
 
-  # Select best split with tie-breaking
+  # Select best split
   best_class <- select_best_ovr_split(impurities_list, tie_break_method)
 
   if (is.null(best_class)) {
@@ -187,16 +189,19 @@ stree_split <- function(data, response, depth = 1, max_depth = 5,
     return(leaf_node(y, n, all_classes))
   }
 
+  # Store which class was selected for this split
+  partition_column <- which(present_classes == best_class)
+
   # Recursive calls
   left_child <- stree_split(
     data[best_result$left_idx, ], response, depth + 1, max_depth, min_samples,
-    kernel, impurity_measure, cost, verbose, all_classes,
+    kernel, impurity_measure, split_criteria, cost, verbose, all_classes,
     class_order_method, tie_break_method, ...
   )
 
   right_child <- stree_split(
     data[best_result$right_idx, ], response, depth + 1, max_depth, min_samples,
-    kernel, impurity_measure, cost, verbose, all_classes,
+    kernel, impurity_measure, split_criteria, cost, verbose, all_classes,
     class_order_method, tie_break_method, ...
   )
 
@@ -206,6 +211,7 @@ stree_split <- function(data, response, depth = 1, max_depth = 5,
     features = best_result$used_features,
     scaling_params = best_result$scaling_params,
     hyperplane_class = best_class,
+    partition_column = partition_column,  # Store for prediction
     left = left_child,
     right = right_child,
     depth = depth,
@@ -213,32 +219,4 @@ stree_split <- function(data, response, depth = 1, max_depth = 5,
     impurity = best_result$impurity,
     kernel = kernel
   ))
-}
-
-# Helper functions
-entropy <- function(y) {
-  if (length(y) == 0) return(0)
-  probs <- table(y) / length(y)
-  probs <- probs[probs > 0]
-  -sum(probs * log2(probs))
-}
-
-gini <- function(y) {
-  if (length(y) == 0) return(0)
-  probs <- table(y) / length(y)
-  1 - sum(probs^2)
-}
-
-leaf_node <- function(y, n, all_classes) {
-  freq <- table(factor(y, levels = all_classes))
-  probs <- freq / n
-  prediction <- names(which.max(freq))
-
-  list(
-    is_leaf = TRUE,
-    prediction = prediction,
-    class_prob = as.vector(probs),
-    class_names = all_classes,
-    n = n
-  )
 }

@@ -20,7 +20,7 @@
 #' )
 #' print_svm_tree(tree)
 #' @export
-print_svm_tree_ovr <- function(tree, indent = "", show_probabilities = FALSE,
+print_svm_tree <- function(tree, indent = "", show_probabilities = FALSE,
                                show_feature_info = TRUE, show_penalties = TRUE) {
   if (tree$is_leaf) {
     cat(indent, "[Leaf] predict =", tree$prediction, "| n =", tree$n)
@@ -64,7 +64,7 @@ print_svm_tree_ovr <- function(tree, indent = "", show_probabilities = FALSE,
   if (!is.null(tree$left) || !is.null(tree$right)) {
     cat(indent, "|- Positive branch (distance >= 0):\n")
     if (!is.null(tree$left)) {
-      print_svm_tree_ovr(
+      print_svm_tree(
         tree$left, paste0(indent, "|  "), show_probabilities,
         show_feature_info, show_penalties
       )
@@ -74,7 +74,7 @@ print_svm_tree_ovr <- function(tree, indent = "", show_probabilities = FALSE,
 
     cat(indent, "`- Negative branch (distance < 0):\n")
     if (!is.null(tree$right)) {
-      print_svm_tree_ovr(
+      print_svm_tree(
         tree$right, paste0(indent, "   "), show_probabilities,
         show_feature_info, show_penalties
       )
