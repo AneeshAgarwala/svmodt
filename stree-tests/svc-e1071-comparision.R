@@ -20,14 +20,14 @@ scaled_iris <- iris |>
 
 set.seed(23)
 
-split_data <- initial_split(scaled_dermatology, prop = 0.8, strata = class)
+split_data <- initial_split(scaled_ctg10, prop = 0.8, strata = CLASS)
 train_data <- training(split_data)
 test_data <- testing(split_data)
 
-x_train <- train_data[, 1:34]
-y_train <- train_data$class
-x_test <- test_data[, 1:34]
-y_test <- test_data$class
+x_train <- train_data[, 1:21]
+y_train <- train_data$CLASS
+x_test <- test_data[, 1:21]
+y_test <- test_data$CLASS
 
 # Python STREE
 stree <- import("stree")
@@ -46,7 +46,7 @@ DiagrammeR::grViz(svc_model$graph())
 
 
 # R STREE
-r_stree_model <- stree_split(data = train_data, response = "class", kernel = "linear", verbose = TRUE)
+r_stree_model <- stree_split(data = train_data, response = "CLASS", kernel = "linear", verbose = TRUE)
 r_stree_preds <- stree_predict(r_stree_model, test_data)
 print_stree(r_stree_model)
 

@@ -89,6 +89,7 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
                           max_features_random_range = c(0.3, 1.0),
                           penalize_used_features = FALSE,
                           feature_penalty_weight = 0.5,
+                          n_subsets = 1,
                           used_features = character(0),
                           class_weights = c("none", "balanced", "balanced_subsample", "custom"),
                           custom_class_weights = NULL,
@@ -152,7 +153,7 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
   } else {
     choose_features_with_penalty(
       data, response, current_max_features, feature_method,
-      penalize_used_features, feature_penalty_weight, used_features,
+      penalize_used_features, feature_penalty_weight, used_features, n_subsets,
       verbose
     )
   }
@@ -212,7 +213,7 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
         max_features_random_range,
         penalize_used_features, feature_penalty_weight, used_features,
         class_weights, custom_class_weights,
-        features, scaler, all_classes, verbose, ...
+        features, scaler, all_classes, n_subsets, verbose, ...
       )
 
       if (child_check$stop) {
@@ -238,7 +239,7 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
       max_features, feature_method, impurity_measure,
       max_features_strategy, max_features_decrease_rate,
       max_features_random_range,
-      penalize_used_features, feature_penalty_weight, updated_used_features,
+      penalize_used_features, feature_penalty_weight, n_subsets, updated_used_features,
       class_weights, custom_class_weights,
       verbose = verbose, all_classes = all_classes, ...
     )
@@ -249,7 +250,7 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
       max_features, feature_method, impurity_measure,
       max_features_strategy, max_features_decrease_rate,
       max_features_random_range,
-      penalize_used_features, feature_penalty_weight, updated_used_features,
+      penalize_used_features, feature_penalty_weight, n_subsets, updated_used_features,
       class_weights, custom_class_weights,
       verbose = verbose, all_classes = all_classes, ...
     )
@@ -363,7 +364,7 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
       max_features, feature_method,
       max_features_strategy, max_features_decrease_rate,
       max_features_random_range,
-      penalize_used_features, feature_penalty_weight, used_features,
+      penalize_used_features, feature_penalty_weight, n_subsets, used_features,
       class_weights, custom_class_weights,
       features, scaler, all_classes, verbose, ...
     )
@@ -392,7 +393,7 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
     max_features, feature_method, impurity_measure,
     max_features_strategy, max_features_decrease_rate,
     max_features_random_range,
-    penalize_used_features, feature_penalty_weight, updated_used_features,
+    penalize_used_features, feature_penalty_weight, n_subsets, updated_used_features,
     class_weights, custom_class_weights,
     verbose = verbose, all_classes = all_classes, ...
   )
@@ -403,7 +404,7 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
     max_features, feature_method, impurity_measure,
     max_features_strategy, max_features_decrease_rate,
     max_features_random_range,
-    penalize_used_features, feature_penalty_weight, updated_used_features,
+    penalize_used_features, feature_penalty_weight, n_subsets, updated_used_features,
     class_weights, custom_class_weights,
     verbose = verbose, all_classes = all_classes, ...
   )

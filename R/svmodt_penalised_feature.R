@@ -29,7 +29,7 @@ choose_features_with_penalty <- function(data, response, max_features,
                                          penalize_used = FALSE,
                                          penalty_weight = 0.5,
                                          used_features = character(0),
-                                         verbose = FALSE) {
+                                         n_subsets = 1, verbose = FALSE) {
   method <- match.arg(method)
   predictors <- setdiff(names(data), response)
 
@@ -40,7 +40,7 @@ choose_features_with_penalty <- function(data, response, max_features,
   penalty_weight <- max(0, min(penalty_weight, 0.99))
 
   if (!penalize_used || length(used_features) == 0) {
-    return(choose_features(data, response, max_features, method))
+    return(choose_features(data, response, max_features, method, n_subsets))
   }
 
   if (verbose) {

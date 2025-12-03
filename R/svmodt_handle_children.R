@@ -48,7 +48,7 @@ handle_small_children <- function(left_idx, right_idx, min_samples,
                                   max_features_strategy, max_features_decrease_rate,
                                   max_features_random_range,
                                   penalize_used_features, feature_penalty_weight,
-                                  used_features,
+                                  n_subsets, used_features,
                                   class_weights, custom_class_weights,
                                   features, scaler, all_classes, verbose, ...) {
   # Both children too small
@@ -69,8 +69,8 @@ handle_small_children <- function(left_idx, right_idx, min_samples,
       depth + 1, max_depth, min_samples,
       max_features, feature_method,
       max_features_strategy, max_features_decrease_rate, max_features_random_range,
-      penalize_used_features, feature_penalty_weight, used_features,
-      class_weights, custom_class_weights,
+      penalize_used_features, feature_penalty_weight, n_subsets,
+      used_features, class_weights, custom_class_weights,
       verbose = verbose, all_classes = all_classes, ...
     )
 
@@ -94,8 +94,8 @@ handle_small_children <- function(left_idx, right_idx, min_samples,
       depth + 1, max_depth, min_samples,
       max_features, feature_method,,
       max_features_strategy, max_features_decrease_rate, max_features_random_range,
-      penalize_used_features, feature_penalty_weight, used_features,
-      class_weights, custom_class_weights,
+      penalize_used_features, feature_penalty_weight,
+      n_subsets, used_features, class_weights, custom_class_weights,
       verbose = verbose, all_classes = all_classes, ...
     )
 

@@ -64,7 +64,7 @@ stree_fit_binary_svm <- function(X, y, kernel, verbose = FALSE,
         kernel = svm_kernel,
         scale = FALSE,
         decision.values = TRUE,
-        tolerance = 0.001,
+        tolerance = 0.0001,
         ...
       )
     },

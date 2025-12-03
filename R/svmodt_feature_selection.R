@@ -71,7 +71,7 @@ calculate_feature_associations <- function(data, response, predictors) {
 #'   \code{\link{calculate_feature_associations}}.
 #' @keywords internal
 choose_features <- function(data, response, max_features,
-                            method = c("random", "mutual", "cor")) {
+                            method = c("random", "mutual", "cor"), n_subsets = 1) {
   method <- match.arg(method)
   predictors <- setdiff(names(data), response)
 
@@ -80,7 +80,11 @@ choose_features <- function(data, response, max_features,
   }
 
   if (method == "random") {
-    return(sample(predictors, max_features))
+    return(unlist(dplyr::arrange(evaluate_random_subsets(data = wdbc,
+                                                  response = "diagnosis",
+                                                  predictors = setdiff(names(wdbc), "diagnosis"),
+                                                  n_subsets = n_subsets,
+                                                  subset_size = max_features))[1,2]))
   }
 
   if (method == "mutual") {
@@ -115,3 +119,4 @@ choose_features <- function(data, response, max_features,
     return(selected)
   }
 }
+
