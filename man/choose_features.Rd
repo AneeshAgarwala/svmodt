@@ -8,7 +8,8 @@ choose_features(
   data,
   response,
   max_features,
-  method = c("random", "mutual", "cor")
+  method = c("random", "mutual", "cor"),
+  n_subsets = 1
 )
 }
 \arguments{

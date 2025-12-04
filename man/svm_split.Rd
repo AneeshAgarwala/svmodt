@@ -18,9 +18,11 @@ svm_split(
   max_features_random_range = c(0.3, 1),
   penalize_used_features = FALSE,
   feature_penalty_weight = 0.5,
+  n_subsets = 1,
   used_features = character(0),
   class_weights = c("none", "balanced", "balanced_subsample", "custom"),
   custom_class_weights = NULL,
+  min_impurity_decrease = 0,
   verbose = FALSE,
   all_classes = NULL,
   ...
@@ -83,6 +85,12 @@ are penalized to encourage diversity.}
 \item{all_classes}{Optional character vector of all possible response classes (used internally).}
 
 \item{...}{Additional arguments passed to the underlying SVM fitting function.}
+
+\item{impurity_method}{Information Gain evaluation criteria
+\itemize{
+  \item `"gini"`: use Gini ratio
+  \item `"entropy"`: use Shannon entropy
+}}
 }
 \value{
 A nested list representing the decision tree. Each node contains:

@@ -12,6 +12,7 @@ choose_features_with_penalty(
   penalize_used = FALSE,
   penalty_weight = 0.5,
   used_features = character(0),
+  n_subsets = 1,
   verbose = FALSE
 )
 }
