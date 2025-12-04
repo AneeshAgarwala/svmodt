@@ -97,7 +97,7 @@ choose_features_with_penalty <- function(data, response, max_features,
       warning("No valid features for correlation, using random selection with penalty")
       return(choose_features_with_penalty(
         data, response, max_features, "random",
-        penalize_used, penalty_weight, used_features, verbose
+        penalize_used, penalty_weight, used_features, n_subsets, verbose
       ))
     }
 

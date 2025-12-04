@@ -45,11 +45,13 @@
 handle_small_children <- function(left_idx, right_idx, min_samples,
                                   data, response, depth, max_depth,
                                   max_features, feature_method,
+                                  impurity_measure,
                                   max_features_strategy, max_features_decrease_rate,
                                   max_features_random_range,
                                   penalize_used_features, feature_penalty_weight,
                                   n_subsets, used_features,
                                   class_weights, custom_class_weights,
+                                  min_impurity_decrease = 0.0,
                                   features, scaler, all_classes, verbose, ...) {
   # Both children too small
   if (length(left_idx) < min_samples && length(right_idx) < min_samples) {
@@ -67,10 +69,10 @@ handle_small_children <- function(left_idx, right_idx, min_samples,
     right_child <- svm_split(
       data[right_idx, , drop = FALSE], response,
       depth + 1, max_depth, min_samples,
-      max_features, feature_method,
+      max_features, feature_method, impurity_measure,
       max_features_strategy, max_features_decrease_rate, max_features_random_range,
       penalize_used_features, feature_penalty_weight, n_subsets,
-      used_features, class_weights, custom_class_weights,
+      used_features, class_weights, custom_class_weights, min_impurity_decrease,
       verbose = verbose, all_classes = all_classes, ...
     )
 
@@ -92,10 +94,10 @@ handle_small_children <- function(left_idx, right_idx, min_samples,
     left_child <- svm_split(
       data[left_idx, , drop = FALSE], response,
       depth + 1, max_depth, min_samples,
-      max_features, feature_method,,
+      max_features, feature_method, impurity_measure,
       max_features_strategy, max_features_decrease_rate, max_features_random_range,
       penalize_used_features, feature_penalty_weight,
-      n_subsets, used_features, class_weights, custom_class_weights,
+      n_subsets, used_features, class_weights, custom_class_weights, min_impurity_decrease,
       verbose = verbose, all_classes = all_classes, ...
     )
 

@@ -38,7 +38,6 @@ fit_svm_with_weights <- function(X, y, class_weights = NULL, verbose = FALSE, ..
     return(NULL)
   }
 
-  # FIXED: Cap weights consistently
   if (!is.null(class_weights)) {
     class_weights <- pmin(class_weights, 10)
     if (verbose) {

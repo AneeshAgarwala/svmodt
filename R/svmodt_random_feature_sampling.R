@@ -84,7 +84,6 @@ svm_info_gain <- function(feature_subset, data, response,
     }
 
     # Create binary split based on decision values
-    # Left: negative distances, Right: positive distances
     split_feature <- factor(
       ifelse(distances < 0, "left", "right"),
       levels = c("left", "right")
@@ -146,7 +145,13 @@ evaluate_random_subsets <- function(data, predictors, response,
   # Validate inputs
   if (length(predictors) == 0) {
     warning("No predictors provided")
-    return(data.frame(features = list(), info_gain = numeric(0)))
+    return(data.frame(features = I(list()), info_gain = numeric(0)))
+  }
+
+  # Validate n_subsets
+  if (!is.numeric(n_subsets) || n_subsets < 1) {
+    warning("Invalid n_subsets, using 1")
+    n_subsets <- 1
   }
 
   # Adjust subset_size if necessary
@@ -178,7 +183,7 @@ evaluate_random_subsets <- function(data, predictors, response,
     info_gain = info_gains,
     stringsAsFactors = FALSE
   )
-  results$features <- feature_subsets
+  results$features <- I(feature_subsets)
 
   # Sort by information gain (descending)
   results <- results[order(-results$info_gain), ]
