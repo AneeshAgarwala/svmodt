@@ -10,7 +10,8 @@ stree_args <- list(
   C = 1,
   tol = 0.0001,
   kernel = "linear",
-  max_iter = 10000000L
+  max_iter = 10000000L,
+  max_depth = 10
 )
 
 ctg3 <- ctg |>
@@ -84,7 +85,8 @@ train_stree_default <- function(data, response) {
     impurity_measure = "entropy",
     cost = 1,
     verbose = FALSE,
-    max_features = NULL
+    max_features = NULL,
+    max_depth = 10
   )
 }
 
@@ -93,6 +95,7 @@ train_svmodt_default <- function(data, response){
   svmodt::svm_split(
     data = data,
     response = response,
+    max_depth = 10,
     feature_method = "mutual")
 }
 
@@ -115,6 +118,7 @@ train_stree_wdbc <- function(data, response) {
     response = response,
     kernel = "linear",
     impurity_measure = "entropy",
+    max_depth = 10,
     cost = 1,
     verbose = FALSE,
     max_features = NULL
@@ -127,6 +131,7 @@ train_stree_iris <- function(data, response) {
     response = response,
     kernel = "linear",
     impurity_measure = "entropy",
+    max_depth = 10,
     cost = 1,
     verbose = FALSE,
     max_features = NULL
@@ -140,6 +145,7 @@ train_stree_echocardiogram <- function(data, response) {
     kernel = "polynomial",
     gamma = 0.1,
     impurity_measure = "entropy",
+    max_depth = 10,
     cost = 7,
     max_features = "auto",
     verbose = FALSE
@@ -152,6 +158,7 @@ train_stree_fertility <- function(data, response) {
     response = response,
     kernel = "linear",
     impurity_measure = "entropy",
+    max_depth = 10,
     cost = 0.05,
     max_features = "auto",
     verbose = FALSE
@@ -163,6 +170,7 @@ train_stree_wine <- function(data, response) {
     data = data,
     response = response,
     impurity_measure = "entropy",
+    max_depth = 10,
     cost = 0.55,
     verbose = FALSE,
     max_features = NULL
@@ -175,6 +183,7 @@ train_stree_ctg3 <- function(data, response) {
     response = response,
     kernel = "linear",
     impurity_measure = "entropy",
+    max_depth = 10,
     cost = 1,
     verbose = FALSE,
     max_features = NULL
@@ -187,6 +196,7 @@ train_stree_ctg10 <- function(data, response) {
     response = response,
     kernel = "linear",
     impurity_measure = "entropy",
+    max_depth = 10,
     cost = 1,
     verbose = FALSE,
     max_features = NULL
@@ -200,6 +210,7 @@ train_stree_ionosphere <- function(data, response) {
     kernel = "polynomial",
     gamma = 0.1,
     impurity_measure = "entropy",
+    max_depth = 10,
     cost = 7,
     max_features = "auto",
     verbose = FALSE
@@ -212,6 +223,7 @@ train_stree_dermatology <- function(data, response) {
     response = response,
     kernel = "linear",
     impurity_measure = "entropy",
+    max_depth = 10,
     cost = 55, ## upper limit on cost in e1071::svm()
     verbose = FALSE,
     max_features = NULL
@@ -224,6 +236,7 @@ train_stree_aus_credit <- function(data, response) {
     response = response,
     kernel = "linear",
     impurity_measure = "entropy",
+    max_depth = 10,
     cost = 0.05,
     max_features = "auto",
     verbose = FALSE
@@ -769,7 +782,7 @@ cat("Aus Credit:     ", round(mean(py_stree_aus_credit), 4), "\n")
 svmodt_results <- data.frame(
   Dataset = c("WDBC", "Iris", "Echocardiogram", "Fertility", "Wine",
               "CTG3", "CTG10", "Ionosphere", "Dermatology", "Aus Credit"),
-  R = c(mean(stat_wdbc),
+  R_STREE = c(mean(stat_wdbc),
         mean(stat_iris),
         mean(stat_echocardiogram),
         mean(stat_fertility),
@@ -780,7 +793,7 @@ svmodt_results <- data.frame(
         mean(stat_dermatology),
         mean(stat_aus_credit)
         ),
-  Python = c(
+  Python_STREE = c(
     mean(py_stree_wdbc),
     mean(py_stree_iris),
     mean(py_stree_echocardiogram),
@@ -792,34 +805,19 @@ svmodt_results <- data.frame(
     mean(py_stree_dermatology),
     mean(py_stree_aus_credit)
   )
+  ,
+  R_SVMODT = c(
+    mean(stat_svmodt_wdbc),
+    mean(stat_svmodt_iris),
+    mean(stat_svmodt_echocardiogram),
+    mean(stat_svmodt_fertility),
+    mean(stat_svmodt_wine),
+    mean(stat_svmodt_ctg3),
+    mean(stat_svmodt_ctg10),
+    mean(stat_svmodt_ionosphere),
+    mean(stat_svmodt_dermatology),
+    mean(stat_svmodt_aus_credit)
+  )
   )
 
 svmodt_results
-
-# ------------------------------------------------------
-# COMPARISON TABLE
-# ------------------------------------------------------
-cat("\n========== COMPARISON: DEFAULT VS OPTIMIZED ==========\n")
-svmodt_results <- data.frame(
-  Dataset = c("WDBC", "Iris", "Echocardiogram", "Fertility", "Wine",
-              "CTG3", "CTG10", "Ionosphere", "Dermatology", "Aus Credit"),
-  Default = round(c(mean(stat_svmodt_wdbc), mean(stat_svmodt_iris), mean(stat_svmodt_echocardiogram),
-                    mean(stat_svmodt_fertility), mean(stat_svmodt_wine), mean(stat_svmodt_ctg3),
-                    mean(stat_svmodt_ctg10), mean(stat_svmodt_ionosphere), mean(stat_svmodt_dermatology),
-                    mean(stat_svmodt_aus_credit)), 4))
-  # Optimized = round(c(mean(opt_stat_wdbc), mean(opt_stat_iris), mean(opt_stat_echocardiogram),
-  #                     mean(opt_stat_fertility), mean(opt_stat_wine), mean(opt_stat_ctg3),
-  #                     mean(opt_stat_ctg10), mean(opt_stat_ionosphere), mean(opt_stat_dermatology),
-  #                     mean(opt_stat_aus_credit)), 4),
-  # Default_sd = round(c(sd(stat_wdbc), sd(stat_iris), sd(stat_echocardiogram),
-  #                      sd(stat_fertility), sd(stat_wine), sd(stat_ctg3),
-  #                      sd(stat_ctg10), sd(stat_ionosphere), sd(stat_dermatology),
-  #                      sd(stat_aus_credit)), 4),
-  # Optimized_sd = round(c(sd(opt_stat_wdbc), sd(opt_stat_iris), sd(opt_stat_echocardiogram),
-  #                     sd(opt_stat_fertility), sd(opt_stat_wine), sd(opt_stat_ctg3),
-  #                     sd(opt_stat_ctg10), sd(opt_stat_ionosphere), sd(opt_stat_dermatology),
-  #                     sd(opt_stat_aus_credit)), 4)
-#)
-comparison$Improvement <- comparison$Optimized - comparison$Default
-
-print(comparison)
