@@ -179,7 +179,20 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
 
   if (ncol(X_scaled) == 0) {
     if (verbose) cat("Stopping: all features are constant\n")
-    return(leaf_node(y, n, all_classes, features, scaler))
+    return(leaf_node(y, n, all_classes, character(0), NULL))
+  }
+
+  # Update features to only include non-constant features**
+  # This must happen BEFORE using features anywhere else
+  features <- names(X_scaled)
+
+  if (length(features) == 0) {
+    if (verbose) cat("Stopping: no features remain after removing constants\n")
+    return(leaf_node(y, n, all_classes, character(0), NULL))
+  }
+
+  if (verbose && length(features) != length(setdiff(names(data), response))) {
+    cat("Features after removing constants:", paste(features, collapse = ", "), "\n")
   }
 
   # BINARY CASE: k = 2
@@ -282,10 +295,10 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
   best_class <- NULL
   best_class_weights <- NULL
 
-  # FIXED: Select impurity function properly
+  # Select impurity function properly
   impurity_func <- if (impurity_measure == "entropy") entropy else gini
 
-  # Calculate parent impurity
+  # Calculate parent impurity using ORIGINAL labels
   parent_impurity <- impurity_func(y)
 
   for (target_class in present_classes) {
@@ -294,16 +307,22 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
       levels = c("positive", "negative")
     )
 
-    if (verbose) cat("  Trying:", target_class, "vs rest\n")
+    if (verbose) {
+      cat("  Trying:", target_class, "vs rest")
+      cat(" (", sum(y == target_class), " vs ", sum(y != target_class), ")\n", sep = "")
+    }
 
+    # Calculate class weights using the BINARY labels (for SVM only)
     node_class_weights <- calculate_node_class_weights(
       y_binary, class_weights, custom_class_weights, verbose = FALSE
     )
 
+    # Fit SVM using BINARY labels
     model <- fit_svm_with_weights(X_scaled, y_binary, node_class_weights,
-                                  verbose = FALSE, ...)
+                                  verbose = verbose, ...)
 
     if (is.null(model)) {
+      if (verbose) cat("    SVM fit failed, skipping this split\n")
       next
     }
 
@@ -314,6 +333,10 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
     right_idx <- which(decision_values <= 0)
 
     if (length(left_idx) == 0 || length(right_idx) == 0) {
+      if (verbose) {
+        cat("    Degenerate split: left=", length(left_idx),
+            ", right=", length(right_idx), " - skipping\n", sep = "")
+      }
       next
     }
 
@@ -389,7 +412,7 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
   }
 
   left_child <- svm_split(
-    data[best_left_idx, , drop = FALSE], response,
+    data[best_left_idx, , drop = FALSE], response,  # Original data and response
     depth + 1, max_depth, min_samples,
     max_features, feature_method, impurity_measure,
     max_features_strategy, max_features_decrease_rate,
@@ -400,7 +423,7 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
   )
 
   right_child <- svm_split(
-    data[best_right_idx, , drop = FALSE], response,
+    data[best_right_idx, , drop = FALSE], response,  # Original data and response
     depth + 1, max_depth, min_samples,
     max_features, feature_method, impurity_measure,
     max_features_strategy, max_features_decrease_rate,

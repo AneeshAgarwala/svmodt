@@ -40,6 +40,7 @@
 #' - If only one child is too small, the other child is recursively split.
 #' - This function ensures that tree nodes respect the minimum sample requirement,
 #'   avoiding invalid splits that could destabilize the SVM-based tree.
+#' - **FIXED**: Properly passes features that remain after constant removal
 #'
 #' @keywords internal
 handle_small_children <- function(left_idx, right_idx, min_samples,
@@ -64,7 +65,7 @@ handle_small_children <- function(left_idx, right_idx, min_samples,
 
   # Left child too small
   if (length(left_idx) < min_samples) {
-    if (verbose) cat("Left child too small, only creating right child\n")
+    if (verbose) cat("Left child too small, creating right child and left leaf\n")
 
     right_child <- svm_split(
       data[right_idx, , drop = FALSE], response,
@@ -76,12 +77,21 @@ handle_small_children <- function(left_idx, right_idx, min_samples,
       verbose = verbose, all_classes = all_classes, ...
     )
 
+    left_child <- leaf_node(
+      data[[response]][left_idx],
+      length(left_idx),
+      all_classes,
+      character(0),
+      NULL
+    )
+
     return(list(
       stop = FALSE,
       node = list(
         is_leaf = FALSE, model = NULL,
+        # **FIX: Use actual features after constant removal**
         features = features, scaler = scaler,
-        best_col = 1, left = NULL, right = right_child,
+        best_col = 1, left = left_child, right = right_child,
         depth = depth, n = nrow(data)
       )
     ))
@@ -89,7 +99,7 @@ handle_small_children <- function(left_idx, right_idx, min_samples,
 
   # Right child too small
   if (length(right_idx) < min_samples) {
-    if (verbose) cat("Right child too small, only creating left child\n")
+    if (verbose) cat("Right child too small, creating left child and right leaf\n")
 
     left_child <- svm_split(
       data[left_idx, , drop = FALSE], response,
@@ -101,12 +111,21 @@ handle_small_children <- function(left_idx, right_idx, min_samples,
       verbose = verbose, all_classes = all_classes, ...
     )
 
+    right_child <- leaf_node(
+      data[[response]][right_idx],
+      length(right_idx),
+      all_classes,
+      character(0),
+      NULL
+    )
+
     return(list(
       stop = FALSE,
       node = list(
         is_leaf = FALSE, model = NULL,
+        # **FIX: Use actual features after constant removal**
         features = features, scaler = scaler,
-        best_col = 1, left = left_child, right = NULL,
+        best_col = 1, left = left_child, right = right_child,
         depth = depth, n = nrow(data)
       )
     ))
