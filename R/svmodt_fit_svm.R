@@ -32,39 +32,50 @@
 #' }
 #'
 #' @keywords internal
-fit_svm_with_weights <- function(X, y, class_weights = NULL, verbose = FALSE, ...) {
-  if (nrow(X) == 0 || length(y) == 0) {
-    if (verbose) cat("Cannot fit SVM: empty data\n")
-    return(NULL)
-  }
+fit_svm_with_weights <- function(X_scaled, y, class_weights_vec,
+                                 verbose = FALSE, ...) {
+  tryCatch({
 
-  if (!is.null(class_weights)) {
-    class_weights <- pmin(class_weights, 10)
-    if (verbose) {
-      cat(
-        "SVM fitting with weights:",
-        paste(names(class_weights), "=", round(class_weights, 3), collapse = ", "), "\n"
-      )
+    # Coerce y to factor with character levels — must match weight names
+    y_factor <- factor(as.character(y))
+
+    if (verbose && !is.null(class_weights_vec)) {
+      cat("SVM weight names :", paste(names(class_weights_vec), collapse = ", "), "\n")
+      cat("y factor levels  :", paste(levels(y_factor),         collapse = ", "), "\n")
+
+      # Explicit mismatch check before fit
+      missing_in_weights <- setdiff(levels(y_factor), names(class_weights_vec))
+      missing_in_levels  <- setdiff(names(class_weights_vec), levels(y_factor))
+
+      if (length(missing_in_weights) > 0)
+        cat("[WARN] Levels not in weights:", paste(missing_in_weights, collapse = ", "), "\n")
+      if (length(missing_in_levels) > 0)
+        cat("[WARN] Weights not in levels:", paste(missing_in_levels, collapse = ", "), "\n")
     }
-  } else {
-    if (verbose) cat("SVM fitting with equal weights\n")
-  }
 
-  tryCatch(
-    {
+    if (is.null(class_weights_vec)) {
       e1071::svm(
-        x = X, y = y,
-        kernel = "linear",
-        decision.values = TRUE,
-        probability = TRUE,
-        scale = FALSE,
-        class.weights = class_weights,
+        x                = X_scaled,
+        y                = y_factor,
+        kernel           = "linear",
+        decision.values  = TRUE,
+        probability      = TRUE,
         ...
       )
-    },
-    error = function(e) {
-      if (verbose) cat("SVM failed:", e$message, "\n")
-      NULL
+    } else {
+      e1071::svm(
+        x                = X_scaled,
+        y                = y_factor,
+        kernel           = "linear",
+        class.weights    = class_weights_vec,
+        decision.values  = TRUE,
+        probability      = TRUE,
+        ...
+      )
     }
-  )
+
+  }, error = function(e) {
+    if (verbose) message("  [WARN] SVM fit failed: ", conditionMessage(e))
+    NULL
+  })
 }

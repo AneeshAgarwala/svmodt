@@ -41,7 +41,7 @@
 #'   \itemize{
 #'     \item `"none"`: no weighting,
 #'     \item `"balanced"`: weight classes inversely proportional to their frequency,
-#'     \item `"balanced_subsample"`: weight per node based on local class distribution,
+#     \item `"balanced_subsample"`: weight per node based on local class distribution,
 #'     \item `"custom"`: use `custom_class_weights`.
 #'   }
 #' @param custom_class_weights Optional named numeric vector specifying custom weights per class.
@@ -96,7 +96,9 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
                       feature_penalty_weight = 0.5,
                       n_subsets = 1,
                       used_features = character(0),
-                      class_weights = c("none", "balanced", "balanced_subsample", "custom"),
+                      class_weights = c("none", "balanced",
+                                        #"balanced_subsample",
+                                        "custom"),
                       custom_class_weights = NULL,
                       min_impurity_decrease = 0.0,
                       verbose = FALSE,
