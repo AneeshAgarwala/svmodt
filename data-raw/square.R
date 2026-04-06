@@ -9,8 +9,8 @@ make_square <- function(n = 2000, side = 2, noise = 0.05) {
 df <- make_square(n = 5000, side = 1, noise = 0.02)
 
 df <- df |>
-  dplyr::mutate(feature = ifelse(x < 0 & y < 0, "A", "B")) |>
-  dplyr::mutate(feature = as.factor(feature))
+  dplyr::mutate() |>
+  dplyr::mutate()
 
 
 # plotly::plot_ly(data = df, x = ~x, y = ~y, color =  ~ feature)

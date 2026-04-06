@@ -17,11 +17,15 @@
 #'     \item `"mutual"`: select based on mutual information with the response,
 #'     \item `"cor"`: select based on correlation with the response.
 #'   }
-#'@param impurity_method Information Gain evaluation criteria
+#' @param n_subsets Number of Evaluated Random Feature combinations at each node when `feature_method = "random`
+#' @param impurity_measure Information Gain evaluation criteria
 #'   \itemize{
 #'     \item `"gini"`: use Gini ratio
 #'     \item `"entropy"`: use Shannon entropy
 #'   }
+#'
+#' @param min_impurity_decrease Required decrease in impurity by a split to be considered valid
+#'
 #' @param max_features_strategy Strategy to adjust the number of features per node:
 #'   \itemize{
 #'     \item `"constant"`: keep `max_features` constant,
@@ -96,14 +100,15 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
                       feature_penalty_weight = 0.5,
                       n_subsets = 1,
                       used_features = character(0),
-                      class_weights = c("none", "balanced",
-                                        #"balanced_subsample",
-                                        "custom"),
+                      class_weights = c(
+                        "none", "balanced",
+                        # "balanced_subsample",
+                        "custom"
+                      ),
                       custom_class_weights = NULL,
                       min_impurity_decrease = 0.0,
                       verbose = FALSE,
                       all_classes = NULL, ...) {
-
   # Match arguments
   feature_method <- match.arg(feature_method)
   impurity_measure <- match.arg(impurity_measure)
@@ -316,12 +321,14 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
 
     # Calculate class weights using the BINARY labels (for SVM only)
     node_class_weights <- calculate_node_class_weights(
-      y_binary, class_weights, custom_class_weights, verbose = FALSE
+      y_binary, class_weights, custom_class_weights,
+      verbose = FALSE
     )
 
     # Fit SVM using BINARY labels
     model <- fit_svm_with_weights(X_scaled, y_binary, node_class_weights,
-                                  verbose = verbose, ...)
+      verbose = verbose, ...
+    )
 
     if (is.null(model)) {
       if (verbose) cat("    SVM fit failed, skipping this split\n")
@@ -337,7 +344,9 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
     if (length(left_idx) == 0 || length(right_idx) == 0) {
       if (verbose) {
         cat("    Degenerate split: left=", length(left_idx),
-            ", right=", length(right_idx), " - skipping\n", sep = "")
+          ", right=", length(right_idx), " - skipping\n",
+          sep = ""
+        )
       }
       next
     }
@@ -355,8 +364,10 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
     impurity_decrease <- parent_impurity - weighted_impurity
 
     if (verbose) {
-      cat("    Weighted impurity:", round(weighted_impurity, 4),
-          "| Decrease:", round(impurity_decrease, 4), "\n")
+      cat(
+        "    Weighted impurity:", round(weighted_impurity, 4),
+        "| Decrease:", round(impurity_decrease, 4), "\n"
+      )
     }
 
     # Check if this split actually helps
@@ -414,7 +425,7 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
   }
 
   left_child <- svm_split(
-    data[best_left_idx, , drop = FALSE], response,  # Original data and response
+    data[best_left_idx, , drop = FALSE], response, # Original data and response
     depth + 1, max_depth, min_samples,
     max_features, feature_method, impurity_measure,
     max_features_strategy, max_features_decrease_rate,
@@ -425,7 +436,7 @@ svm_split <- function(data, response, depth = 1, max_depth = 3,
   )
 
   right_child <- svm_split(
-    data[best_right_idx, , drop = FALSE], response,  # Original data and response
+    data[best_right_idx, , drop = FALSE], response, # Original data and response
     depth + 1, max_depth, min_samples,
     max_features, feature_method, impurity_measure,
     max_features_strategy, max_features_decrease_rate,

@@ -66,8 +66,10 @@
 #' preds <- predict_svm_tree(tree, newdata = wdbc)
 #'
 #' # Predict with probabilities and logistic calibration
-#' result <- predict_svm_tree(tree, newdata = wdbc,
-#'                            return_probs = TRUE, calibrate_probs = TRUE)
+#' result <- predict_svm_tree(tree,
+#'   newdata = wdbc,
+#'   return_probs = TRUE, calibrate_probs = TRUE
+#' )
 #' }
 #' @export
 svm_predict_tree <- function(tree, newdata, return_probs = FALSE,
@@ -104,12 +106,14 @@ svm_predict_tree <- function(tree, newdata, return_probs = FALSE,
 
   # Scale features
   available_features <- intersect(tree$features, names(newdata))
-  missing_features   <- setdiff(tree$features, names(newdata))
+  missing_features <- setdiff(tree$features, names(newdata))
 
   if (length(missing_features) > 0) {
-    warning("Prediction: missing features in newdata: ",
-            paste(missing_features, collapse = ", "),
-            " - using majority class fallback")
+    warning(
+      "Prediction: missing features in newdata: ",
+      paste(missing_features, collapse = ", "),
+      " - using majority class fallback"
+    )
     # fall through to the scaling failure handler below
     X_scaled <- data.frame()
   } else {

@@ -55,55 +55,59 @@ svm_info_gain <- function(feature_subset, data, response,
   y <- data[[response]]
 
   if (verbose) {
-    cat("Computing SVM info gain with features:",
-        paste(feature_subset, collapse = ", "), "\n")
+    cat(
+      "Computing SVM info gain with features:",
+      paste(feature_subset, collapse = ", "), "\n"
+    )
   }
 
   # Fit linear SVM
-  tryCatch({
-    model <- e1071::svm(
-      x = X, y = y,
-      kernel = "linear",
-      scale = TRUE,
-      decision.values = TRUE,
-      probability = FALSE
-    )
+  tryCatch(
+    {
+      model <- e1071::svm(
+        x = X, y = y,
+        kernel = "linear",
+        scale = TRUE,
+        decision.values = TRUE,
+        probability = FALSE
+      )
 
-    # Get decision values
-    pred <- predict(model, X, decision.values = TRUE)
-    distances <- attr(pred, "decision.values")
+      # Get decision values
+      pred <- predict(model, X, decision.values = TRUE)
+      distances <- attr(pred, "decision.values")
 
-    if (is.null(distances)) {
-      warning("SVM did not return decision values")
+      if (is.null(distances)) {
+        warning("SVM did not return decision values")
+        return(0)
+      }
+
+      # Convert to vector if matrix
+      if (is.matrix(distances)) {
+        distances <- distances[, 1]
+      }
+
+      # Create binary split based on decision values
+      split_feature <- factor(
+        ifelse(distances < 0, "left", "right"),
+        levels = c("left", "right")
+      )
+
+      # Calculate information gain
+      ig <- info_gain(split_feature, y, metric = metric)
+
+      if (verbose) {
+        cat("  Information gain:", round(ig, 4), "\n")
+      }
+
+      return(ig)
+    },
+    error = function(e) {
+      if (verbose) {
+        warning("SVM info gain calculation failed: ", e$message)
+      }
       return(0)
     }
-
-    # Convert to vector if matrix
-    if (is.matrix(distances)) {
-      distances <- distances[, 1]
-    }
-
-    # Create binary split based on decision values
-    split_feature <- factor(
-      ifelse(distances < 0, "left", "right"),
-      levels = c("left", "right")
-    )
-
-    # Calculate information gain
-    ig <- info_gain(split_feature, y, metric = metric)
-
-    if (verbose) {
-      cat("  Information gain:", round(ig, 4), "\n")
-    }
-
-    return(ig)
-
-  }, error = function(e) {
-    if (verbose) {
-      warning("SVM info gain calculation failed: ", e$message)
-    }
-    return(0)
-  })
+  )
 }
 
 
@@ -174,7 +178,8 @@ evaluate_random_subsets <- function(data, predictors, response,
       cat("  Evaluating subset", i, "of", n_subsets, "\n")
     }
     info_gains[i] <- svm_info_gain(
-      feature_subsets[[i]], data, response, metric, verbose = FALSE
+      feature_subsets[[i]], data, response, metric,
+      verbose = FALSE
     )
   }
 

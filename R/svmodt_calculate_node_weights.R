@@ -31,19 +31,22 @@
 calculate_node_class_weights <- function(y, class_weights = "none",
                                          custom_class_weights = NULL,
                                          verbose = FALSE) {
-
-  class_weights <- match.arg(class_weights,
-                             c("none", "balanced",
-                               #"balanced_subsample",
-                               "custom"))
+  class_weights <- match.arg(
+    class_weights,
+    c(
+      "none", "balanced",
+      # "balanced_subsample",
+      "custom"
+    )
+  )
 
   # ── Coerce y to character to avoid factor level type mismatches ─────────────
   # e1071::svm expects weight names to exactly match levels of y as seen
   # during fit — integer factor levels produce names like "1" but svm
   # internally sees factor level "1" vs integer 1 differently
-  y_char      <- as.character(y)
+  y_char <- as.character(y)
   class_table <- table(y_char)
-  class_names <- names(class_table)  # always character now
+  class_names <- names(class_table) # always character now
 
   if (verbose) {
     cat("Classes at node      :", paste(class_names, collapse = ", "), "\n")
@@ -66,8 +69,10 @@ calculate_node_class_weights <- function(y, class_weights = "none",
 
     missing_classes <- setdiff(class_names, names(custom_class_weights))
     if (length(missing_classes) > 0) {
-      warning("Custom weights missing classes: ",
-              paste(missing_classes, collapse = ", "), ". Using 'none'.")
+      warning(
+        "Custom weights missing classes: ",
+        paste(missing_classes, collapse = ", "), ". Using 'none'."
+      )
       return(NULL)
     }
 
@@ -76,8 +81,10 @@ calculate_node_class_weights <- function(y, class_weights = "none",
     names(weights) <- class_names
 
     if (verbose) {
-      cat("Class weights (custom):",
-          paste(names(weights), "=", round(weights, 3), collapse = ", "), "\n")
+      cat(
+        "Class weights (custom):",
+        paste(names(weights), "=", round(weights, 3), collapse = ", "), "\n"
+      )
     }
     return(weights)
   }
@@ -85,13 +92,15 @@ calculate_node_class_weights <- function(y, class_weights = "none",
   if (class_weights == "balanced") {
     n_samples <- length(y_char)
     n_classes <- length(class_table)
-    weights   <- n_samples / (n_classes * as.numeric(class_table))
-    weights   <- pmin(weights, 10)
+    weights <- n_samples / (n_classes * as.numeric(class_table))
+    weights <- pmin(weights, 10)
     names(weights) <- class_names
 
     if (verbose) {
-      cat("Class weights (balanced):",
-          paste(names(weights), "=", round(weights, 3), collapse = ", "), "\n")
+      cat(
+        "Class weights (balanced):",
+        paste(names(weights), "=", round(weights, 3), collapse = ", "), "\n"
+      )
     }
     return(weights)
   }

@@ -21,13 +21,14 @@
 #' print_svm_tree(tree)
 #' @export
 print_svm_tree <- function(tree, indent = "", show_probabilities = FALSE,
-                               show_feature_info = TRUE, show_penalties = TRUE) {
+                           show_feature_info = TRUE, show_penalties = TRUE) {
   if (tree$is_leaf) {
     cat(indent, "[Leaf] predict =", tree$prediction, "| n =", tree$n)
 
     if (show_probabilities && !is.null(tree$class_prob)) {
       probs <- paste(names(tree$class_prob), "=", round(tree$class_prob, 3),
-                     collapse = ", ")
+        collapse = ", "
+      )
       cat(" | probs = [", probs, "]", sep = "")
     }
 

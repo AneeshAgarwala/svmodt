@@ -30,7 +30,6 @@ We'll use two datasets:
 -   **Wisconsin Breast Cancer**: Medical diagnosis data
 
 ```{r setup, message=FALSE, warning=FALSE}
-
 # Packages required for this vignette
 pkgs <- c(
   "rpart", "e1071", "dplyr", "tidyr",
@@ -54,8 +53,10 @@ The Palmer Penguins dataset contains measurements of three penguin species from 
 # Adelie vs Chinstrap
 penguins_data <- palmerpenguins::penguins |>
   dplyr::filter(species %in% c("Adelie", "Chinstrap")) |>
-  dplyr::select(species, bill_length_mm, bill_depth_mm, 
-         flipper_length_mm, body_mass_g) |>
+  dplyr::select(
+    species, bill_length_mm, bill_depth_mm,
+    flipper_length_mm, body_mass_g
+  ) |>
   na.omit() |>
   dplyr::mutate(species = droplevels(species))
 
@@ -83,9 +84,10 @@ tree_penguins <- svm_split(
 ### Examine Tree Structure
 ```{r penguins-structure}
 # Print tree structure
-print_svm_tree(tree_penguins, 
-               show_probabilities = TRUE, 
-               show_feature_info = TRUE)
+print_svm_tree(tree_penguins,
+  show_probabilities = TRUE,
+  show_feature_info = TRUE
+)
 ```
 
 ### Make Predictions
@@ -94,8 +96,9 @@ print_svm_tree(tree_penguins,
 predictions <- svm_predict_tree(tree_penguins, test_penguins)
 
 # Predict with probabilities
-predictions_prob <- svm_predict_tree(tree_penguins, test_penguins, 
-                                     return_probs = TRUE)
+predictions_prob <- svm_predict_tree(tree_penguins, test_penguins,
+  return_probs = TRUE
+)
 
 # View first few predictions
 head(data.frame(
@@ -103,7 +106,8 @@ head(data.frame(
   Predicted = predictions_prob$predictions,
   Prob_Adelie = round(predictions_prob$probabilities[, "Adelie"], 3),
   Prob_Chinstrap = round(predictions_prob$probabilities[, "Chinstrap"], 3)
-), 10) |> kableExtra::kable(align = "lccc", format = "html", caption = "SVMODT Class Predictions with Associated Probabilites on Palmerpenguins dataset") |>
+), 10) |>
+  kableExtra::kable(align = "lccc", format = "html", caption = "SVMODT Class Predictions with Associated Probabilites on Palmerpenguins dataset") |>
   kableExtra::kable_styling(position = "center", full_width = FALSE)
 ```
 
@@ -169,7 +173,7 @@ tree_wdbc <- svm_split(
   min_samples = 10,
   max_features = 2,
   feature_method = "mutual",
-  class_weights = "balanced",  # For Class Imbalance
+  class_weights = "balanced", # For Class Imbalance
   verbose = FALSE
 )
 ```
@@ -249,15 +253,19 @@ Now, we will compare the performance of our SVMODT model with other classificati
 
 ```{r comparison}
 # RPART decision tree
-tree_rpart <- rpart::rpart(diagnosis ~ ., data = train_wdbc,
-                   control = rpart::rpart.control(cp = 0.01))
+tree_rpart <- rpart::rpart(diagnosis ~ .,
+  data = train_wdbc,
+  control = rpart::rpart.control(cp = 0.01)
+)
 pred_rpart <- predict(tree_rpart, test_wdbc, type = "class")
 
-tree_wdbc <- svm_split(data = train_wdbc,
-                               response = "diagnosis", 
-                               max_depth = 2, 
-                               feature_method = "mutual", 
-                               penalize_used_features = TRUE)
+tree_wdbc <- svm_split(
+  data = train_wdbc,
+  response = "diagnosis",
+  max_depth = 2,
+  feature_method = "mutual",
+  penalize_used_features = TRUE
+)
 
 # Standard SVM
 model_svm <- e1071::svm(diagnosis ~ ., data = train_wdbc, probability = TRUE)
@@ -273,12 +281,15 @@ results <- data.frame(
     mean(pred_svmodt == test_wdbc$diagnosis),
     mean(pred_rpart == test_wdbc$diagnosis),
     mean(pred_svm == test_wdbc$diagnosis)
-  )) 
+  )
+)
 
-results |> kableExtra::kable(align = "lc", format = "html", digits = 4,
-                             caption = "Comparing Test set Accuracy of SVMODT model with a Linear SVM and a Decision Tree") |>
+results |>
+  kableExtra::kable(
+    align = "lc", format = "html", digits = 4,
+    caption = "Comparing Test set Accuracy of SVMODT model with a Linear SVM and a Decision Tree"
+  ) |>
   kableExtra::kable_styling(position = "center", full_width = FALSE)
-
 ```
 
 From Table \@ref(tab:comparison) we can observe that our SVMODT model has outperformed both the Linear SVM model and the Rpart Decision tree on the test.  

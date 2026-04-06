@@ -49,6 +49,12 @@ All other columns are treated as predictors.}
   \item `"cor"`: select based on correlation with the response.
 }}
 
+\item{impurity_measure}{Information Gain evaluation criteria
+\itemize{
+  \item `"gini"`: use Gini ratio
+  \item `"entropy"`: use Shannon entropy
+}}
+
 \item{max_features_strategy}{Strategy to adjust the number of features per node:
 \itemize{
   \item `"constant"`: keep `max_features` constant,
@@ -67,6 +73,8 @@ are penalized to encourage diversity.}
 
 \item{feature_penalty_weight}{Numeric (0–1) weight for penalizing previously used features.}
 
+\item{n_subsets}{Number of Evaluated Random Feature combinations at each node when `feature_method = "random`}
+
 \item{used_features}{Character vector of features already used in ancestor nodes
 (used internally).}
 
@@ -79,17 +87,13 @@ are penalized to encourage diversity.}
 
 \item{custom_class_weights}{Optional named numeric vector specifying custom weights per class.}
 
+\item{min_impurity_decrease}{Required decrease in impurity by a split to be considered valid}
+
 \item{verbose}{Logical; if TRUE, prints information about each node during tree construction.}
 
 \item{all_classes}{Optional character vector of all possible response classes (used internally).}
 
 \item{...}{Additional arguments passed to the underlying SVM fitting function.}
-
-\item{impurity_method}{Information Gain evaluation criteria
-\itemize{
-  \item `"gini"`: use Gini ratio
-  \item `"entropy"`: use Shannon entropy
-}}
 }
 \value{
 A nested list representing the decision tree. Each node contains:
