@@ -17,3 +17,14 @@ R/custom*
 R/stree*
 stree-tests/
 presentation-slides/
+R/cube.R
+R/echocardiogram.R
+R/fertility.R
+R/square.R
+R/wine.R
+man/cube.Rd
+man/echocardiogram.Rd
+man/fertility.Rd
+man/square.Rd
+man/wine.Rd
+R/svmodt-visualizer.R

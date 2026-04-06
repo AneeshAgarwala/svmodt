@@ -101,6 +101,13 @@ choose_features_with_penalty <- function(data, response, max_features,
       ))
     }
 
+    # Remove NAs before penalising
+    cor_vals <- cor_vals[!is.na(cor_vals) & is.finite(cor_vals)]
+
+    if (length(cor_vals) == 0) {
+      return(sample(predictors, min(max_features, length(predictors))))
+    }
+
     penalty_idx <- which(names(cor_vals) %in% used_features)
     if (length(penalty_idx) > 0) {
       cor_vals[penalty_idx] <- cor_vals[penalty_idx] * (1 - penalty_weight)
@@ -109,7 +116,17 @@ choose_features_with_penalty <- function(data, response, max_features,
       }
     }
 
-    selected <- names(sort(cor_vals, decreasing = TRUE))[1:max_features]
+    # Guard n_select against exceeding available features
+    n_select <- min(max_features, length(cor_vals))
+    selected <- names(sort(cor_vals, decreasing = TRUE))[seq_len(n_select)]
+
+    # Ensure all selected names actually exist in data
+    selected <- intersect(selected, names(data))
+
+    if (length(selected) == 0) {
+      return(sample(predictors, min(max_features, length(predictors))))
+    }
+
     return(selected)
   }
 }

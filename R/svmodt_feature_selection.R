@@ -19,30 +19,30 @@
 calculate_feature_associations <- function(data, response, predictors) {
   y <- data[[response]]
   if (is.character(y)) y <- as.numeric(factor(y))
-  if (is.factor(y)) y <- as.numeric(y)
+  if (is.factor(y))    y <- as.numeric(y)
 
   assoc_vals <- sapply(predictors, function(p) {
     x <- data[[p]]
     if (!is.numeric(x)) {
-      # Handle categorical variables
       if (is.factor(x) || is.character(x)) {
-        tryCatch(
-          {
-            model <- lm(y ~ x)
-            anova_result <- anova(model)
-            sqrt(anova_result$`Sum Sq`[1] / sum(anova_result$`Sum Sq`))
-          },
-          error = function(e) NA_real_
-        )
+        tryCatch({
+          model        <- lm(y ~ x)
+          anova_result <- anova(model)
+          sqrt(anova_result$`Sum Sq`[1] / sum(anova_result$`Sum Sq`))
+        }, error = function(e) NA_real_)
       } else {
         NA_real_
       }
     } else {
+      # FIX: guard against zero-variance columns
+      if (var(x, na.rm = TRUE) == 0) return(NA_real_)
       suppressWarnings(abs(cor(x, y, use = "complete.obs")))
     }
   })
 
-  assoc_vals[!is.na(assoc_vals)]
+  # keep names when filtering NAs
+  assoc_vals <- assoc_vals[!is.na(assoc_vals) & is.finite(assoc_vals)]
+  return(assoc_vals)
 }
 
 #' Select a subset of features based on correlation, mutual information, or randomness
@@ -124,7 +124,16 @@ choose_features <- function(data, response, max_features,
       return(sample(predictors, min(max_features, length(predictors))))
     }
 
-    selected <- names(sort(cor_vals, decreasing = TRUE))[1:min(max_features, length(cor_vals))]
+    # FIX: Remove NAs and guard n_select
+    cor_vals  <- cor_vals[!is.na(cor_vals) & is.finite(cor_vals)]
+    n_select  <- min(max_features, length(cor_vals))
+    selected  <- names(sort(cor_vals, decreasing = TRUE))[seq_len(n_select)]
+    selected  <- intersect(selected, names(data))  # safety check
+
+    if (length(selected) == 0) {
+      return(sample(predictors, min(max_features, length(predictors))))
+    }
+
     return(selected)
   }
 }

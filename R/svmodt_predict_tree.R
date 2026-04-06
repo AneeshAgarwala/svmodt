@@ -27,7 +27,7 @@
 #'   \item \strong{Leaf nodes:} Return the majority class stored in the node, along with class probabilities.
 #'   \item \strong{Internal nodes:}
 #'     \itemize{
-#'       \item Scale features according to the node’s scaling parameters.
+#'       \item Scale features according to the node's scaling parameters.
 #'       \item Compute SVM decision values.
 #'       \item Recursively traverse left and right children depending on the sign of the decision value.
 #'     }
@@ -103,7 +103,18 @@ svm_predict_tree <- function(tree, newdata, return_probs = FALSE,
   }
 
   # Scale features
-  X_scaled <- apply_scaler(newdata[, tree$features, drop = FALSE], tree$scaler)
+  available_features <- intersect(tree$features, names(newdata))
+  missing_features   <- setdiff(tree$features, names(newdata))
+
+  if (length(missing_features) > 0) {
+    warning("Prediction: missing features in newdata: ",
+            paste(missing_features, collapse = ", "),
+            " - using majority class fallback")
+    # fall through to the scaling failure handler below
+    X_scaled <- data.frame()
+  } else {
+    X_scaled <- apply_scaler(newdata[, tree$features, drop = FALSE], tree$scaler)
+  }
 
   # Handle case where scaling fails
   if (ncol(X_scaled) == 0 || nrow(X_scaled) == 0) {

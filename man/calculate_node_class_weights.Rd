@@ -19,7 +19,6 @@ Options are:
 \itemize{
   \item `"none"` – no weighting (default).
   \item `"balanced"` – weights inversely proportional to class frequencies.
-  \item `"balanced_subsample"` – weights adjusted to balance each subsample.
   \item `"custom"` – user-provided custom weights.
 }}
 

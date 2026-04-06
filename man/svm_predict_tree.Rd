@@ -38,7 +38,7 @@ The function traverses the SVM-based oblique decision tree recursively and predi
   \item \strong{Leaf nodes:} Return the majority class stored in the node, along with class probabilities.
   \item \strong{Internal nodes:}
     \itemize{
-      \item Scale features according to the node’s scaling parameters.
+      \item Scale features according to the node's scaling parameters.
       \item Compute SVM decision values.
       \item Recursively traverse left and right children depending on the sign of the decision value.
     }

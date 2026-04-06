@@ -4,19 +4,19 @@
 \alias{fit_svm_with_weights}
 \title{Fit a linear SVM model with optional class weights}
 \usage{
-fit_svm_with_weights(X, y, class_weights = NULL, verbose = FALSE, ...)
+fit_svm_with_weights(X_scaled, y, class_weights_vec, verbose = FALSE, ...)
 }
 \arguments{
-\item{X}{A data frame or matrix of predictor variables.}
-
 \item{y}{A vector of class labels corresponding to the rows of \code{X}.}
-
-\item{class_weights}{Optional named numeric vector of class weights. Names must match
-the unique class labels in \code{y}. Weights are capped at 10 to prevent instability.}
 
 \item{verbose}{Logical; if \code{TRUE}, prints diagnostic messages during fitting.}
 
 \item{...}{Additional arguments passed to \code{\link[e1071]{svm}}.}
+
+\item{X}{A data frame or matrix of predictor variables.}
+
+\item{class_weights}{Optional named numeric vector of class weights. Names must match
+the unique class labels in \code{y}. Weights are capped at 10 to prevent instability.}
 }
 \value{
 A fitted \code{svm} model object (of class \code{"svm"}) on success, or

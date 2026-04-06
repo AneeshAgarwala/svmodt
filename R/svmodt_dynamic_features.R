@@ -63,7 +63,7 @@ calculate_dynamic_max_features <- function(data, response, base_max_features, de
                      max(1, min(decreased, total_features))
                    },
                    "random" = {
-                     min_features <- max(1, round(total_features * random_range[1]))
+                     min_features <- max(2L, round(total_features * random_range[1]))  # was max(1,...)
                      max_features <- min(total_features, round(total_features * random_range[2]))
                      if (min_features >= max_features) {
                        min_features
