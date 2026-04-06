@@ -32,7 +32,7 @@ We'll use two datasets:
 ```{r setup, message=FALSE, warning=FALSE}
 # Packages required for this vignette
 pkgs <- c(
-  "rpart", "e1071", "dplyr", "tidyr",
+  "rpart", "e1071", "dplyr", "tidyr", "ggplot2",
   "rsample", "gridExtra", "kableExtra", "palmerpenguins"
 )
 
@@ -113,8 +113,6 @@ head(data.frame(
 
 Table \@ref(tab:penguins-predict) shows the predicted value along with the associated probabilities of the first 10 observations of the palmerpenguins dataset. The prediction function returns the majority class at each node along the class proportion. In this table we can observe that all the observations have been correctly predicted.  
 
-### Evaluate Performance
-
 ### Visualize Decision Boundaries
 
 ```{r penguins-viz, fig.height=6, fig.width=8}
@@ -176,6 +174,13 @@ tree_wdbc <- svm_split(
   class_weights = "balanced", # For Class Imbalance
   verbose = FALSE
 )
+```
+
+### Evaluate Performance
+```{r wdbc-eval}
+preds_wdbc <- svm_predict_tree(tree_wdbc, test_wdbc)
+cat("Accuracy:", round(mean(preds_wdbc == test_wdbc$diagnosis), 4), "\n")
+print(table(Predicted = preds_wdbc, Actual = test_wdbc$diagnosis))
 ```
 
 ### Advanced Features
@@ -244,7 +249,180 @@ tree_custom <- svm_split(
 )
 ```
 
-------------------------------------------------------------------------
+## Example 3: Multiclass Classification — Wine Dataset
+
+The Wine dataset contains chemical measurements for 178 wine samples from three Italian cultivars. This demonstrates SVMODT's multiclass capability via one-vs-rest splitting at each node.
+```{r wine-prep}
+set.seed(234)
+
+wine$class <- as.factor(wine$class)
+split_wine <- rsample::initial_split(wine, prop = 0.8, strata = class)
+train_wine  <- rsample::training(split_wine)
+test_wine   <- rsample::testing(split_wine)
+
+```
+
+### Train Multiclass SVMODT
+
+At each internal node, SVMODT iterates over all present classes, fits a binary one-vs-rest SVM, and selects the split that maximally reduces entropy. This continues recursively until `max_depth` is reached or `min_impurity_decrease` prevents uninformative splits.
+```{r wine-train}
+tree_wine <- svm_split(
+  data               = train_wine,
+  response           = "class",
+  max_depth          = 5,
+  max_features = 5,
+  feature_method     = "mutual",
+  impurity_measure   = "entropy",
+  min_impurity_decrease = 0.01,
+  class_weights      = "balanced",
+  penalize_used_features = TRUE,
+  feature_penalty_weight = 0.5,
+  verbose            = FALSE
+)
+```
+
+### Visualize Decision Boundary
+```{r plot-surface, eval=TRUE, echo=FALSE}
+plot_svmodt_surface <- function(tree, data, response, resolution = 200) {
+  
+  # Get the features used in the tree
+  all_features <- get_tree_features(tree)
+  
+  if (length(all_features) < 2) {
+    stop("Tree must use at least 2 features for surface plotting")
+  }
+  
+  # Use first two features for the grid axes
+  plot_features <- all_features[1:2]
+  
+  # Create grid for the two plotting dimensions
+  grid <- expand.grid(
+    x = seq(min(data[[plot_features[1]]], na.rm = TRUE),
+            max(data[[plot_features[1]]], na.rm = TRUE),
+            length.out = resolution),
+    y = seq(min(data[[plot_features[2]]], na.rm = TRUE),
+            max(data[[plot_features[2]]], na.rm = TRUE),
+            length.out = resolution)
+  )
+  
+  names(grid) <- plot_features
+  
+  # CRITICAL FIX: Add ALL other features that might be used anywhere in the tree
+  # Set them to their median values
+  other_features <- setdiff(names(data), c(response, plot_features))
+  for (feat in other_features) {
+    if (is.numeric(data[[feat]])) {
+      grid[[feat]] <- median(data[[feat]], na.rm = TRUE)
+    } else if (is.factor(data[[feat]]) || is.character(data[[feat]])) {
+      # For categorical features, use the mode (most common value)
+      grid[[feat]] <- names(sort(table(data[[feat]]), decreasing = TRUE))[1]
+    }
+  }
+  
+  # IMPORTANT: Reorder columns to match original data structure
+  # This ensures the scaler receives columns in the expected order
+  grid <- grid[, intersect(names(data), names(grid)), drop = FALSE]
+  
+  # Get predictions with probabilities
+  pred_result <- svm_predict_tree(tree, grid, return_probs = TRUE, 
+                                  calibrate_probs = TRUE)
+  
+  # Create plot data - only keep the two plotting dimensions
+  plot_data <- data.frame(
+    x = grid[[plot_features[1]]],
+    y = grid[[plot_features[2]]],
+    prediction = pred_result$predictions
+  )
+  names(plot_data)[1:2] <- plot_features
+  
+  # Get class levels from original data
+  class_levels <- levels(factor(data[[response]]))
+  
+  # # Create color palette
+  # n_classes <- length(class_levels)
+  # cols <- if (n_classes == 3) {
+  #   c("darkorange", "purple", "cyan4")
+  # } else {
+  #   scales::hue_pal()(n_classes)
+  # }
+  
+  # Create the plot
+  p <- ggplot2::ggplot(plot_data, ggplot2::aes(x = .data[[plot_features[1]]], 
+                             y = .data[[plot_features[2]]])) +
+    ggplot2::geom_tile(ggplot2::aes(fill = prediction), alpha = 0.25) +
+    ggplot2::geom_point(data = data,
+               ggplot2::aes(x = .data[[plot_features[1]]], 
+                   y = .data[[plot_features[2]]],
+                   color = .data[[response]], 
+                   shape = .data[[response]]),
+               alpha = 0.5) +
+    ggplot2::scale_color_brewer(palette = "Dark2") +
+    ggplot2::scale_fill_brewer(palette = "Dark2") +
+    ggplot2::labs(x = plot_features[1],
+         y = plot_features[2]) +
+    ggplot2::theme_minimal() +
+    ggplot2::scale_x_continuous(expand = c(0, 0)) +
+    ggplot2::scale_y_continuous(expand = c(0, 0)) +
+    ggplot2::theme(panel.grid = ggplot2::element_blank(),
+          panel.border = ggplot2::element_rect(fill = NA),
+          legend.position = 'bottom',
+          legend.text = ggplot2::element_text(size = 8),
+          legend.title = ggplot2::element_blank(),
+          aspect.ratio = 1) +
+    ggplot2::guides(fill = "none")
+  
+  return(p)
+}
+
+get_tree_features <- function(tree) {
+  if (tree$is_leaf) {
+    return(tree$features)
+  }
+  
+  features <- tree$features
+  
+  if (!is.null(tree$left)) {
+    features <- c(features, get_tree_features(tree$left))
+  }
+  
+  if (!is.null(tree$right)) {
+    features <- c(features, get_tree_features(tree$right))
+  }
+  
+  return(unique(features))
+}
+```
+
+```{r wine-viz}
+plot_svmodt_surface(tree = tree_wine, data = train_wine, response = "class")
+```
+Fig \@ref(fig:wine-viz) displays multiclass decision boundaries on the Wine dataset acorss the first two features in the tree. 
+
+### Tree Structure
+```{r wine-structure}
+print_svm_tree(tree_wine,
+  show_probabilities = FALSE,
+  show_feature_info  = TRUE,
+  show_penalties     = TRUE
+)
+```
+
+Each internal node shows the class used for the one-vs-rest binary split (`split: X vs rest`), the features selected at that node, and whether feature penalisation was active (`penalty = !`).
+
+### Performance
+```{r wine-eval}
+preds_wine <- svm_predict_tree(tree = tree_wine, newdata = test_wine)
+acc_wine <- mean(preds_wine == test_wine$class)
+cat("Test accuracy:", round(acc_wine, 4), "\n")
+conf_mat <- table(Predicted = preds_wine, Actual = test_wine$class)
+print(conf_mat)
+```
+
+### Trace a Prediction Path
+```{r wine-trace}
+# Show how the first test observation is routed through the tree
+trace_prediction_path(tree_wine, test_wine, sample_idx = 1)
+```
 
 ## Model Comparison
 

@@ -56,14 +56,14 @@ with optional class-specific weights to handle class imbalance.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fit_svm_with_weights</span><span class="op">(</span><span class="va">X</span>, <span class="va">y</span>, class_weights <span class="op">=</span> <span class="cn">NULL</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fit_svm_with_weights</span><span class="op">(</span><span class="va">X_scaled</span>, <span class="va">y</span>, <span class="va">class_weights_vec</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
 
 
-<dl><dt id="arg-x">X<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
+<dl><dt id="arg-x-scaled">X_scaled<a class="anchor" aria-label="anchor" href="#arg-x-scaled"></a></dt>
 <dd><p>A data frame or matrix of predictor variables.</p></dd>
 
 
@@ -71,7 +71,7 @@ with optional class-specific weights to handle class imbalance.</p>
 <dd><p>A vector of class labels corresponding to the rows of <code>X</code>.</p></dd>
 
 
-<dt id="arg-class-weights">class_weights<a class="anchor" aria-label="anchor" href="#arg-class-weights"></a></dt>
+<dt id="arg-class-weights-vec">class_weights_vec<a class="anchor" aria-label="anchor" href="#arg-class-weights-vec"></a></dt>
 <dd><p>Optional named numeric vector of class weights. Names must match
 the unique class labels in <code>y</code>. Weights are capped at 10 to prevent instability.</p></dd>
 

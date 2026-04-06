@@ -70,14 +70,17 @@ return a flag to continue normal processing.</p>
 <span>  <span class="va">max_depth</span>,</span>
 <span>  <span class="va">max_features</span>,</span>
 <span>  <span class="va">feature_method</span>,</span>
+<span>  <span class="va">impurity_measure</span>,</span>
 <span>  <span class="va">max_features_strategy</span>,</span>
 <span>  <span class="va">max_features_decrease_rate</span>,</span>
 <span>  <span class="va">max_features_random_range</span>,</span>
 <span>  <span class="va">penalize_used_features</span>,</span>
 <span>  <span class="va">feature_penalty_weight</span>,</span>
+<span>  <span class="va">n_subsets</span>,</span>
 <span>  <span class="va">used_features</span>,</span>
 <span>  <span class="va">class_weights</span>,</span>
 <span>  <span class="va">custom_class_weights</span>,</span>
+<span>  min_impurity_decrease <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  <span class="va">features</span>,</span>
 <span>  <span class="va">scaler</span>,</span>
 <span>  <span class="va">all_classes</span>,</span>
@@ -189,7 +192,8 @@ return a flag to continue normal processing.</p>
     <p>- If both children are smaller than <code>min_samples</code>, a leaf node is created.
 - If only one child is too small, the other child is recursively split.
 - This function ensures that tree nodes respect the minimum sample requirement,
-  avoiding invalid splits that could destabilize the SVM-based tree.</p>
+  avoiding invalid splits that could destabilize the SVM-based tree.
+- **FIXED**: Properly passes features that remain after constant removal</p>
     </div>
 
   </div>

@@ -66,14 +66,17 @@ feature penalization, scaling, and class weighting.</p>
 <span>  min_samples <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  max_features <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  feature_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"random"</span>, <span class="st">"mutual"</span>, <span class="st">"cor"</span><span class="op">)</span>,</span>
+<span>  impurity_measure <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"entropy"</span>, <span class="st">"gini"</span><span class="op">)</span>,</span>
 <span>  max_features_strategy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"constant"</span>, <span class="st">"random"</span>, <span class="st">"decrease"</span><span class="op">)</span>,</span>
 <span>  max_features_decrease_rate <span class="op">=</span> <span class="fl">0.8</span>,</span>
 <span>  max_features_random_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">1</span><span class="op">)</span>,</span>
 <span>  penalize_used_features <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  feature_penalty_weight <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  n_subsets <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  used_features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>,</span>
-<span>  class_weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"none"</span>, <span class="st">"balanced"</span>, <span class="st">"balanced_subsample"</span>, <span class="st">"custom"</span><span class="op">)</span>,</span>
+<span>  class_weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"none"</span>, <span class="st">"balanced"</span>, <span class="st">"custom"</span><span class="op">)</span>,</span>
 <span>  custom_class_weights <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  min_impurity_decrease <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  all_classes <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -116,6 +119,12 @@ All other columns are treated as predictors.</p></dd>
 </ul></dd>
 
 
+<dt id="arg-impurity-measure">impurity_measure<a class="anchor" aria-label="anchor" href="#arg-impurity-measure"></a></dt>
+<dd><p>Information Gain evaluation criteria</p><ul><li><p>`"gini"`: use Gini ratio</p></li>
+<li><p>`"entropy"`: use Shannon entropy</p></li>
+</ul></dd>
+
+
 <dt id="arg-max-features-strategy">max_features_strategy<a class="anchor" aria-label="anchor" href="#arg-max-features-strategy"></a></dt>
 <dd><p>Strategy to adjust the number of features per node:</p><ul><li><p>`"constant"`: keep `max_features` constant,</p></li>
 <li><p>`"decrease"`: reduce features with depth,</p></li>
@@ -142,6 +151,10 @@ are penalized to encourage diversity.</p></dd>
 <dd><p>Numeric (0–1) weight for penalizing previously used features.</p></dd>
 
 
+<dt id="arg-n-subsets">n_subsets<a class="anchor" aria-label="anchor" href="#arg-n-subsets"></a></dt>
+<dd><p>Number of Evaluated Random Feature combinations at each node when `feature_method = "random`</p></dd>
+
+
 <dt id="arg-used-features">used_features<a class="anchor" aria-label="anchor" href="#arg-used-features"></a></dt>
 <dd><p>Character vector of features already used in ancestor nodes
 (used internally).</p></dd>
@@ -150,13 +163,16 @@ are penalized to encourage diversity.</p></dd>
 <dt id="arg-class-weights">class_weights<a class="anchor" aria-label="anchor" href="#arg-class-weights"></a></dt>
 <dd><p>Character string specifying how to handle class imbalance. One of:</p><ul><li><p>`"none"`: no weighting,</p></li>
 <li><p>`"balanced"`: weight classes inversely proportional to their frequency,</p></li>
-<li><p>`"balanced_subsample"`: weight per node based on local class distribution,</p></li>
 <li><p>`"custom"`: use `custom_class_weights`.</p></li>
 </ul></dd>
 
 
 <dt id="arg-custom-class-weights">custom_class_weights<a class="anchor" aria-label="anchor" href="#arg-custom-class-weights"></a></dt>
 <dd><p>Optional named numeric vector specifying custom weights per class.</p></dd>
+
+
+<dt id="arg-min-impurity-decrease">min_impurity_decrease<a class="anchor" aria-label="anchor" href="#arg-min-impurity-decrease"></a></dt>
+<dd><p>Required decrease in impurity by a split to be considered valid</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
@@ -232,50 +248,52 @@ rather than axis-aligned.</p>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> --- Node at depth 1 ---</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Rows: 569 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Response distribution:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Samples: 569 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Class distribution:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   B   M </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 357 212 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Class weights: none (equal weights)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Dynamic max_features: 30 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of classes at node: 2 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Selected features: radius_mean, texture_mean, perimeter_mean, area_mean, smoothness_mean, compactness_mean, concavity_mean, concave.points_mean, symmetry_mean, fractal_dimension_mean, radius_se, texture_se, perimeter_se, area_se, smoothness_se, compactness_se, concavity_se, concave.points_se, symmetry_se, fractal_dimension_se, radius_worst, texture_worst, perimeter_worst, area_worst, smoothness_worst, compactness_worst, concavity_worst, concave.points_worst, symmetry_worst, fractal_dimension_worst </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> SVM fitting with equal weights</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Left size: 209 Right size: 360 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Binary classification case</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Classes at node      : B, M </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Class counts         : 357, 212 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Class weights: none (equal weights)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> --- Node at depth 2 ---</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Rows: 209 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Response distribution:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Samples: 209 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Class distribution:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   B   M </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   2 207 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Class weights: none (equal weights)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Dynamic max_features: 30 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of classes at node: 2 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Selected features: radius_mean, texture_mean, perimeter_mean, area_mean, smoothness_mean, compactness_mean, concavity_mean, concave.points_mean, symmetry_mean, fractal_dimension_mean, radius_se, texture_se, perimeter_se, area_se, smoothness_se, compactness_se, concavity_se, concave.points_se, symmetry_se, fractal_dimension_se, radius_worst, texture_worst, perimeter_worst, area_worst, smoothness_worst, compactness_worst, concavity_worst, concave.points_worst, symmetry_worst, fractal_dimension_worst </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> SVM fitting with equal weights</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Left size: 207 Right size: 2 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Right child too small, only creating left child</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Binary classification case</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Classes at node      : B, M </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Class counts         : 2, 207 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Class weights: none (equal weights)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Right child too small, creating left child and right leaf</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> --- Node at depth 3 ---</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Rows: 207 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Response distribution:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Samples: 207 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Class distribution:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   B   M </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   0 207 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Stopping at depth 3 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Creating leaf node</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> --- Node at depth 2 ---</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Rows: 360 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Response distribution:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Samples: 360 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Class distribution:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   B   M </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 355   5 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Class weights: none (equal weights)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Dynamic max_features: 30 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Number of classes at node: 2 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Selected features: radius_mean, texture_mean, perimeter_mean, area_mean, smoothness_mean, compactness_mean, concavity_mean, concave.points_mean, symmetry_mean, fractal_dimension_mean, radius_se, texture_se, perimeter_se, area_se, smoothness_se, compactness_se, concavity_se, concave.points_se, symmetry_se, fractal_dimension_se, radius_worst, texture_worst, perimeter_worst, area_worst, smoothness_worst, compactness_worst, concavity_worst, concave.points_worst, symmetry_worst, fractal_dimension_worst </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> SVM fitting with equal weights</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Left size: 360 Right size: 0 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Stopping: ineffective split (all points on one side)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Binary classification case</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Classes at node      : B, M </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Class counts         : 355, 5 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Class weights: none (equal weights)</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

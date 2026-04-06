@@ -94,7 +94,7 @@ If <code>return_probs = TRUE</code>, a list with elements:</p><ul><li><p><code>p
     <div id="details">
     <h2>Details</h2>
     <p>The function traverses the SVM-based oblique decision tree recursively and predicts class labels or probabilities. Key behaviors:</p><ul><li><p><strong>Leaf nodes:</strong> Return the majority class stored in the node, along with class probabilities.</p></li>
-<li><p><strong>Internal nodes:</strong></p><ul><li><p>Scale features according to the node’s scaling parameters.</p></li>
+<li><p><strong>Internal nodes:</strong></p><ul><li><p>Scale features according to the node's scaling parameters.</p></li>
 <li><p>Compute SVM decision values.</p></li>
 <li><p>Recursively traverse left and right children depending on the sign of the decision value.</p></li>
 </ul></li>
@@ -128,8 +128,10 @@ If <code>return_probs = TRUE</code>, a list with elements:</p><ul><li><p><code>p
 <span class="r-in"><span><span class="va">preds</span> <span class="op">&lt;-</span> <span class="fu">predict_svm_tree</span><span class="op">(</span><span class="va">tree</span>, newdata <span class="op">=</span> <span class="va">wdbc</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Predict with probabilities and logistic calibration</span></span></span>
-<span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">predict_svm_tree</span><span class="op">(</span><span class="va">tree</span>, newdata <span class="op">=</span> <span class="va">wdbc</span>,</span></span>
-<span class="r-in"><span>                           return_probs <span class="op">=</span> <span class="cn">TRUE</span>, calibrate_probs <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">predict_svm_tree</span><span class="op">(</span><span class="va">tree</span>,</span></span>
+<span class="r-in"><span>  newdata <span class="op">=</span> <span class="va">wdbc</span>,</span></span>
+<span class="r-in"><span>  return_probs <span class="op">=</span> <span class="cn">TRUE</span>, calibrate_probs <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

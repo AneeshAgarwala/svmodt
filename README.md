@@ -31,8 +31,8 @@ devtools::install_github("AneeshAgarwala/svmodt")
 
 - **Linear SVM splits** for simple decision boundaries
 
-- **Binary classification**; currently only limited to data with binary
-  response variable
+- **Binary & Multiclass Classification** via one-vs-rest SVM splits at
+  each node.
 
 - **Flexible feature selection** (random, mutual information,
   correlation)
