@@ -77,7 +77,9 @@ tree <- svm_split_enhanced(
 preds <- predict_svm_tree(tree, newdata = wdbc)
 
 # Predict with probabilities and logistic calibration
-result <- predict_svm_tree(tree, newdata = wdbc,
-                           return_probs = TRUE, calibrate_probs = TRUE)
+result <- predict_svm_tree(tree,
+  newdata = wdbc,
+  return_probs = TRUE, calibrate_probs = TRUE
+)
 }
 }
