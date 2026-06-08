@@ -64,3 +64,60 @@ test_that("invalid decrease_rate is silently corrected and does not error", {
     )
   )
 })
+
+
+test_that("decrease strategy with verbose = TRUE prints strategy info", {
+  expect_output(
+    calculate_dynamic_max_features(
+      binary_data, "label",
+      base_max_features = 2,
+      depth             = 2,
+      strategy          = "decrease",
+      verbose           = TRUE
+    ),
+    regexp = "Strategy|decrease|depth"
+  )
+})
+
+test_that("random strategy with verbose = TRUE prints strategy info", {
+  expect_output(
+    calculate_dynamic_max_features(
+      binary_data, "label",
+      base_max_features = NULL,
+      depth             = 1,
+      strategy          = "random",
+      verbose           = TRUE
+    ),
+    regexp = "Strategy|random|depth"
+  )
+})
+
+test_that("constant strategy with verbose = TRUE produces no extra output", {
+  # constant strategy has an early return inside switch — the verbose cat
+  # is inside the if (strategy != "constant") guard, so nothing is printed.
+  output <- capture.output(
+    calculate_dynamic_max_features(
+      binary_data, "label",
+      base_max_features = 2,
+      depth             = 1,
+      strategy          = "constant",
+      verbose           = TRUE
+    )
+  )
+  expect_length(output, 1)
+})
+
+test_that("random strategy with equal min/max range returns min_features", {
+  # When min_features >= max_features inside the random branch, the function
+  # returns min_features directly without calling sample().
+  # Force this by using random_range = c(1.0, 1.0).
+  result <- calculate_dynamic_max_features(
+    binary_data, "label",
+    base_max_features     = NULL,
+    depth                 = 1,
+    strategy              = "random",
+    random_range          = c(1.0, 1.0)   # min == max -> no sample()
+  )
+  expect_type(result, "double")
+  expect_gte(result, 1)
+})

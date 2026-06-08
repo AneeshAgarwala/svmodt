@@ -50,3 +50,32 @@ test_that("prints the stopping reason to the console when verbose = TRUE", {
     regexp = "max depth"
   )
 })
+
+
+test_that("stop_conditions_met prints 'pure node' reason when verbose = TRUE", {
+  pure_y <- factor(rep("A", 10))
+  expect_output(
+    stop_conditions_met(
+      binary_data[1:10, ], pure_y,
+      depth       = 1,
+      max_depth   = 10,
+      min_samples = 2,
+      verbose     = TRUE
+    ),
+    regexp = "pure"
+  )
+})
+
+test_that("stop_conditions_met prints 'Stopping: pure node' when verbose = TRUE", {
+  small_df <- binary_data[1:3, ]
+  expect_output(
+    stop_conditions_met(
+      small_df, small_df$label,
+      depth       = 1,
+      max_depth   = 10,
+      min_samples = 5,
+      verbose     = TRUE
+    ),
+    regexp = "Stopping: pure node "
+  )
+})

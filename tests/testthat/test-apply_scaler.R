@@ -35,3 +35,16 @@ test_that("warns and returns the original data when scaler has no transform fiel
   )
   expect_equal(result, df)
 })
+
+test_that("apply_scaler warns and returns original df when transform throws", {
+  df <- binary_data[, c("x1", "x2")]
+  bad_scaler <- list(
+    transform = function(x) stop("deliberate transform error")
+  )
+
+  expect_warning(
+    result <- apply_scaler(df, bad_scaler),
+    regexp = "Scaling failed"
+  )
+  expect_equal(result, df)
+})

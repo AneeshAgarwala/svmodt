@@ -32,3 +32,13 @@ test_that("constant column is excluded from the result", {
   )
   expect_false("constant_col" %in% names(result))
 })
+
+test_that("returns an empty vector when all predictors are constant", {
+  df <- data.frame(
+    c1    = rep(1, 20),
+    c2    = rep(2, 20),
+    label = factor(rep(c("A", "B"), 10))
+  )
+  result <- calculate_feature_associations(df, "label", c("c1", "c2"))
+  expect_length(result, 0)
+})

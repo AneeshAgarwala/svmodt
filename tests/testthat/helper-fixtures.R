@@ -1,5 +1,6 @@
 library(e1071)
 
+
 # --- Minimal binary dataset (linearly separable) ---
 make_binary_data <- function(n = 40, seed = 42) {
   set.seed(seed)
@@ -46,7 +47,16 @@ make_tiny_data <- function() {
   )
 }
 
+make_binary_model <- function() {
+  scaler <- scale_node(binary_data[, c("x1", "x2")])
+  model  <- fit_svm_with_weights(scaler$train, binary_data$label,
+                                 class_weights_vec = NULL)
+  list(model = model, scaler = scaler)
+}
+
 # Pre-built instances used across multiple test files
 binary_data     <- make_binary_data()
 multiclass_data <- make_multiclass_data()
 imbalanced_data <- make_imbalanced_data()
+m <- make_binary_model()
+
