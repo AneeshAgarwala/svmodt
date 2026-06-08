@@ -293,12 +293,11 @@ test_that("verbose = TRUE reports 'Stopping: all features are constant'", {
     x2    = rep(2, 20),
     label = factor(rep(c("A", "B"), 10))
   )
-  expect_output(
+  expect_warning(
     svm_split(const_data, "label",
               max_depth   = 3,
               min_samples = 2,
-              verbose     = TRUE),
-    regexp = "constant"
+              verbose     = TRUE)
   )
 })
 

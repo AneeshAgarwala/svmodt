@@ -103,7 +103,7 @@ test_that("penalty cor path falls back to random when all cor_vals are NA", {
 
   # With all predictors constant, cor_vals will be empty after NA removal.
   # The function should fall back to random selection without error.
-  expect_no_error(
+  expect_warning(
     result <- choose_features_with_penalty(
       df, "label",
       max_features   = 1,
