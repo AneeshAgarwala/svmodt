@@ -30,7 +30,7 @@ calculate_impurity <- function(y, method = c("gini", "entropy")) {
     return(1 - sum(p^2))
   } else {
     p <- p[p > 0]
-    return(-sum(p * log(p)))
+    return(-sum(p * log2(p)))
   }
 }
 

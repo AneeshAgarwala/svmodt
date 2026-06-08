@@ -8,7 +8,7 @@ svm_split(
   data,
   response,
   depth = 1,
-  max_depth = 3,
+  max_depth = 10,
   min_samples = 5,
   max_features = NULL,
   feature_method = c("random", "mutual", "cor"),
@@ -22,7 +22,7 @@ svm_split(
   used_features = character(0),
   class_weights = c("none", "balanced", "custom"),
   custom_class_weights = NULL,
-  min_impurity_decrease = 0,
+  min_impurity_decrease = 0.001,
   verbose = FALSE,
   all_classes = NULL,
   ...

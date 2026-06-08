@@ -27,7 +27,7 @@
 #'
 #' @keywords internal
 leaf_node <- function(y, n, all_classes = NULL, features = character(0), scaler = NULL) {
-  # FIXED: Handle missing all_classes
+  # Handle missing all_classes
   if (is.null(all_classes)) {
     all_classes <- unique(as.character(y))
   }
@@ -38,9 +38,10 @@ leaf_node <- function(y, n, all_classes = NULL, features = character(0), scaler 
 
   # Initialize probability vector for all classes
   prob_vec <- setNames(rep(0, length(all_classes)), all_classes)
-  prob_vec[names(class_props)] <- as.numeric(class_props)
+  known <- intersect(names(class_props), names(prob_vec))
+  prob_vec[known] <- as.numeric(class_props[known])
 
-  # FIXED: Better safety check
+  # Better safety check
   if (sum(prob_vec) == 0 || any(is.na(prob_vec)) || all(prob_vec == 0)) {
     prob_vec <- rep(1 / length(all_classes), length(all_classes))
     names(prob_vec) <- all_classes
