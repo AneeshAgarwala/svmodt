@@ -2,7 +2,7 @@
 #'
 #' Recursively prints the structure of an SVM-based decision tree.
 #'
-#' @param tree The tree object to print.
+#' @param tree An object of class \code{svmodt_node} (leaf or tree).
 #' @param indent String used for indentation (for recursive calls).
 #' @param show_probabilities Logical; whether to display class probabilities at leaf nodes.
 #' @param show_feature_info Logical; whether to show features used at nodes.

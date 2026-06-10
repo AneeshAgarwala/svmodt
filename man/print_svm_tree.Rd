@@ -13,7 +13,7 @@ print_svm_tree(
 )
 }
 \arguments{
-\item{tree}{The tree object to print.}
+\item{tree}{An object of class \code{svmodt_node} (leaf or tree).}
 
 \item{indent}{String used for indentation (for recursive calls).}
 

@@ -50,12 +50,12 @@ leaf_node <- function(y, n, all_classes = NULL, features = character(0), scaler 
   # Normalize to ensure sum = 1
   prob_vec <- prob_vec / sum(prob_vec)
 
-  list(
+  svmodt_leaf(list(
     is_leaf    = TRUE,
     prediction = names(which.max(prob_vec)),
     n          = n,
     features   = features,
     scaler     = scaler,
     class_prob = prob_vec
-  )
+  ))
 }

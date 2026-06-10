@@ -87,13 +87,13 @@ handle_small_children <- function(left_idx, right_idx, min_samples,
 
     return(list(
       stop = FALSE,
-      node = list(
+      node = svmodt_tree(list(
         is_leaf = FALSE, model = NULL,
         # **FIX: Use actual features after constant removal**
         features = features, scaler = scaler,
         best_col = 1, left = left_child, right = right_child,
         depth = depth, n = nrow(data)
-      )
+      ))
     ))
   }
 
@@ -121,13 +121,13 @@ handle_small_children <- function(left_idx, right_idx, min_samples,
 
     return(list(
       stop = FALSE,
-      node = list(
+      node = svmodt_tree(list(
         is_leaf = FALSE, model = NULL,
         # **FIX: Use actual features after constant removal**
         features = features, scaler = scaler,
         best_col = 1, left = left_child, right = right_child,
         depth = depth, n = nrow(data)
-      )
+      ))
     ))
   }
 

@@ -274,7 +274,7 @@ svm_split <- function(data, response, depth = 1, max_depth = 10,
       verbose = verbose, all_classes = all_classes, ...
     )
 
-    return(list(
+    return(svmodt_tree(list(
       is_leaf = FALSE,
       model = model,
       features = features,
@@ -288,7 +288,7 @@ svm_split <- function(data, response, depth = 1, max_depth = 10,
       max_features_used = current_max_features,
       penalty_applied = penalize_used_features && length(used_features) > 0,
       class_weights_used = node_class_weights
-    ))
+    )))
   }
 
   # MULTICLASS CASE: k > 2
@@ -445,7 +445,7 @@ svm_split <- function(data, response, depth = 1, max_depth = 10,
     verbose = verbose, all_classes = all_classes, ...
   )
 
-  return(list(
+  return(svmodt_tree(list(
     is_leaf = FALSE,
     model = best_model,
     features = features,
@@ -460,5 +460,5 @@ svm_split <- function(data, response, depth = 1, max_depth = 10,
     max_features_used = current_max_features,
     penalty_applied = penalize_used_features && length(used_features) > 0,
     class_weights_used = best_class_weights
-  ))
+  )))
 }
