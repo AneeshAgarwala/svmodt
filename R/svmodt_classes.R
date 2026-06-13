@@ -1,4 +1,4 @@
-# ── Constructors ──────────────────────────────────────────────────────────────
+# <U+2500><U+2500> Constructors <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
 
 #' @keywords internal
 svmodt_leaf <- function(x) {
@@ -12,7 +12,7 @@ svmodt_tree <- function(x) {
   structure(x, class = c("svmodt_tree", "svmodt_node"))
 }
 
-# ── print generic + methods ───────────────────────────────────────────────────
+# <U+2500><U+2500> print generic + methods <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
 
 #' Print method for svmodt_node objects
 #' @param x An object of class \code{svmodt_node}.
@@ -38,7 +38,7 @@ print.svmodt_tree <- function(x, ...) {
   invisible(x)
 }
 
-# ── predict method ────────────────────────────────────────────────────────────
+# <U+2500><U+2500> predict method <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
 
 #' Predict method for svmodt_node objects
 #'
@@ -52,24 +52,24 @@ print.svmodt_tree <- function(x, ...) {
 predict.svmodt_node <- function(object, newdata, return_probs = FALSE,
                                 calibrate_probs = TRUE, ...) {
   svm_predict_tree(object, newdata,
-                   return_probs = return_probs,
-                   calibrate_probs = calibrate_probs
+    return_probs = return_probs,
+    calibrate_probs = calibrate_probs
   )
 }
 
-# ── format method ─────────────────────────────────────────────────────────────
+# <U+2500><U+2500> format method <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
 
 #' @method format svmodt_node
 #' @export
 format.svmodt_node <- function(x, ...) {
-  cls   <- if (inherits(x, "svmodt_leaf")) "leaf" else "tree"
+  cls <- if (inherits(x, "svmodt_leaf")) "leaf" else "tree"
   depth <- if (!is.null(x$depth)) x$depth else 1L
-  n     <- x$n
+  n <- x$n
   paste0("<svmodt_node [", cls, "] depth=", depth, " n=", n, ">")
 }
 
 
-# ─── S3 trace method ──────────────────────────────────────────────────────────
+# <U+2500><U+2500><U+2500> S3 trace method <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
 #' Trace the prediction path of a sample through an svmodt tree
 #'
 #' Generic function that walks the tree for a single row of new data, printing

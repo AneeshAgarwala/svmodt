@@ -5,8 +5,8 @@ library(e1071)
 make_binary_data <- function(n = 40, seed = 42) {
   set.seed(seed)
   data.frame(
-    x1    = c(rnorm(n / 2, mean = -2), rnorm(n / 2, mean =  2)),
-    x2    = c(rnorm(n / 2, mean = -2), rnorm(n / 2, mean =  2)),
+    x1    = c(rnorm(n / 2, mean = -2), rnorm(n / 2, mean = 2)),
+    x2    = c(rnorm(n / 2, mean = -2), rnorm(n / 2, mean = 2)),
     label = factor(rep(c("A", "B"), each = n / 2))
   )
 }
@@ -16,7 +16,7 @@ make_multiclass_data <- function(n_per_class = 20, seed = 42) {
   set.seed(seed)
   data.frame(
     x1    = c(rnorm(n_per_class, -3), rnorm(n_per_class, 0), rnorm(n_per_class, 3)),
-    x2    = c(rnorm(n_per_class,  0), rnorm(n_per_class, 3), rnorm(n_per_class, 0)),
+    x2    = c(rnorm(n_per_class, 0), rnorm(n_per_class, 3), rnorm(n_per_class, 0)),
     label = factor(rep(c("A", "B", "C"), each = n_per_class))
   )
 }
@@ -49,14 +49,14 @@ make_tiny_data <- function() {
 
 make_binary_model <- function() {
   scaler <- scale_node(binary_data[, c("x1", "x2")])
-  model  <- fit_svm_with_weights(scaler$train, binary_data$label,
-                                 class_weights_vec = NULL)
+  model <- fit_svm_with_weights(scaler$train, binary_data$label,
+    class_weights_vec = NULL
+  )
   list(model = model, scaler = scaler)
 }
 
 # Pre-built instances used across multiple test files
-binary_data     <- make_binary_data()
+binary_data <- make_binary_data()
 multiclass_data <- make_multiclass_data()
 imbalanced_data <- make_imbalanced_data()
 m <- make_binary_model()
-

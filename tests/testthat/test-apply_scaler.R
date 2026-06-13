@@ -1,5 +1,5 @@
 test_that("returns a data frame with the same dimensions as the input", {
-  df     <- binary_data[, c("x1", "x2")]
+  df <- binary_data[, c("x1", "x2")]
   scaler <- scale_node(df)
   result <- apply_scaler(df, scaler)
 
@@ -8,7 +8,7 @@ test_that("returns a data frame with the same dimensions as the input", {
 })
 
 test_that("returns an empty data frame when given an empty input", {
-  df     <- binary_data[, c("x1", "x2")]
+  df <- binary_data[, c("x1", "x2")]
   scaler <- scale_node(df)
   result <- apply_scaler(data.frame(), scaler)
 
@@ -26,7 +26,7 @@ test_that("warns and returns the original data when scaler is NULL", {
 })
 
 test_that("warns and returns the original data when scaler has no transform field", {
-  df         <- binary_data[, c("x1", "x2")]
+  df <- binary_data[, c("x1", "x2")]
   bad_scaler <- list(not_transform = function(x) x)
 
   expect_warning(

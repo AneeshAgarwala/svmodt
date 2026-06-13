@@ -1,7 +1,8 @@
 test_that("evaluate_random_subsets returns a data frame with two columns", {
   set.seed(1)
   result <- evaluate_random_subsets(
-    binary_data, predictors = c("x1", "x2"),
+    binary_data,
+    predictors = c("x1", "x2"),
     response = "label", n_subsets = 3, subset_size = 1
   )
 

@@ -16,7 +16,7 @@ test_that("svm_info_gain is higher for informative features than noise", {
   )
 
   ig_signal <- svm_info_gain(c("informative"), df, "label")
-  ig_noise  <- svm_info_gain(c("noise1", "noise2"), df, "label")
+  ig_noise <- svm_info_gain(c("noise1", "noise2"), df, "label")
 
   expect_gt(ig_signal, ig_noise)
 })

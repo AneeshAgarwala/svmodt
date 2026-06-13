@@ -45,8 +45,8 @@ rotate_z <- function(df, angle) {
 
 
 coords <- as.matrix(df[, c("x", "y", "z")])
-coords <- rotate_z(coords, pi / 4) # 45° Z
-coords <- rotate_x(coords, pi / 6) # 30° X
+coords <- rotate_z(coords, pi / 4) # 45<U+00B0> Z
+coords <- rotate_x(coords, pi / 6) # 30<U+00B0> X
 df$x_rot <- coords[, 1]
 df$y_rot <- coords[, 2]
 df$z_rot <- coords[, 3]

@@ -60,10 +60,10 @@ calculate_feature_associations <- function(data, response, predictors) {
 #' @param max_features Integer specifying the maximum number of features to select.
 #' @param method Selection strategy. One of:
 #'   \itemize{
-#'     \item \code{"random"} – randomly selects features.
-#'     \item \code{"mutual"} – ranks features by mutual information with the response
+#'     \item \code{"random"} <U+2013> randomly selects features.
+#'     \item \code{"mutual"} <U+2013> ranks features by mutual information with the response
 #'       (requires \pkg{FSelectorRcpp}).
-#'     \item \code{"cor"} – ranks features by absolute correlation with the response.
+#'     \item \code{"cor"} <U+2013> ranks features by absolute correlation with the response.
 #'   }
 #'
 #' @return A character vector of selected feature names.

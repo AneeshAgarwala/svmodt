@@ -33,7 +33,7 @@ test_that("entropy is always non-negative", {
   expect_gte(entropy(y), 0)
 })
 
-# calculate_impurity — consistency with gini / entropy
+# calculate_impurity <U+2014> consistency with gini / entropy
 test_that("calculate_impurity with method='gini' matches gini()", {
   y <- c("A", "B", "B", "C")
   expect_equal(calculate_impurity(y, method = "gini"), gini(y), tolerance = 1e-12)

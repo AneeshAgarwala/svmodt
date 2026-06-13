@@ -36,7 +36,7 @@ fit_svm_with_weights <- function(X_scaled, y, class_weights_vec,
                                  verbose = FALSE, ...) {
   tryCatch(
     {
-      # Coerce y to factor with character levels — must match weight names
+      # Coerce y to factor with character levels <U+2014> must match weight names
       y_factor <- factor(as.character(y))
 
       if (verbose && !is.null(class_weights_vec)) {

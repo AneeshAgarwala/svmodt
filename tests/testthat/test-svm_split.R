@@ -39,12 +39,14 @@ test_that("internal node contains all required fields", {
 
 test_that("no node in the tree has depth greater than max_depth", {
   max_d <- 2
-  tree  <- svm_split(binary_data, "label", max_depth = max_d, min_samples = 3)
+  tree <- svm_split(binary_data, "label", max_depth = max_d, min_samples = 3)
 
   check_depth <- function(node) {
-    if (node$is_leaf) return(invisible())
+    if (node$is_leaf) {
+      return(invisible())
+    }
     expect_lte(node$depth, max_d)
-    if (!is.null(node$left))  check_depth(node$left)
+    if (!is.null(node$left)) check_depth(node$left)
     if (!is.null(node$right)) check_depth(node$right)
   }
   check_depth(tree)
@@ -53,141 +55,155 @@ test_that("no node in the tree has depth greater than max_depth", {
 test_that("feature_method = 'cor' produces a valid tree", {
   expect_no_error(
     svm_split(binary_data, "label",
-              max_depth = 2, min_samples = 5,
-              feature_method = "cor")
+      max_depth = 2, min_samples = 5,
+      feature_method = "cor"
+    )
   )
 })
 
 test_that("class_weights = 'balanced' runs without error", {
   expect_no_error(
     svm_split(imbalanced_data, "label",
-              max_depth = 2, min_samples = 5,
-              class_weights = "balanced")
+      max_depth = 2, min_samples = 5,
+      class_weights = "balanced"
+    )
   )
 })
 
 test_that("penalize_used_features = TRUE runs without error", {
   expect_no_error(
     svm_split(binary_data, "label",
-              max_depth = 2, min_samples = 5,
-              penalize_used_features = TRUE,
-              feature_penalty_weight = 0.5)
+      max_depth = 2, min_samples = 5,
+      penalize_used_features = TRUE,
+      feature_penalty_weight = 0.5
+    )
   )
 })
 
 test_that("max_features_strategy = 'decrease' runs without error", {
   expect_no_error(
     svm_split(binary_data, "label",
-              max_depth = 2, min_samples = 5,
-              max_features_strategy      = "decrease",
-              max_features_decrease_rate = 0.5)
+      max_depth = 2, min_samples = 5,
+      max_features_strategy = "decrease",
+      max_features_decrease_rate = 0.5
+    )
   )
 })
 
 test_that("errors with an informative message when the response column is absent", {
   expect_error(
-    svm_split(binary_data, response = "nonexistent",
-              max_depth = 2, min_samples = 2),
+    svm_split(binary_data,
+      response = "nonexistent",
+      max_depth = 2, min_samples = 2
+    ),
     regexp = "not found"
   )
 })
 
-# ── impurity_measure = "entropy" ──────────────────────────────────────────────
+# <U+2500><U+2500> impurity_measure = "entropy" <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
 
 test_that("entropy impurity measure builds a valid tree", {
   tree <- svm_split(binary_data, "label",
-                    max_depth        = 2,
-                    min_samples      = 5,
-                    impurity_measure = "entropy")
+    max_depth        = 2,
+    min_samples      = 5,
+    impurity_measure = "entropy"
+  )
 
   expect_type(tree, "list")
   expect_true("is_leaf" %in% names(tree))
 })
 
 test_that("multiclass tree with entropy produces correct prediction set", {
-  tree  <- svm_split(multiclass_data, "label",
-                     max_depth        = 3,
-                     min_samples      = 5,
-                     impurity_measure = "entropy")
+  tree <- svm_split(multiclass_data, "label",
+    max_depth        = 3,
+    min_samples      = 5,
+    impurity_measure = "entropy"
+  )
   preds <- svm_predict_tree(tree, multiclass_data)
 
   expect_true(all(preds %in% c("A", "B", "C")))
 })
 
-# ── min_impurity_decrease ─────────────────────────────────────────────────────
+# <U+2500><U+2500> min_impurity_decrease <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
 
 test_that("very high min_impurity_decrease forces the root to be a leaf", {
   # No split will ever decrease impurity by 999
   tree <- svm_split(multiclass_data, "label",
-                    max_depth             = 5,
-                    min_samples           = 2,
-                    min_impurity_decrease = 999)
+    max_depth             = 5,
+    min_samples           = 2,
+    min_impurity_decrease = 999
+  )
 
   expect_true(tree$is_leaf)
 })
 
 test_that("min_impurity_decrease = 0 allows the tree to grow normally", {
   tree <- svm_split(binary_data, "label",
-                    max_depth             = 3,
-                    min_samples           = 5,
-                    min_impurity_decrease = 0)
+    max_depth             = 3,
+    min_samples           = 5,
+    min_impurity_decrease = 0
+  )
 
   # Root should split at least once on clean data
   expect_false(tree$is_leaf)
 })
 
-# ── n_subsets > 1 (random method with subset evaluation) ─────────────────────
+# <U+2500><U+2500> n_subsets > 1 (random method with subset evaluation) <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
 
 test_that("n_subsets = 3 with random feature method builds a valid tree", {
   set.seed(7)
   tree <- svm_split(binary_data, "label",
-                    max_depth      = 2,
-                    min_samples    = 5,
-                    feature_method = "random",
-                    n_subsets      = 3)
+    max_depth      = 2,
+    min_samples    = 5,
+    feature_method = "random",
+    n_subsets      = 3
+  )
 
   expect_type(tree, "list")
   expect_true("is_leaf" %in% names(tree))
 })
 
-# ── max_features_strategy = "random" ─────────────────────────────────────────
+# <U+2500><U+2500> max_features_strategy = "random" <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
 
 test_that("random max_features_strategy builds a tree without error", {
   set.seed(3)
   expect_no_error(
     svm_split(binary_data, "label",
-              max_depth             = 2,
-              min_samples           = 5,
-              max_features_strategy = "random",
-              max_features_random_range = c(0.5, 1.0))
+      max_depth = 2,
+      min_samples = 5,
+      max_features_strategy = "random",
+      max_features_random_range = c(0.5, 1.0)
+    )
   )
 })
 
-# ── custom class weights ──────────────────────────────────────────────────────
+# <U+2500><U+2500> custom class weights <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
 
 test_that("custom class weights are accepted and build a valid tree", {
   expect_no_error(
     svm_split(binary_data, "label",
-              max_depth            = 2,
-              min_samples          = 5,
-              class_weights        = "custom",
-              custom_class_weights = c(A = 1.5, B = 0.8))
+      max_depth            = 2,
+      min_samples          = 5,
+      class_weights        = "custom",
+      custom_class_weights = c(A = 1.5, B = 0.8)
+    )
   )
 })
 
 test_that("custom class weights with missing class fall back to no-weighting", {
-  # Custom weights are missing class B — should warn but not crash
+  # Custom weights are missing class B <U+2014> should warn but not crash
   expect_warning(
     tree <- svm_split(binary_data, "label",
-                      max_depth            = 2,
-                      min_samples          = 5,
-                      class_weights        = "custom",
-                      custom_class_weights = c(A = 2))
+      max_depth            = 2,
+      min_samples          = 5,
+      class_weights        = "custom",
+      custom_class_weights = c(A = 2)
+    )
   )
   expect_type(tree, "list")
 })
 
-# ── internal node metadata ────────────────────────────────────────────────────
+# <U+2500><U+2500> internal node metadata <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
 
 test_that("internal node records the correct depth value", {
   tree <- svm_split(binary_data, "label", max_depth = 2, min_samples = 5)
@@ -204,9 +220,10 @@ test_that("internal node records n equal to the number of training rows", {
 
 test_that("penalty_applied is FALSE when penalize_used_features = FALSE", {
   tree <- svm_split(binary_data, "label",
-                    max_depth              = 2,
-                    min_samples            = 5,
-                    penalize_used_features = FALSE)
+    max_depth              = 2,
+    min_samples            = 5,
+    penalize_used_features = FALSE
+  )
 
   if (!tree$is_leaf) {
     expect_false(tree$penalty_applied)
@@ -216,34 +233,36 @@ test_that("penalty_applied is FALSE when penalize_used_features = FALSE", {
 test_that("penalty_applied is FALSE at root (used_features is empty) even when penalization is on", {
   # At the root, used_features = character(0), so penalty_applied should be FALSE
   tree <- svm_split(binary_data, "label",
-                    max_depth              = 2,
-                    min_samples            = 5,
-                    penalize_used_features = TRUE)
+    max_depth              = 2,
+    min_samples            = 5,
+    penalize_used_features = TRUE
+  )
 
   if (!tree$is_leaf) {
     expect_false(tree$penalty_applied)
   }
 })
 
-# ── NA handling ───────────────────────────────────────────────────────────────
+# <U+2500><U+2500> NA handling <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
 
 test_that("dataset with NA values returns a leaf (graceful fallback)", {
-  na_data        <- binary_data
-  na_data[1, 1]  <- NA
+  na_data <- binary_data
+  na_data[1, 1] <- NA
 
   tree <- svm_split(na_data, "label", max_depth = 3, min_samples = 2)
   expect_true(tree$is_leaf)
 })
 
 
-# ── verbose output ────────────────────────────────────────────────────────────
+# <U+2500><U+2500> verbose output <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
 
 test_that("verbose = TRUE produces node-depth output for binary data", {
   expect_output(
     svm_split(binary_data, "label",
-              max_depth   = 1,
-              min_samples = 5,
-              verbose     = TRUE),
+      max_depth   = 1,
+      min_samples = 5,
+      verbose     = TRUE
+    ),
     regexp = "Node at depth"
   )
 })
@@ -251,9 +270,10 @@ test_that("verbose = TRUE produces node-depth output for binary data", {
 test_that("verbose = TRUE prints class distribution table", {
   expect_output(
     svm_split(binary_data, "label",
-              max_depth   = 1,
-              min_samples = 5,
-              verbose     = TRUE),
+      max_depth   = 1,
+      min_samples = 5,
+      verbose     = TRUE
+    ),
     regexp = "Class distribution"
   )
 })
@@ -261,9 +281,10 @@ test_that("verbose = TRUE prints class distribution table", {
 test_that("verbose = TRUE prints selected features", {
   expect_output(
     svm_split(binary_data, "label",
-              max_depth   = 1,
-              min_samples = 5,
-              verbose     = TRUE),
+      max_depth   = 1,
+      min_samples = 5,
+      verbose     = TRUE
+    ),
     regexp = "Selected features"
   )
 })
@@ -271,9 +292,10 @@ test_that("verbose = TRUE prints selected features", {
 test_that("verbose = TRUE prints multi-class split attempts", {
   expect_output(
     svm_split(multiclass_data, "label",
-              max_depth   = 1,
-              min_samples = 5,
-              verbose     = TRUE),
+      max_depth   = 1,
+      min_samples = 5,
+      verbose     = TRUE
+    ),
     regexp = "Multi-class case"
   )
 })
@@ -281,8 +303,9 @@ test_that("verbose = TRUE prints multi-class split attempts", {
 test_that("verbose = TRUE reports 'Creating leaf node' at stopping conditions", {
   expect_output(
     svm_split(binary_data, "label",
-              max_depth   = 0,
-              verbose     = TRUE),
+      max_depth   = 0,
+      verbose     = TRUE
+    ),
     regexp = "Creating leaf"
   )
 })
@@ -295,44 +318,48 @@ test_that("verbose = TRUE reports 'Stopping: all features are constant'", {
   )
   expect_warning(
     svm_split(const_data, "label",
-              max_depth   = 3,
-              min_samples = 2,
-              verbose     = TRUE)
+      max_depth   = 3,
+      min_samples = 2,
+      verbose     = TRUE
+    )
   )
 })
 
 test_that("verbose = TRUE with NA data reports the NA warning", {
-  na_data       <- binary_data
+  na_data <- binary_data
   na_data[1, 1] <- NA
   expect_output(
     svm_split(na_data, "label",
-              max_depth   = 3,
-              min_samples = 2,
-              verbose     = TRUE),
+      max_depth   = 3,
+      min_samples = 2,
+      verbose     = TRUE
+    ),
     regexp = "NA values"
   )
 })
 
-# ── multiclass: no valid split found -> leaf ──────────────────────────────────
+# <U+2500><U+2500> multiclass: no valid split found -> leaf <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
 
 test_that("multiclass tree returns a leaf when min_impurity_decrease is impossibly high", {
   # All one-vs-rest splits will be skipped; best_model stays NULL -> leaf
   tree <- svm_split(multiclass_data, "label",
-                    max_depth             = 3,
-                    min_samples           = 2,
-                    min_impurity_decrease = 999)
+    max_depth             = 3,
+    min_samples           = 2,
+    min_impurity_decrease = 999
+  )
   expect_true(tree$is_leaf)
 })
 
 test_that("leaf from failed multiclass split has valid class probabilities", {
   tree <- svm_split(multiclass_data, "label",
-                    max_depth             = 3,
-                    min_samples           = 2,
-                    min_impurity_decrease = 999)
+    max_depth             = 3,
+    min_samples           = 2,
+    min_impurity_decrease = 999
+  )
   expect_equal(sum(tree$class_prob), 1, tolerance = 1e-9)
 })
 
-# ── multiclass: degenerate split (all samples to one side) ───────────────────
+# <U+2500><U+2500> multiclass: degenerate split (all samples to one side) <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
 # Provoked by a near-separable single-class-vs-rest where the SVM assigns
 # every sample to the same side; such splits are skipped with "Degenerate split"
 
@@ -349,13 +376,14 @@ test_that("verbose = TRUE prints 'Degenerate split' message when it occurs", {
   # but tree should still build without error
   expect_no_error(
     svm_split(skewed, "label",
-              max_depth   = 2,
-              min_samples = 2,
-              verbose     = FALSE)
+      max_depth   = 2,
+      min_samples = 2,
+      verbose     = FALSE
+    )
   )
 })
 
-# ── multiclass: handle_small_children triggered after best split ──────────────
+# <U+2500><U+2500> multiclass: handle_small_children triggered after best split <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
 # Achieved by setting min_samples high enough that the best split's children
 # are valid splits (not triggering the length==0 guard) but one child falls
 # below min_samples, routing into handle_small_children.
@@ -368,15 +396,16 @@ test_that("multiclass tree builds correctly when best split has a small child", 
 
   expect_no_error(
     tree <- svm_split(mc, "label",
-                      max_depth   = 2,
-                      min_samples = 15)
+      max_depth   = 2,
+      min_samples = 15
+    )
   )
   expect_type(tree, "list")
 })
 
 test_that("predictions from a tree with small multiclass children are valid", {
   set.seed(42)
-  mc   <- make_multiclass_data(n_per_class = 20)
+  mc <- make_multiclass_data(n_per_class = 20)
   tree <- svm_split(mc, "label", max_depth = 2, min_samples = 15)
   preds <- svm_predict_tree(tree, mc)
 
@@ -384,7 +413,7 @@ test_that("predictions from a tree with small multiclass children are valid", {
   expect_true(all(preds %in% c("A", "B", "C")))
 })
 
-# ── binary: handle_small_children non-stop path ───────────────────────────────
+# <U+2500><U+2500> binary: handle_small_children non-stop path <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
 # When one binary child has < min_samples, handle_small_children returns
 # stop=FALSE and a partially-built node (not a leaf). The code then attaches
 # the model and returns that node. We provoke this with asymmetric data where
@@ -401,8 +430,9 @@ test_that("binary tree handles one small child without error", {
 
   expect_no_error(
     tree <- svm_split(asym, "label",
-                      max_depth   = 2,
-                      min_samples = 3)
+      max_depth   = 2,
+      min_samples = 3
+    )
   )
   expect_type(tree, "list")
 })
@@ -414,22 +444,23 @@ test_that("binary tree with one small child produces valid predictions", {
     x2    = c(rnorm(38, -2), rnorm(2, 10)),
     label = factor(c(rep("A", 38), rep("B", 2)))
   )
-  tree  <- svm_split(asym, "label", max_depth = 2, min_samples = 3)
+  tree <- svm_split(asym, "label", max_depth = 2, min_samples = 3)
   preds <- svm_predict_tree(tree, asym)
 
   expect_length(preds, nrow(asym))
   expect_true(all(preds %in% c("A", "B")))
 })
 
-# ── impurity_func / parent_impurity available in binary path ─────────────────
+# <U+2500><U+2500> impurity_func / parent_impurity available in binary path <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
 # After hoisting impurity_func and parent_impurity above the k==2 branch,
 # verify binary splits still produce correct trees with both impurity measures.
 
 test_that("binary tree with impurity_measure = 'gini' builds and predicts correctly", {
-  tree  <- svm_split(binary_data, "label",
-                     max_depth        = 2,
-                     min_samples      = 5,
-                     impurity_measure = "gini")
+  tree <- svm_split(binary_data, "label",
+    max_depth        = 2,
+    min_samples      = 5,
+    impurity_measure = "gini"
+  )
   preds <- svm_predict_tree(tree, binary_data)
 
   expect_true(all(preds %in% c("A", "B")))
@@ -437,17 +468,18 @@ test_that("binary tree with impurity_measure = 'gini' builds and predicts correc
 })
 
 test_that("binary tree with impurity_measure = 'entropy' builds and predicts correctly", {
-  tree  <- svm_split(binary_data, "label",
-                     max_depth        = 2,
-                     min_samples      = 5,
-                     impurity_measure = "entropy")
+  tree <- svm_split(binary_data, "label",
+    max_depth        = 2,
+    min_samples      = 5,
+    impurity_measure = "entropy"
+  )
   preds <- svm_predict_tree(tree, binary_data)
 
   expect_true(all(preds %in% c("A", "B")))
   expect_gt(mean(preds == as.character(binary_data$label)), 0.7)
 })
 
-# ── max_features NULL path (is.null branch) ──────────────────────────────────
+# <U+2500><U+2500> max_features NULL path (is.null branch) <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
 
 test_that("max_features = NULL uses all available predictors", {
   # When max_features is NULL, calculate_dynamic_max_features returns
@@ -455,9 +487,10 @@ test_that("max_features = NULL uses all available predictors", {
   # The outer is.null(max_features) guard: if NULL is passed as max_features,
   # all predictors are eligible.
   tree <- svm_split(binary_data, "label",
-                    max_depth    = 1,
-                    min_samples  = 5,
-                    max_features = NULL)
+    max_depth    = 1,
+    min_samples  = 5,
+    max_features = NULL
+  )
 
   expect_type(tree, "list")
   if (!tree$is_leaf) {

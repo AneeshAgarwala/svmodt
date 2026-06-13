@@ -14,7 +14,7 @@ test_that("all association values are between 0 and 1", {
 
 test_that("a highly informative feature scores higher than pure noise", {
   set.seed(42)
-  y    <- factor(rep(c("A", "B"), each = 50))
+  y <- factor(rep(c("A", "B"), each = 50))
   data <- data.frame(
     informative = c(rnorm(50, -3), rnorm(50, 3)),
     noise       = rnorm(100),
@@ -26,7 +26,7 @@ test_that("a highly informative feature scores higher than pure noise", {
 })
 
 test_that("constant column is excluded from the result", {
-  df     <- make_data_with_constant()
+  df <- make_data_with_constant()
   result <- calculate_feature_associations(
     df, "label", c("x1", "x2", "constant_col")
   )

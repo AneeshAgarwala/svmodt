@@ -57,10 +57,10 @@ test_that("stop_conditions_met prints 'pure node' reason when verbose = TRUE", {
   expect_output(
     stop_conditions_met(
       binary_data[1:10, ], pure_y,
-      depth       = 1,
-      max_depth   = 10,
+      depth = 1,
+      max_depth = 10,
       min_samples = 2,
-      verbose     = TRUE
+      verbose = TRUE
     ),
     regexp = "pure"
   )
@@ -71,10 +71,10 @@ test_that("stop_conditions_met prints 'Stopping: pure node' when verbose = TRUE"
   expect_output(
     stop_conditions_met(
       small_df, small_df$label,
-      depth       = 1,
-      max_depth   = 10,
+      depth = 1,
+      max_depth = 10,
       min_samples = 5,
-      verbose     = TRUE
+      verbose = TRUE
     ),
     regexp = "Stopping: pure node "
   )

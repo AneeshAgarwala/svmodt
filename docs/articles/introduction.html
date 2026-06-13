@@ -54,7 +54,14 @@
   </ul>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/AneeshAgarwala/svmodt/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
+
+  </a>
+</li>
+      </ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -70,7 +77,7 @@
       <h1 data-toc-skip>Constructing Oblique Trees with svmodt</h1>
             
       
-
+      <small class="dont-index">Source: <a href="https://github.com/AneeshAgarwala/svmodt/blob/HEAD/vignettes/introduction.Rmd" class="external-link"><code>vignettes/introduction.Rmd</code></a></small>
       <div class="hidden name"><code>introduction.Rmd</code></div>
 
     </div>
@@ -104,7 +111,7 @@
 <span>  <span class="op">}</span></span>
 <span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">svmodt</span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/AneeshAgarwala/svmodt" class="external-link">svmodt</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level2" number="1">
 <h2 id="example-1-palmer-penguins-classification">
 <span class="header-section-number">1</span> Example 1: Palmer Penguins Classification<a class="anchor" aria-label="anchor" href="#example-1-palmer-penguins-classification"></a>
@@ -148,7 +155,7 @@
 </h3>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Print tree structure</span></span>
-<span><span class="fu"><a href="../reference/print_svm_tree.html">print_svm_tree</a></span><span class="op">(</span><span class="va">tree_penguins</span>,</span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">tree_penguins</span>,</span>
 <span>  show_probabilities <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  show_feature_info <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
@@ -172,7 +179,7 @@
 </h3>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Predict classes only</span></span>
-<span><span class="va">predictions</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/svm_predict_tree.html">svm_predict_tree</a></span><span class="op">(</span><span class="va">tree_penguins</span>, <span class="va">test_penguins</span><span class="op">)</span></span>
+<span><span class="va">predictions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">tree_penguins</span>, <span class="va">test_penguins</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Predict with probabilities</span></span>
 <span><span class="va">predictions_prob</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/svm_predict_tree.html">svm_predict_tree</a></span><span class="op">(</span><span class="va">tree_penguins</span>, <span class="va">test_penguins</span>,</span>
@@ -357,9 +364,9 @@ Adelie
 </h3>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Visualize tree decision boundaries</span></span>
-<span><span class="va">viz_penguins</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visualize_svm_tree.html">visualize_svm_tree</a></span><span class="op">(</span></span>
+<span><span class="va">viz_penguins</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_boundary.html">plot_boundary</a></span><span class="op">(</span></span>
 <span>  tree <span class="op">=</span> <span class="va">tree_penguins</span>,</span>
-<span>  original_data <span class="op">=</span> <span class="va">train_penguins</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">train_penguins</span>,</span>
 <span>  response_col <span class="op">=</span> <span class="st">"species"</span>,</span>
 <span>  max_depth <span class="op">=</span> <span class="fl">3</span></span>
 <span><span class="op">)</span></span>
@@ -371,19 +378,19 @@ Adelie
 Figure 1: SVMODT Split at Root Node (Depth = 1)
 </p>
 </div>
-<p>Fig <a href="#fig:penguins-viz">1</a> depicts the root node of the SVM-based oblique decision tree, where the first split is performed
+<p>Figure <a href="#fig:penguins-viz">1</a> depicts the root node of the SVM-based oblique decision tree, where the first split is performed
 using the features bill_length_mm and flipper_length_mm. The figure illustrates how the linear SVM
 at the root node divides the dataset into two branches, guiding samples toward subsequent child
 nodes.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange</a></span><span class="op">(</span><span class="va">viz_penguins</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">`depth_2_Root_→_L`</span>, <span class="va">viz_penguins</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">`depth_2_Root_→_R`</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange</a></span><span class="op">(</span><span class="va">viz_penguins</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">depth_2_Root_L</span>, <span class="va">viz_penguins</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">depth_2_Root_R</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <span style="display:block;" id="fig:penguins-viz-2"></span>
 <img src="introduction_files/figure-html/penguins-viz-2-1.png" alt="SVMODT Split at Child Node (Depth = 2)"><p class="caption">
 Figure 2: SVMODT Split at Child Node (Depth = 2)
 </p>
 </div>
-<p>Fig <a href="#fig:penguins-viz-2">2</a> shows a node at depth 2 of the tree, where the SVM uses bill_length_mm and
+<p>Figure <a href="#fig:penguins-viz-2">2</a> shows a node at depth 2 of the tree, where the SVM uses bill_length_mm and
 bill_depth_mm to further partition the data. The decision hyper-plane and sample positions are plotted,
 highlighting how oblique splits can capture multivariate relationships that univariate thresholds
 cannot.</p>
@@ -393,7 +400,7 @@ cannot.</p>
 <span class="header-section-number">1.5</span> Trace Prediction Path<a class="anchor" aria-label="anchor" href="#trace-prediction-path"></a>
 </h3>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/trace_prediction_path.html">trace_prediction_path</a></span><span class="op">(</span><span class="va">tree_penguins</span>, <span class="va">test_penguins</span>, sample_idx <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/trace_path.html">trace_path</a></span><span class="op">(</span><span class="va">tree_penguins</span>, <span class="va">test_penguins</span>, sample_idx <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="co">#&gt; === Tracing Prediction Path ===</span></span>
 <span><span class="co">#&gt; Sample 1 :</span></span>
 <span><span class="co">#&gt;    species = 1 </span></span>
@@ -411,8 +418,7 @@ cannot.</p>
 <span><span class="co">#&gt;      [FINAL] Predict Adelie (n = 120 )</span></span>
 <span><span class="co">#&gt;      Path taken: LEFT -&gt; LEFT </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Final prediction: Adelie</span></span>
-<span><span class="co">#&gt; [1] "Adelie"</span></span></code></pre></div>
+<span><span class="co">#&gt; Final prediction: Adelie</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2" number="2">
@@ -458,7 +464,7 @@ cannot.</p>
 <span class="header-section-number">2.4</span> Evaluate Performance<a class="anchor" aria-label="anchor" href="#evaluate-performance"></a>
 </h3>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">preds_wdbc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/svm_predict_tree.html">svm_predict_tree</a></span><span class="op">(</span><span class="va">tree_wdbc</span>, <span class="va">test_wdbc</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">preds_wdbc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">tree_wdbc</span>, <span class="va">test_wdbc</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Accuracy:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">preds_wdbc</span> <span class="op">==</span> <span class="va">test_wdbc</span><span class="op">$</span><span class="va">diagnosis</span><span class="op">)</span>, <span class="fl">4</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Accuracy: 0.9478</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span>Predicted <span class="op">=</span> <span class="va">preds_wdbc</span>, Actual <span class="op">=</span> <span class="va">test_wdbc</span><span class="op">$</span><span class="va">diagnosis</span><span class="op">)</span><span class="op">)</span></span>
@@ -570,20 +576,20 @@ cannot.</p>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3" number="3.2">
-<h3 id="visualize-decision-boundary">
-<span class="header-section-number">3.2</span> Visualize Decision Boundary<a class="anchor" aria-label="anchor" href="#visualize-decision-boundary"></a>
+<h3 id="visualize-decision-surface">
+<span class="header-section-number">3.2</span> Visualize Decision Surface<a class="anchor" aria-label="anchor" href="#visualize-decision-surface"></a>
 </h3>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">plot_svmodt_surface</span><span class="op">(</span>tree <span class="op">=</span> <span class="va">tree_wine</span>, data <span class="op">=</span> <span class="va">train_wine</span>, response <span class="op">=</span> <span class="st">"class"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/wine-viz-1.png"><!-- -->
-Fig <a href="#fig:wine-viz"><strong>??</strong></a> displays multiclass decision boundaries on the Wine dataset acorss the first two features in the tree.</p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_surface.html">plot_surface</a></span><span class="op">(</span>tree <span class="op">=</span> <span class="va">tree_wine</span>, data <span class="op">=</span> <span class="va">train_wine</span>, response <span class="op">=</span> <span class="st">"class"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="introduction_files/figure-html/wine-multiclass-viz-1.png"><!-- -->
+Figure <a href="#fig:wine-multiclass-viz"><strong>??</strong></a> displays multiclass decision surface on the Wine dataset acorss two features in the tree.</p>
 </div>
 <div class="section level3" number="3.3">
 <h3 id="tree-structure">
 <span class="header-section-number">3.3</span> Tree Structure<a class="anchor" aria-label="anchor" href="#tree-structure"></a>
 </h3>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/print_svm_tree.html">print_svm_tree</a></span><span class="op">(</span><span class="va">tree_wine</span>,</span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">tree_wine</span>,</span>
 <span>  show_probabilities <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  show_feature_info  <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  show_penalties     <span class="op">=</span> <span class="cn">TRUE</span></span>
@@ -634,7 +640,7 @@ Fig <a href="#fig:wine-viz"><strong>??</strong></a> displays multiclass decision
 </h3>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Show how the first test observation is routed through the tree</span></span>
-<span><span class="fu"><a href="../reference/trace_prediction_path.html">trace_prediction_path</a></span><span class="op">(</span><span class="va">tree_wine</span>, <span class="va">test_wine</span>, sample_idx <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/trace_path.html">trace_path</a></span><span class="op">(</span><span class="va">tree_wine</span>, <span class="va">test_wine</span>, sample_idx <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="co">#&gt; === Tracing Prediction Path ===</span></span>
 <span><span class="co">#&gt; Sample 1 :</span></span>
 <span><span class="co">#&gt;    class = 1 </span></span>
@@ -661,8 +667,7 @@ Fig <a href="#fig:wine-viz"><strong>??</strong></a> displays multiclass decision
 <span><span class="co">#&gt;      [FINAL] Predict 1 (n = 47 )</span></span>
 <span><span class="co">#&gt;      Path taken: LEFT -&gt; LEFT </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Final prediction: 1</span></span>
-<span><span class="co">#&gt; [1] "1"</span></span></code></pre></div>
+<span><span class="co">#&gt; Final prediction: 1</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2" number="4">

@@ -1,5 +1,5 @@
 test_that("scale_node returns a list with 'train' and 'transform'", {
-  df     <- binary_data[, c("x1", "x2")]
+  df <- binary_data[, c("x1", "x2")]
   result <- scale_node(df)
 
   expect_type(result, "list")
@@ -9,7 +9,7 @@ test_that("scale_node returns a list with 'train' and 'transform'", {
 })
 
 test_that("scale_node produces zero-mean, unit-variance columns", {
-  df     <- binary_data[, c("x1", "x2")]
+  df <- binary_data[, c("x1", "x2")]
   result <- scale_node(df)
   scaled <- result$train
 
@@ -30,14 +30,14 @@ test_that("scale_node removes constant columns and warns", {
 })
 
 test_that("scale_node transform applies consistent scaling to new data", {
-  df     <- binary_data[, c("x1", "x2")]
+  df <- binary_data[, c("x1", "x2")]
   scaler <- scale_node(df)
 
-  new_df     <- data.frame(x1 = c(0, 1), x2 = c(0, 1))
+  new_df <- data.frame(x1 = c(0, 1), x2 = c(0, 1))
   new_scaled <- scaler$transform(new_df)
 
-  mu       <- colMeans(df)
-  sds      <- apply(df, 2, sd)
+  mu <- colMeans(df)
+  sds <- apply(df, 2, sd)
   expected <- sweep(sweep(new_df, 2, mu, "-"), 2, sds, "/")
 
   expect_equal(as.numeric(new_scaled$x1), as.numeric(expected$x1), tolerance = 1e-9)
@@ -50,8 +50,8 @@ test_that("scale_node returns empty data frame for zero-column input", {
 })
 
 test_that("scale_node transform returns empty data frame when called on empty input", {
-  df     <- binary_data[, c("x1", "x2")]
+  df <- binary_data[, c("x1", "x2")]
   scaler <- scale_node(df)
-  out    <- scaler$transform(data.frame())
+  out <- scaler$transform(data.frame())
   expect_equal(ncol(out), 0)
 })

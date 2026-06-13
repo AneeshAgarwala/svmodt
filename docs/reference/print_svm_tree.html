@@ -35,7 +35,13 @@
       <a href="../articles/introduction.html">Constructing Oblique Trees with svmodt</a>
     </li>
   </ul></li>
-      </ul><ul class="nav navbar-nav navbar-right"></ul></div><!--/.nav-collapse -->
+      </ul><ul class="nav navbar-nav navbar-right"><li>
+  <a href="https://github.com/AneeshAgarwala/svmodt/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
+
+  </a>
+</li>
+      </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
@@ -45,7 +51,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Print an SVM Decision Tree</h1>
-
+    <small class="dont-index">Source: <a href="https://github.com/AneeshAgarwala/svmodt/blob/HEAD/R/svmodt_print_tree.R" class="external-link"><code>R/svmodt_print_tree.R</code></a></small>
     <div class="hidden name"><code>print_svm_tree.Rd</code></div>
     </div>
 
@@ -68,7 +74,7 @@
 
 
 <dl><dt id="arg-tree">tree<a class="anchor" aria-label="anchor" href="#arg-tree"></a></dt>
-<dd><p>The tree object to print.</p></dd>
+<dd><p>An object of class <code>svmodt_node</code> (leaf or tree).</p></dd>
 
 
 <dt id="arg-indent">indent<a class="anchor" aria-label="anchor" href="#arg-indent"></a></dt>
@@ -111,8 +117,8 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span>   B   M </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 357 212 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of classes at node: 2 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Selected features: smoothness_mean, compactness_mean </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Features after removing constants: smoothness_mean, compactness_mean </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Selected features: compactness_mean, symmetry_mean </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Features after removing constants: compactness_mean, symmetry_mean </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Binary classification case</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Classes at node      : B, M </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Class counts         : 357, 212 </span>
@@ -123,50 +129,57 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> Class distribution:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   B   M </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  43 138 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  41 140 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of classes at node: 2 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Selected features: symmetry_mean, fractal_dimension_mean </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Features after removing constants: symmetry_mean, fractal_dimension_mean </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Selected features: texture_worst, fractal_dimension_mean </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Features after removing constants: texture_worst, fractal_dimension_mean </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Binary classification case</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Classes at node      : B, M </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Class counts         : 43, 138 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Class counts         : 41, 140 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Class weights: none (equal weights)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> --- Node at depth 3 ---</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Samples: 149 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Samples: 146 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Class distribution:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   B   M </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  18 131 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  17 129 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of classes at node: 2 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Selected features: smoothness_worst, fractal_dimension_se </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Features after removing constants: smoothness_worst, fractal_dimension_se </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Selected features: fractal_dimension_se, texture_worst </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Features after removing constants: fractal_dimension_se, texture_worst </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Binary classification case</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Classes at node      : B, M </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Class counts         : 18, 131 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Class counts         : 17, 129 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Class weights: none (equal weights)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> --- Node at depth 3 ---</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Samples: 32 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Samples: 35 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Class distribution:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  B  M </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25  7 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24 11 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of classes at node: 2 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Selected features: compactness_worst, fractal_dimension_worst </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Features after removing constants: compactness_worst, fractal_dimension_worst </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Selected features: fractal_dimension_worst, fractal_dimension_mean </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Features after removing constants: fractal_dimension_worst, fractal_dimension_mean </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Binary classification case</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Classes at node      : B, M </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Class counts         : 25, 7 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Class counts         : 24, 11 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Class weights: none (equal weights)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Left child too small, creating right child and left leaf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> --- Node at depth 4 ---</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Samples: 5 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Class distribution:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> B M </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 4 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Creating leaf node</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> --- Node at depth 4 ---</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Samples: 30 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Class distribution:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  B  M </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25  5 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23  7 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Creating leaf node</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> --- Node at depth 2 ---</span>
@@ -174,80 +187,60 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> Class distribution:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   B   M </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 314  74 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 316  72 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of classes at node: 2 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Selected features: concave.points_worst, fractal_dimension_worst </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Features after removing constants: concave.points_worst, fractal_dimension_worst </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Selected features: area_worst, concave.points_worst </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Features after removing constants: area_worst, concave.points_worst </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Binary classification case</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Classes at node      : B, M </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Class counts         : 314, 74 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Class counts         : 316, 72 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Class weights: none (equal weights)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> --- Node at depth 3 ---</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Samples: 64 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Samples: 60 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Class distribution:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  B  M </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13 51 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4 56 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of classes at node: 2 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Selected features: concave.points_mean, compactness_worst </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Features after removing constants: concave.points_mean, compactness_worst </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Selected features: area_mean, concavity_mean </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Features after removing constants: area_mean, concavity_mean </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Binary classification case</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Classes at node      : B, M </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Class counts         : 13, 51 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Class counts         : 4, 56 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Class weights: none (equal weights)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> --- Node at depth 4 ---</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Samples: 56 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Class distribution:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  B  M </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7 49 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Creating leaf node</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> --- Node at depth 4 ---</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Samples: 8 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Class distribution:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> B M </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 2 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Creating leaf node</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> --- Node at depth 3 ---</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Samples: 324 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Samples: 328 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Class distribution:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   B   M </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 301  23 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 312  16 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of classes at node: 2 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Selected features: fractal_dimension_mean, smoothness_se </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Features after removing constants: fractal_dimension_mean, smoothness_se </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Selected features: smoothness_se, concavity_worst </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Features after removing constants: smoothness_se, concavity_worst </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Binary classification case</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Classes at node      : B, M </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Class counts         : 301, 23 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Class counts         : 312, 16 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Class weights: none (equal weights)</span>
 <span class="r-in"><span><span class="fu">print_svm_tree</span><span class="op">(</span><span class="va">tree</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [Node] depth = 1 | n = 569 | features = [smoothness_mean,compactness_mean] | penalty = +</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [Node] depth = 1 | n = 569 | features = [compactness_mean,symmetry_mean] | penalty = +</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  |- Positive branch (distance &gt;= 0):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |   [Node] depth = 2 | n = 181 | features = [symmetry_mean,fractal_dimension_mean] | penalty = +</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |   [Node] depth = 2 | n = 181 | features = [texture_worst,fractal_dimension_mean] | penalty = +</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |   |- Positive branch (distance &gt;= 0):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |  |   [Leaf] predict = M | n = 149 | features = [smoothness_worst,fractal_dimension_se]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |  |   [Leaf] predict = M | n = 146 | features = [fractal_dimension_se,texture_worst]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |   `- Negative branch (distance &lt; 0):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |      [Node] depth = 3 | n = 32 | features = [compactness_worst,fractal_dimension_worst]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |      [Node] depth = 3 | n = 35 | features = [fractal_dimension_worst,fractal_dimension_mean] | penalty = +</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |      |- Positive branch (distance &gt;= 0):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |     |   [Leaf] predict = M | n = 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |     |   [Leaf] predict = M | n = 5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |      `- Negative branch (distance &lt; 0):</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |         [Leaf] predict = B | n = 30</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  `- Negative branch (distance &lt; 0):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     [Node] depth = 2 | n = 388 | features = [concave.points_worst,fractal_dimension_worst] | penalty = +</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     [Node] depth = 2 | n = 388 | features = [area_worst,concave.points_worst] | penalty = +</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     |- Positive branch (distance &gt;= 0):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    |   [Node] depth = 3 | n = 64 | features = [concave.points_mean,compactness_worst] | penalty = +</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    |   |- Positive branch (distance &gt;= 0):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    |  |   [Leaf] predict = M | n = 56</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    |   `- Negative branch (distance &lt; 0):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    |      [Leaf] predict = B | n = 8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    |   [Leaf] predict = M | n = 60 | features = [area_mean,concavity_mean]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     `- Negative branch (distance &lt; 0):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        [Leaf] predict = B | n = 324 | features = [fractal_dimension_mean,smoothness_se]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        [Leaf] predict = B | n = 328 | features = [smoothness_se,concavity_worst]</span>
 </code></pre></div>
     </div>
   </div>

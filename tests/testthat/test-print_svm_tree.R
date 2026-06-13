@@ -9,7 +9,7 @@ test_that("produces console output for an internal node tree", {
 })
 
 test_that("returns NULL invisibly", {
-  leaf   <- leaf_node(factor("A"), 1, c("A", "B"))
+  leaf <- leaf_node(factor("A"), 1, c("A", "B"))
   result <- print_svm_tree(leaf)
   expect_null(result)
 })
@@ -23,17 +23,18 @@ test_that("shows class probabilities when show_probabilities = TRUE", {
 })
 
 test_that("print_svm_tree shows 'no left child' when left is NULL", {
-  leaf  <- leaf_node(factor("B"), 1, c("A", "B"))
+  leaf <- leaf_node(factor("B"), 1, c("A", "B"))
   scaler <- scale_node(binary_data[, c("x1", "x2")])
-  model  <- fit_svm_with_weights(scaler$train, binary_data$label,
-                                 class_weights_vec = NULL)
+  model <- fit_svm_with_weights(scaler$train, binary_data$label,
+    class_weights_vec = NULL
+  )
 
   node <- list(
     is_leaf          = FALSE,
     model            = model,
     features         = c("x1", "x2"),
     scaler           = scaler,
-    left             = NULL,    # deliberately absent
+    left             = NULL, # deliberately absent
     right            = leaf,
     depth            = 1,
     n                = nrow(binary_data),
@@ -49,10 +50,11 @@ test_that("print_svm_tree shows 'no left child' when left is NULL", {
 })
 
 test_that("print_svm_tree shows 'no right child' when right is NULL", {
-  leaf  <- leaf_node(factor("A"), 1, c("A", "B"))
+  leaf <- leaf_node(factor("A"), 1, c("A", "B"))
   scaler <- scale_node(binary_data[, c("x1", "x2")])
-  model  <- fit_svm_with_weights(scaler$train, binary_data$label,
-                                 class_weights_vec = NULL)
+  model <- fit_svm_with_weights(scaler$train, binary_data$label,
+    class_weights_vec = NULL
+  )
 
   node <- list(
     is_leaf          = FALSE,
@@ -60,7 +62,7 @@ test_that("print_svm_tree shows 'no right child' when right is NULL", {
     features         = c("x1", "x2"),
     scaler           = scaler,
     left             = leaf,
-    right            = NULL,    # deliberately absent
+    right            = NULL, # deliberately absent
     depth            = 1,
     n                = nrow(binary_data),
     hyperplane_class = NULL,
@@ -75,11 +77,12 @@ test_that("print_svm_tree shows 'no right child' when right is NULL", {
 })
 
 test_that("print_svm_tree shows hyperplane_class when set", {
-  leaf  <- leaf_node(factor("A"), 1, c("A", "B", "C"))
+  leaf <- leaf_node(factor("A"), 1, c("A", "B", "C"))
   leaf2 <- leaf_node(factor("B"), 1, c("A", "B", "C"))
   scaler <- scale_node(binary_data[, c("x1", "x2")])
-  model  <- fit_svm_with_weights(scaler$train, binary_data$label,
-                                 class_weights_vec = NULL)
+  model <- fit_svm_with_weights(scaler$train, binary_data$label,
+    class_weights_vec = NULL
+  )
 
   node <- list(
     is_leaf          = FALSE,
@@ -90,7 +93,7 @@ test_that("print_svm_tree shows hyperplane_class when set", {
     right            = leaf2,
     depth            = 1,
     n                = 60,
-    hyperplane_class = "A",     # OVR split label
+    hyperplane_class = "A", # OVR split label
     impurity         = 0.6,
     penalty_applied  = FALSE
   )

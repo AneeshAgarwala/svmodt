@@ -43,8 +43,8 @@ test_that("n_subsets = 3 with random method returns a character vector", {
   result <- choose_features(
     multiclass_data, "label",
     max_features = 1,
-    method       = "random",
-    n_subsets    = 3
+    method = "random",
+    n_subsets = 3
   )
 
   expect_type(result, "character")
@@ -54,10 +54,14 @@ test_that("n_subsets = 3 with random method returns a character vector", {
 
 test_that("n_subsets = 1 (default) and n_subsets = 5 return valid features", {
   set.seed(2)
-  r1 <- choose_features(binary_data, "label", max_features = 1,
-                        method = "random", n_subsets = 1)
-  r5 <- choose_features(binary_data, "label", max_features = 1,
-                        method = "random", n_subsets = 5)
+  r1 <- choose_features(binary_data, "label",
+    max_features = 1,
+    method = "random", n_subsets = 1
+  )
+  r5 <- choose_features(binary_data, "label",
+    max_features = 1,
+    method = "random", n_subsets = 5
+  )
 
   expect_true(r1 %in% c("x1", "x2"))
   expect_true(r5 %in% c("x1", "x2"))

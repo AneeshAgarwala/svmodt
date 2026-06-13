@@ -1,5 +1,5 @@
 test_that("returns a character vector of the correct length", {
-  tree  <- svm_split(binary_data, "label", max_depth = 2, min_samples = 5)
+  tree <- svm_split(binary_data, "label", max_depth = 2, min_samples = 5)
   preds <- svm_predict_tree(tree, binary_data)
 
   expect_type(preds, "character")
@@ -7,14 +7,14 @@ test_that("returns a character vector of the correct length", {
 })
 
 test_that("all predictions belong to the known class set", {
-  tree  <- svm_split(binary_data, "label", max_depth = 2, min_samples = 5)
+  tree <- svm_split(binary_data, "label", max_depth = 2, min_samples = 5)
   preds <- svm_predict_tree(tree, binary_data)
 
   expect_true(all(preds %in% c("A", "B")))
 })
 
 test_that("return_probs = TRUE yields a named list with 'predictions' and 'probabilities'", {
-  tree   <- svm_split(binary_data, "label", max_depth = 2, min_samples = 5)
+  tree <- svm_split(binary_data, "label", max_depth = 2, min_samples = 5)
   result <- svm_predict_tree(tree, binary_data, return_probs = TRUE)
 
   expect_type(result, "list")
@@ -22,7 +22,7 @@ test_that("return_probs = TRUE yields a named list with 'predictions' and 'proba
 })
 
 test_that("probability matrix has the correct number of rows and at least 2 columns", {
-  tree   <- svm_split(binary_data, "label", max_depth = 2, min_samples = 5)
+  tree <- svm_split(binary_data, "label", max_depth = 2, min_samples = 5)
   result <- svm_predict_tree(tree, binary_data, return_probs = TRUE)
 
   expect_equal(nrow(result$probabilities), nrow(binary_data))
@@ -30,15 +30,15 @@ test_that("probability matrix has the correct number of rows and at least 2 colu
 })
 
 test_that("every row of the probability matrix sums to 1", {
-  tree     <- svm_split(binary_data, "label", max_depth = 2, min_samples = 5)
-  result   <- svm_predict_tree(tree, binary_data, return_probs = TRUE)
+  tree <- svm_split(binary_data, "label", max_depth = 2, min_samples = 5)
+  result <- svm_predict_tree(tree, binary_data, return_probs = TRUE)
   row_sums <- rowSums(result$probabilities)
 
   expect_true(all(abs(row_sums - 1) < 1e-6))
 })
 
 test_that("predicting on a leaf node returns the majority class for every row", {
-  leaf  <- leaf_node(factor(c("A", "A", "B")), 3, c("A", "B"))
+  leaf <- leaf_node(factor(c("A", "A", "B")), 3, c("A", "B"))
   preds <- svm_predict_tree(leaf, binary_data[1:5, ])
 
   expect_length(preds, 5)
@@ -46,7 +46,7 @@ test_that("predicting on a leaf node returns the majority class for every row", 
 })
 
 test_that("zero-row newdata is handled gracefully", {
-  tree   <- svm_split(binary_data, "label", max_depth = 2, min_samples = 5)
+  tree <- svm_split(binary_data, "label", max_depth = 2, min_samples = 5)
   result <- svm_predict_tree(tree, binary_data[0, ], return_probs = TRUE)
 
   expect_length(result$predictions, 0)
@@ -54,15 +54,15 @@ test_that("zero-row newdata is handled gracefully", {
 })
 
 test_that("achieves > 80% accuracy on clearly separable training data", {
-  tree  <- svm_split(binary_data, "label", max_depth = 3, min_samples = 3)
+  tree <- svm_split(binary_data, "label", max_depth = 3, min_samples = 3)
   preds <- svm_predict_tree(tree, binary_data)
-  acc   <- mean(preds == as.character(binary_data$label))
+  acc <- mean(preds == as.character(binary_data$label))
 
   expect_gt(acc, 0.80)
 })
 
 test_that("multiclass predictions are all within the known class set", {
-  tree  <- svm_split(multiclass_data, "label", max_depth = 3, min_samples = 5)
+  tree <- svm_split(multiclass_data, "label", max_depth = 3, min_samples = 5)
   preds <- svm_predict_tree(tree, multiclass_data)
 
   expect_true(all(preds %in% c("A", "B", "C")))
@@ -113,30 +113,31 @@ test_that("using model calibration does not error and stays within [0.001, 0.999
   expect_lte(max(probs), 0.999)
 })
 
-# ── calibrate_probs = FALSE ───────────────────────────────────────────────────
+# <U+2500><U+2500> calibrate_probs = FALSE <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
 
 test_that("calibrate_probs = FALSE returns predictions for every row", {
-  tree   <- svm_split(binary_data, "label", max_depth = 2, min_samples = 5)
-  preds  <- svm_predict_tree(tree, binary_data, calibrate_probs = FALSE)
+  tree <- svm_split(binary_data, "label", max_depth = 2, min_samples = 5)
+  preds <- svm_predict_tree(tree, binary_data, calibrate_probs = FALSE)
 
   expect_length(preds, nrow(binary_data))
   expect_true(all(preds %in% c("A", "B")))
 })
 
 test_that("calibrate_probs = FALSE with return_probs gives rows summing to 1", {
-  tree   <- svm_split(binary_data, "label", max_depth = 2, min_samples = 5)
+  tree <- svm_split(binary_data, "label", max_depth = 2, min_samples = 5)
   result <- svm_predict_tree(tree, binary_data,
-                             return_probs    = TRUE,
-                             calibrate_probs = FALSE)
+    return_probs    = TRUE,
+    calibrate_probs = FALSE
+  )
 
   row_sums <- rowSums(result$probabilities)
   expect_true(all(abs(row_sums - 1) < 1e-6))
 })
 
-# ── multiclass probability shape ──────────────────────────────────────────────
+# <U+2500><U+2500> multiclass probability shape <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
 
 test_that("multiclass tree returns probability matrix with one column per class", {
-  tree   <- svm_split(multiclass_data, "label", max_depth = 3, min_samples = 5)
+  tree <- svm_split(multiclass_data, "label", max_depth = 3, min_samples = 5)
   result <- svm_predict_tree(tree, multiclass_data, return_probs = TRUE)
 
   expect_gte(ncol(result$probabilities), 3)
@@ -144,25 +145,25 @@ test_that("multiclass tree returns probability matrix with one column per class"
 })
 
 test_that("multiclass probability rows each sum to 1", {
-  tree     <- svm_split(multiclass_data, "label", max_depth = 3, min_samples = 5)
-  result   <- svm_predict_tree(tree, multiclass_data, return_probs = TRUE)
+  tree <- svm_split(multiclass_data, "label", max_depth = 3, min_samples = 5)
+  result <- svm_predict_tree(tree, multiclass_data, return_probs = TRUE)
   row_sums <- rowSums(result$probabilities)
 
   expect_true(all(abs(row_sums - 1) < 1e-6))
 })
 
 test_that("multiclass predictions all belong to the known label set", {
-  tree  <- svm_split(multiclass_data, "label", max_depth = 3, min_samples = 5)
+  tree <- svm_split(multiclass_data, "label", max_depth = 3, min_samples = 5)
   preds <- svm_predict_tree(tree, multiclass_data)
 
   expect_true(all(preds %in% c("A", "B", "C")))
 })
 
-# ── leaf-only tree (max_depth = 0) ────────────────────────────────────────────
+# <U+2500><U+2500> leaf-only tree (max_depth = 0) <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
 
 test_that("depth-0 tree (single leaf) predicts the majority class for every sample", {
   # With max_depth = 0 the root is immediately a leaf
-  tree  <- svm_split(binary_data, "label", max_depth = 0)
+  tree <- svm_split(binary_data, "label", max_depth = 0)
   preds <- svm_predict_tree(tree, binary_data)
 
   # All predictions must be the same (the leaf's majority class)
@@ -170,40 +171,41 @@ test_that("depth-0 tree (single leaf) predicts the majority class for every samp
   expect_true(unique(preds) %in% c("A", "B"))
 })
 
-# ── probability matrix column naming ─────────────────────────────────────────
+# <U+2500><U+2500> probability matrix column naming <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
 
 test_that("probability matrix columns are named with class labels", {
-  tree   <- svm_split(binary_data, "label", max_depth = 2, min_samples = 5)
+  tree <- svm_split(binary_data, "label", max_depth = 2, min_samples = 5)
   result <- svm_predict_tree(tree, binary_data, return_probs = TRUE)
 
   expect_false(is.null(colnames(result$probabilities)))
   expect_true(all(colnames(result$probabilities) %in% c("A", "B")))
 })
 
-# ── single-row newdata ────────────────────────────────────────────────────────
+# <U+2500><U+2500> single-row newdata <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
 
 test_that("works correctly with a single-row newdata frame", {
-  tree  <- svm_split(binary_data, "label", max_depth = 2, min_samples = 5)
+  tree <- svm_split(binary_data, "label", max_depth = 2, min_samples = 5)
   preds <- svm_predict_tree(tree, binary_data[1, , drop = FALSE])
 
   expect_length(preds, 1)
   expect_true(preds %in% c("A", "B"))
 })
 
-# ── predictions on imbalanced data ───────────────────────────────────────────
+# <U+2500><U+2500> predictions on imbalanced data <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
 
 test_that("tree with balanced weights still returns valid predictions", {
-  tree  <- svm_split(imbalanced_data, "label",
-                     max_depth     = 2,
-                     min_samples   = 5,
-                     class_weights = "balanced")
+  tree <- svm_split(imbalanced_data, "label",
+    max_depth     = 2,
+    min_samples   = 5,
+    class_weights = "balanced"
+  )
   preds <- svm_predict_tree(tree, imbalanced_data)
 
   expect_length(preds, nrow(imbalanced_data))
   expect_true(all(preds %in% c("majority", "minority")))
 })
 
-# ── get_fallback_predictions ──────────────────────────────────────────────────
+# <U+2500><U+2500> get_fallback_predictions <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
 
 test_that("returns a list with 'predictions' and 'probabilities'", {
   result <- get_fallback_predictions(
@@ -219,7 +221,7 @@ test_that("returns a list with 'predictions' and 'probabilities'", {
 })
 
 test_that("predictions vector has one element per sample", {
-  n      <- 8
+  n <- 8
   result <- get_fallback_predictions(
     model           = m$model,
     X_scaled        = m$scaler$train[1:n, ],
@@ -233,7 +235,7 @@ test_that("predictions vector has one element per sample", {
 })
 
 test_that("probability matrix rows sum to 1", {
-  n      <- 6
+  n <- 6
   result <- get_fallback_predictions(
     model           = m$model,
     X_scaled        = m$scaler$train[1:n, ],
@@ -275,10 +277,11 @@ test_that("zero-sample input is handled gracefully", {
 })
 
 test_that("uses svm_probs when they are provided (Option 1 path)", {
-  n     <- 4
+  n <- 4
   # Craft a fake probability matrix that unambiguously favours class "A"
-  fake_probs        <- matrix(c(0.9, 0.1, 0.9, 0.1, 0.1, 0.9, 0.1, 0.9),
-                              nrow = n, ncol = 2)
+  fake_probs <- matrix(c(0.9, 0.1, 0.9, 0.1, 0.1, 0.9, 0.1, 0.9),
+    nrow = n, ncol = 2
+  )
   colnames(fake_probs) <- c("A", "B")
 
   result <- get_fallback_predictions(
@@ -290,10 +293,10 @@ test_that("uses svm_probs when they are provided (Option 1 path)", {
     calibrate       = TRUE
   )
 
-  # First and third rows → should predict "A" (prob 0.9)
+  # First and third rows <U+2192> should predict "A" (prob 0.9)
   expect_equal(result$predictions[1], "A")
   expect_equal(result$predictions[3], "A")
-  # Second and fourth rows → should predict "B" (prob 0.9)
+  # Second and fourth rows <U+2192> should predict "B" (prob 0.9)
   expect_equal(result$predictions[2], "B")
   expect_equal(result$predictions[4], "B")
 })

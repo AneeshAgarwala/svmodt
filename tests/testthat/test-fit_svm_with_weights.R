@@ -13,7 +13,7 @@ test_that("returns an svm object for valid binary input without weights", {
 })
 
 test_that("returns an svm object when class weights are supplied", {
-  cw    <- c(A = 1, B = 2)
+  cw <- c(A = 1, B = 2)
   model <- fit_svm_with_weights(
     scaled_binary$X, scaled_binary$y,
     class_weights_vec = cw
@@ -22,7 +22,7 @@ test_that("returns an svm object when class weights are supplied", {
 })
 
 test_that("returns NULL without error when SVM fitting is impossible (single class)", {
-  X     <- data.frame(x1 = 1:5, x2 = 1:5)
+  X <- data.frame(x1 = 1:5, x2 = 1:5)
   y_bad <- factor(rep("A", 5))
 
   result <- expect_no_error(
@@ -43,13 +43,13 @@ test_that("fitted model produces decision values on predict()", {
 
 test_that("fit_svm_with_weights verbose = TRUE prints weight and level info", {
   scaler <- scale_node(binary_data[, c("x1", "x2")])
-  cw     <- c(A = 1.5, B = 0.8)
+  cw <- c(A = 1.5, B = 0.8)
 
   expect_output(
     fit_svm_with_weights(
       scaler$train, binary_data$label,
       class_weights_vec = cw,
-      verbose           = TRUE
+      verbose = TRUE
     ),
     regexp = "weight|level"
   )
@@ -62,16 +62,16 @@ test_that("fit_svm_with_weights verbose = TRUE with no weights still runs withou
     model <- fit_svm_with_weights(
       scaler$train, binary_data$label,
       class_weights_vec = NULL,
-      verbose           = TRUE
+      verbose = TRUE
     )
   )
   expect_s3_class(model, "svm")
 })
 
 test_that("fit_svm_with_weights verbose = TRUE prints WARN when weight names mismatch levels", {
-  scaler   <- scale_node(binary_data[, c("x1", "x2")])
+  scaler <- scale_node(binary_data[, c("x1", "x2")])
   # Supply weights only for "A" so "B" is missing -> [WARN] in verbose output
-  cw_bad   <- c(A = 2.0)   # B intentionally absent
+  cw_bad <- c(A = 2.0) # B intentionally absent
 
   # The SVM will likely error with mismatched weights, but we just want to
   # confirm the verbose mismatch-check lines are executed (not an error check).
@@ -80,7 +80,7 @@ test_that("fit_svm_with_weights verbose = TRUE prints WARN when weight names mis
       fit_svm_with_weights(
         scaler$train, binary_data$label,
         class_weights_vec = cw_bad,
-        verbose           = TRUE
+        verbose = TRUE
       ),
       error = function(e) NULL
     )

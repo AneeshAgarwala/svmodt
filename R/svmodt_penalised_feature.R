@@ -9,7 +9,7 @@
 #' @param max_features Maximum number of features to select.
 #' @param method Feature selection method; one of \code{"random"}, \code{"mutual"}, or \code{"cor"}.
 #' @param penalize_used Logical; if \code{TRUE}, previously used features are penalized.
-#' @param penalty_weight Numeric (0–0.99); fraction by which to reduce the score/weight of used features.
+#' @param penalty_weight Numeric (0<U+2013>0.99); fraction by which to reduce the score/weight of used features.
 #' @param used_features Character vector of features previously used in the tree.
 #' @param verbose Logical; if \code{TRUE}, prints information about penalties applied.
 #'

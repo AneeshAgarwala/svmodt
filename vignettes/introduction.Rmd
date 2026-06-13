@@ -127,7 +127,7 @@ viz_penguins <- plot_boundary(
 
 viz_penguins$plots$depth_1_Root
 ```
-Fig \@ref(fig:penguins-viz) depicts the root node of the SVM-based oblique decision tree, where the first split is performed
+Figure \@ref(fig:penguins-viz) depicts the root node of the SVM-based oblique decision tree, where the first split is performed
 using the features bill_length_mm and flipper_length_mm. The figure illustrates how the linear SVM
 at the root node divides the dataset into two branches, guiding samples toward subsequent child
 nodes.
@@ -136,7 +136,7 @@ nodes.
 #| fig-cap: SVMODT Split at Child Node (Depth = 2)
 gridExtra::grid.arrange(viz_penguins$plots$depth_2_Root_L, viz_penguins$plots$depth_2_Root_R, ncol = 2)
 ```
-Fig \@ref(fig:penguins-viz-2) shows a node at depth 2 of the tree, where the SVM uses bill_length_mm and
+Figure \@ref(fig:penguins-viz-2) shows a node at depth 2 of the tree, where the SVM uses bill_length_mm and
 bill_depth_mm to further partition the data. The decision hyper-plane and sample positions are plotted,
 highlighting how oblique splits can capture multivariate relationships that univariate thresholds
 cannot.
@@ -257,9 +257,8 @@ set.seed(234)
 
 wine$class <- as.factor(wine$class)
 split_wine <- rsample::initial_split(wine, prop = 0.8, strata = class)
-train_wine  <- rsample::training(split_wine)
-test_wine   <- rsample::testing(split_wine)
-
+train_wine <- rsample::training(split_wine)
+test_wine <- rsample::testing(split_wine)
 ```
 
 ### Train Multiclass SVMODT
@@ -267,25 +266,25 @@ test_wine   <- rsample::testing(split_wine)
 At each internal node, SVMODT iterates over all present classes, fits a binary one-vs-rest SVM, and selects the split that maximally reduces entropy. This continues recursively until `max_depth` is reached or `min_impurity_decrease` prevents uninformative splits.
 ```{r wine-train}
 tree_wine <- svm_split(
-  data               = train_wine,
-  response           = "class",
-  max_depth          = 5,
+  data = train_wine,
+  response = "class",
+  max_depth = 5,
   max_features = 5,
-  feature_method     = "mutual",
-  impurity_measure   = "entropy",
+  feature_method = "mutual",
+  impurity_measure = "entropy",
   min_impurity_decrease = 0.01,
-  class_weights      = "balanced",
+  class_weights = "balanced",
   penalize_used_features = TRUE,
   feature_penalty_weight = 0.5,
-  verbose            = FALSE
+  verbose = FALSE
 )
 ```
 
-### Visualize Decision Boundary
-```{r wine-viz}
+### Visualize Decision Surface
+```{r wine-multiclass-viz, fig.height=6, fig.width=8}
 plot_surface(tree = tree_wine, data = train_wine, response = "class")
 ```
-Fig \@ref(fig:wine-viz) displays multiclass decision boundaries on the Wine dataset acorss the first two features in the tree. 
+Figure \@ref(fig:wine-multiclass-viz) displays multiclass decision surface on the Wine dataset acorss two features in the tree. 
 
 ### Tree Structure
 ```{r wine-structure}

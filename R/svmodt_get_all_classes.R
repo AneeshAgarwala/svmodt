@@ -1,13 +1,13 @@
 #' Retrieve all class labels from a decision tree
 #'
-#' Recursively extracts all unique class labels stored in a decision tree’s
+#' Recursively extracts all unique class labels stored in a decision tree<U+2019>s
 #' leaf nodes.
 #'
 #' @param tree A decision tree object, where each node may contain:
 #'   \itemize{
-#'     \item \code{is_leaf} – logical; \code{TRUE} if the node is a leaf.
-#'     \item \code{class_prob} – named numeric vector of class probabilities.
-#'     \item \code{left}, \code{right} – child node objects.
+#'     \item \code{is_leaf} <U+2013> logical; \code{TRUE} if the node is a leaf.
+#'     \item \code{class_prob} <U+2013> named numeric vector of class probabilities.
+#'     \item \code{left}, \code{right} <U+2013> child node objects.
 #'   }
 #'
 #' @return A character vector of all unique class labels present in the tree.

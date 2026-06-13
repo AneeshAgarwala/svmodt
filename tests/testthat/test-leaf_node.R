@@ -25,7 +25,7 @@ test_that("classes absent from y receive probability 0", {
 })
 
 test_that("safety fallback gives a valid uniform distribution when all probs would be 0", {
-  # y contains a class that is not in all_classes — every named entry stays 0
+  # y contains a class that is not in all_classes <U+2014> every named entry stays 0
   node <- leaf_node(factor(c("D", "D")), n = 2, all_classes = c("A", "B"))
 
   expect_equal(sum(node$class_prob), 1, tolerance = 1e-9)

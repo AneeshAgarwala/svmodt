@@ -1,10 +1,10 @@
 # helpers
 
-# Shared call signature — all the boring boilerplate in one place
+# Shared call signature <U+2014> all the boring boilerplate in one place
 call_handle <- function(left_idx, right_idx,
                         min_samples = 5,
-                        data        = binary_data,
-                        verbose     = FALSE) {
+                        data = binary_data,
+                        verbose = FALSE) {
   handle_small_children(
     left_idx                    = left_idx,
     right_idx                   = right_idx,
@@ -33,7 +33,7 @@ call_handle <- function(left_idx, right_idx,
   )
 }
 
-# ── both children too small ───────────────────────────────────────────────────
+# <U+2500><U+2500> both children too small <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
 
 test_that("returns stop = TRUE and a leaf when both children are too small", {
   result <- call_handle(left_idx = 1:2, right_idx = 3:4, min_samples = 10)
@@ -48,7 +48,7 @@ test_that("leaf node from both-too-small case has valid class probabilities", {
   expect_equal(sum(result$node$class_prob), 1, tolerance = 1e-9)
 })
 
-# ── left child too small ──────────────────────────────────────────────────────
+# <U+2500><U+2500> left child too small <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
 
 test_that("returns stop = FALSE and a node when only the left child is too small", {
   # Give the right side enough samples, left side is tiny
@@ -70,7 +70,7 @@ test_that("node for small-left case has a valid right child but left child is a 
   expect_true(result$node$left$is_leaf)
 })
 
-# ── right child too small ─────────────────────────────────────────────────────
+# <U+2500><U+2500> right child too small <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
 
 test_that("returns stop = FALSE and a node when only the right child is too small", {
   result <- call_handle(left_idx = 1:30, right_idx = 31:32, min_samples = 5)
@@ -86,7 +86,7 @@ test_that("node for small-right case has a valid left child but right child is a
   expect_true(result$node$right$is_leaf)
 })
 
-# ── neither child too small ───────────────────────────────────────────────────
+# <U+2500><U+2500> neither child too small <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
 
 test_that("returns stop = FALSE and node = NULL when both children are large enough", {
   result <- call_handle(left_idx = 1:20, right_idx = 21:40, min_samples = 5)
@@ -95,7 +95,7 @@ test_that("returns stop = FALSE and node = NULL when both children are large eno
   expect_null(result$node)
 })
 
-# ── verbose output ────────────────────────────────────────────────────────────
+# <U+2500><U+2500> verbose output <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
 
 test_that("prints a message when both children are too small and verbose = TRUE", {
   expect_output(

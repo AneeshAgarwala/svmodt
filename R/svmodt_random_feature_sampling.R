@@ -9,8 +9,8 @@
 #' @param response Character string specifying the response variable name.
 #' @param metric Impurity measure for information gain calculation. One of:
 #'   \itemize{
-#'     \item \code{"entropy"} – entropy-based information gain (default).
-#'     \item \code{"gini"} – Gini impurity-based information gain.
+#'     \item \code{"entropy"} <U+2013> entropy-based information gain (default).
+#'     \item \code{"gini"} <U+2013> Gini impurity-based information gain.
 #'   }
 #' @param verbose Logical; if \code{TRUE}, prints diagnostic information.
 #'

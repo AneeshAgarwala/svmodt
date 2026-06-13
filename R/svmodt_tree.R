@@ -38,7 +38,7 @@
 #'   fraction of features if `max_features_strategy = "random"`.
 #' @param penalize_used_features Logical; if TRUE, features used in ancestor nodes
 #'   are penalized to encourage diversity.
-#' @param feature_penalty_weight Numeric (0–1) weight for penalizing previously used features.
+#' @param feature_penalty_weight Numeric (0<U+2013>1) weight for penalizing previously used features.
 #' @param used_features Character vector of features already used in ancestor nodes
 #'   (used internally).
 #' @param class_weights Character string specifying how to handle class imbalance. One of:
@@ -60,7 +60,7 @@
 #'   \item{features}{Vector of features selected for this node.}
 #'   \item{scaler}{Scaling information used at this node.}
 #'   \item{left}{Left child node (decision value > 0).}
-#'   \item{right}{Right child node (decision value ≤ 0).}
+#'   \item{right}{Right child node (decision value <U+2264> 0).}
 #'   \item{depth}{Depth of this node in the tree.}
 #'   \item{n}{Number of samples at this node.}
 #'   \item{max_features_used}{Number of features considered at this node.}
@@ -89,7 +89,6 @@
 #'   verbose = TRUE
 #' )
 #' }
-#'
 #'
 #' @export
 svm_split <- function(data, response, depth = 1, max_depth = 10,

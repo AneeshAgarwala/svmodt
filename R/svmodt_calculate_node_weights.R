@@ -8,10 +8,10 @@
 #' @param class_weights Character string specifying the weighting strategy.
 #'   Options are:
 #'   \itemize{
-#'     \item `"none"` – no weighting (default).
-#'     \item `"balanced"` – weights inversely proportional to class frequencies.
-#     \item `"balanced_subsample"` – weights adjusted to balance each subsample.
-#'     \item `"custom"` – user-provided custom weights.
+#'     \item `"none"` <U+2013> no weighting (default).
+#'     \item `"balanced"` <U+2013> weights inversely proportional to class frequencies.
+#     \item `"balanced_subsample"` <U+2013> weights adjusted to balance each subsample.
+#'     \item `"custom"` <U+2013> user-provided custom weights.
 #'   }
 #' @param custom_class_weights Named numeric vector of custom class weights
 #'   (used only if `class_weights = "custom"`). Names must match the unique
@@ -40,9 +40,9 @@ calculate_node_class_weights <- function(y, class_weights = "none",
     )
   )
 
-  # ── Coerce y to character to avoid factor level type mismatches ─────────────
+  # <U+2500><U+2500> Coerce y to character to avoid factor level type mismatches <U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500><U+2500>
   # e1071::svm expects weight names to exactly match levels of y as seen
-  # during fit — integer factor levels produce names like "1" but svm
+  # during fit <U+2014> integer factor levels produce names like "1" but svm
   # internally sees factor level "1" vs integer 1 differently
   y_char <- as.character(y)
   class_table <- table(y_char)
