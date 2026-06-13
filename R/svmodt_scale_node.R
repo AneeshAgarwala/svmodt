@@ -26,6 +26,13 @@ scale_node <- function(df) {
     ))
   }
 
+  # Identify and remove non-numeric columns before scaling
+  numeric_cols <- names(df)[sapply(df, is.numeric)]
+  if (length(numeric_cols) == 0) {
+    return(list(train = df, transform = function(newdata) newdata))
+  }
+  df <- df[, numeric_cols, drop = FALSE]
+
   # Identify and remove constant features
   constant_vars <- sapply(df, function(x) {
     if (is.numeric(x)) {
@@ -49,9 +56,8 @@ scale_node <- function(df) {
 
   mu <- sapply(df, mean, na.rm = TRUE)
   sd_vals <- sapply(df, sd, na.rm = TRUE)
-
-  # FIXED: Handle zero standard deviation
   sd_vals[sd_vals == 0] <- 1
+
 
   scaled <- sweep(sweep(df, 2, mu, "-"), 2, sd_vals, "/")
 

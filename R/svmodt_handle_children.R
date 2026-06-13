@@ -52,7 +52,7 @@ handle_small_children <- function(left_idx, right_idx, min_samples,
                                   penalize_used_features, feature_penalty_weight,
                                   n_subsets, used_features,
                                   class_weights, custom_class_weights,
-                                  min_impurity_decrease = 0.0,
+                                  min_impurity_decrease = 0.001,
                                   features, scaler, all_classes, verbose, ...) {
   # Both children too small
   if (length(left_idx) < min_samples && length(right_idx) < min_samples) {

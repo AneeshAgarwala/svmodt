@@ -79,14 +79,20 @@ tree <- svm_split(
 )
 
 # Predict
-predictions <- svm_predict_tree(tree, test_data)
+predictions <- predict(tree, test_data)
 
-# Visualize - only works for trees with 2 features at each node
-viz <- visualize_svm_tree(
+# Visualize Split Boundary at Individual Node(s)
+viz <- plot_boundary(
   tree = tree,
   original_data = train_data,
   response_col = "diagnosis"
 )
+
+# Visualize Overall Surface Split(s) 
+viz <- plot_surface(
+  tree = tree,
+  data = data, 
+  response = "diagnois")
 ```
 
 ### Advanced Usage

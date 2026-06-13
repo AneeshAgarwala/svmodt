@@ -24,7 +24,7 @@ handle_small_children(
   used_features,
   class_weights,
   custom_class_weights,
-  min_impurity_decrease = 0,
+  min_impurity_decrease = 0.001,
   features,
   scaler,
   all_classes,

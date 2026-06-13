@@ -84,7 +84,7 @@ tree_penguins <- svm_split(
 ### Examine Tree Structure
 ```{r penguins-structure}
 # Print tree structure
-print_svm_tree(tree_penguins,
+print(tree_penguins,
   show_probabilities = TRUE,
   show_feature_info = TRUE
 )
@@ -93,7 +93,7 @@ print_svm_tree(tree_penguins,
 ### Make Predictions
 ```{r penguins-predict}
 # Predict classes only
-predictions <- svm_predict_tree(tree_penguins, test_penguins)
+predictions <- predict(tree_penguins, test_penguins)
 
 # Predict with probabilities
 predictions_prob <- svm_predict_tree(tree_penguins, test_penguins,
@@ -118,9 +118,9 @@ Table \@ref(tab:penguins-predict) shows the predicted value along with the assoc
 ```{r penguins-viz, fig.height=6, fig.width=8}
 #| fig-cap: SVMODT Split at Root Node (Depth = 1)
 # Visualize tree decision boundaries
-viz_penguins <- visualize_svm_tree(
+viz_penguins <- plot_boundary(
   tree = tree_penguins,
-  original_data = train_penguins,
+  data = train_penguins,
   response_col = "species",
   max_depth = 3
 )
@@ -134,7 +134,7 @@ nodes.
 
 ```{r penguins-viz-2, fig.height=6, fig.width=8}
 #| fig-cap: SVMODT Split at Child Node (Depth = 2)
-gridExtra::grid.arrange(viz_penguins$plots$`depth_2_Root_→_L`, viz_penguins$plots$`depth_2_Root_→_R`, ncol = 2)
+gridExtra::grid.arrange(viz_penguins$plots$depth_2_Root_L, viz_penguins$plots$depth_2_Root_R, ncol = 2)
 ```
 Fig \@ref(fig:penguins-viz-2) shows a node at depth 2 of the tree, where the SVM uses bill_length_mm and
 bill_depth_mm to further partition the data. The decision hyper-plane and sample positions are plotted,
@@ -143,7 +143,7 @@ cannot.
 
 ### Trace Prediction Path
 ```{r penguins-trace}
-trace_prediction_path(tree_penguins, test_penguins, sample_idx = 1)
+trace_path(tree_penguins, test_penguins, sample_idx = 1)
 ```
 ## Example 2: Wisconsin Breast Cancer Diagnosis
 
@@ -178,7 +178,7 @@ tree_wdbc <- svm_split(
 
 ### Evaluate Performance
 ```{r wdbc-eval}
-preds_wdbc <- svm_predict_tree(tree_wdbc, test_wdbc)
+preds_wdbc <- predict(tree_wdbc, test_wdbc)
 cat("Accuracy:", round(mean(preds_wdbc == test_wdbc$diagnosis), 4), "\n")
 print(table(Predicted = preds_wdbc, Actual = test_wdbc$diagnosis))
 ```
@@ -282,125 +282,14 @@ tree_wine <- svm_split(
 ```
 
 ### Visualize Decision Boundary
-```{r plot-surface, eval=TRUE, echo=FALSE}
-plot_svmodt_surface <- function(tree, data, response, resolution = 200) {
-  
-  # Get the features used in the tree
-  all_features <- get_tree_features(tree)
-  
-  if (length(all_features) < 2) {
-    stop("Tree must use at least 2 features for surface plotting")
-  }
-  
-  # Use first two features for the grid axes
-  plot_features <- all_features[1:2]
-  
-  # Create grid for the two plotting dimensions
-  grid <- expand.grid(
-    x = seq(min(data[[plot_features[1]]], na.rm = TRUE),
-            max(data[[plot_features[1]]], na.rm = TRUE),
-            length.out = resolution),
-    y = seq(min(data[[plot_features[2]]], na.rm = TRUE),
-            max(data[[plot_features[2]]], na.rm = TRUE),
-            length.out = resolution)
-  )
-  
-  names(grid) <- plot_features
-  
-  # CRITICAL FIX: Add ALL other features that might be used anywhere in the tree
-  # Set them to their median values
-  other_features <- setdiff(names(data), c(response, plot_features))
-  for (feat in other_features) {
-    if (is.numeric(data[[feat]])) {
-      grid[[feat]] <- median(data[[feat]], na.rm = TRUE)
-    } else if (is.factor(data[[feat]]) || is.character(data[[feat]])) {
-      # For categorical features, use the mode (most common value)
-      grid[[feat]] <- names(sort(table(data[[feat]]), decreasing = TRUE))[1]
-    }
-  }
-  
-  # IMPORTANT: Reorder columns to match original data structure
-  # This ensures the scaler receives columns in the expected order
-  grid <- grid[, intersect(names(data), names(grid)), drop = FALSE]
-  
-  # Get predictions with probabilities
-  pred_result <- svm_predict_tree(tree, grid, return_probs = TRUE, 
-                                  calibrate_probs = TRUE)
-  
-  # Create plot data - only keep the two plotting dimensions
-  plot_data <- data.frame(
-    x = grid[[plot_features[1]]],
-    y = grid[[plot_features[2]]],
-    prediction = pred_result$predictions
-  )
-  names(plot_data)[1:2] <- plot_features
-  
-  # Get class levels from original data
-  class_levels <- levels(factor(data[[response]]))
-  
-  # # Create color palette
-  # n_classes <- length(class_levels)
-  # cols <- if (n_classes == 3) {
-  #   c("darkorange", "purple", "cyan4")
-  # } else {
-  #   scales::hue_pal()(n_classes)
-  # }
-  
-  # Create the plot
-  p <- ggplot2::ggplot(plot_data, ggplot2::aes(x = .data[[plot_features[1]]], 
-                             y = .data[[plot_features[2]]])) +
-    ggplot2::geom_tile(ggplot2::aes(fill = prediction), alpha = 0.25) +
-    ggplot2::geom_point(data = data,
-               ggplot2::aes(x = .data[[plot_features[1]]], 
-                   y = .data[[plot_features[2]]],
-                   color = .data[[response]], 
-                   shape = .data[[response]]),
-               alpha = 0.5) +
-    ggplot2::scale_color_brewer(palette = "Dark2") +
-    ggplot2::scale_fill_brewer(palette = "Dark2") +
-    ggplot2::labs(x = plot_features[1],
-         y = plot_features[2]) +
-    ggplot2::theme_minimal() +
-    ggplot2::scale_x_continuous(expand = c(0, 0)) +
-    ggplot2::scale_y_continuous(expand = c(0, 0)) +
-    ggplot2::theme(panel.grid = ggplot2::element_blank(),
-          panel.border = ggplot2::element_rect(fill = NA),
-          legend.position = 'bottom',
-          legend.text = ggplot2::element_text(size = 8),
-          legend.title = ggplot2::element_blank(),
-          aspect.ratio = 1) +
-    ggplot2::guides(fill = "none")
-  
-  return(p)
-}
-
-get_tree_features <- function(tree) {
-  if (tree$is_leaf) {
-    return(tree$features)
-  }
-  
-  features <- tree$features
-  
-  if (!is.null(tree$left)) {
-    features <- c(features, get_tree_features(tree$left))
-  }
-  
-  if (!is.null(tree$right)) {
-    features <- c(features, get_tree_features(tree$right))
-  }
-  
-  return(unique(features))
-}
-```
-
 ```{r wine-viz}
-plot_svmodt_surface(tree = tree_wine, data = train_wine, response = "class")
+plot_surface(tree = tree_wine, data = train_wine, response = "class")
 ```
 Fig \@ref(fig:wine-viz) displays multiclass decision boundaries on the Wine dataset acorss the first two features in the tree. 
 
 ### Tree Structure
 ```{r wine-structure}
-print_svm_tree(tree_wine,
+print(tree_wine,
   show_probabilities = FALSE,
   show_feature_info  = TRUE,
   show_penalties     = TRUE
@@ -421,7 +310,7 @@ print(conf_mat)
 ### Trace a Prediction Path
 ```{r wine-trace}
 # Show how the first test observation is routed through the tree
-trace_prediction_path(tree_wine, test_wine, sample_idx = 1)
+trace_path(tree_wine, test_wine, sample_idx = 1)
 ```
 
 ## Model Comparison

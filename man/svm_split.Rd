@@ -126,6 +126,7 @@ construction of an **oblique decision tree**, where splits are linear hyperplane
 rather than axis-aligned.
 }
 \examples{
+\donttest{
 data(wdbc)
 tree <- svm_split(
   data = wdbc,
@@ -135,5 +136,7 @@ tree <- svm_split(
   feature_method = "random",
   verbose = TRUE
 )
+}
+
 
 }

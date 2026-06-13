@@ -34,7 +34,6 @@ print.svmodt_leaf <- function(x, ...) {
 #' @method print svmodt_tree
 #' @export
 print.svmodt_tree <- function(x, ...) {
-  cat(format(x), "\n")
   print_svm_tree(x, ...)
   invisible(x)
 }

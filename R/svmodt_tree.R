@@ -78,6 +78,7 @@
 #' rather than axis-aligned.
 #'
 #' @examples
+#' \donttest{
 #' data(wdbc)
 #' tree <- svm_split(
 #'   data = wdbc,
@@ -87,6 +88,8 @@
 #'   feature_method = "random",
 #'   verbose = TRUE
 #' )
+#' }
+#'
 #'
 #' @export
 svm_split <- function(data, response, depth = 1, max_depth = 10,

@@ -154,8 +154,8 @@ svm_predict_tree <- function(tree, newdata, return_probs = FALSE,
   # For multiclass: use one-vs-rest approach
   if (is.matrix(dec_values)) {
     # Multiple decision values (one-vs-one for multiclass)
-    best_col <- purrr::`%||%`(tree$best_col, 1)
-    if (best_col > ncol(dec_values)) best_col <- 1
+    best_col <- if (is.null(tree$best_col)) 1L else tree$best_col
+    if (best_col > ncol(dec_values)) best_col <- 1L
     decision_values <- dec_values[, best_col]
   } else {
     decision_values <- as.numeric(dec_values)
@@ -295,41 +295,6 @@ get_fallback_predictions <- function(model, X_scaled, decision_values,
   if (!is.null(svm_probs) && is.matrix(svm_probs) && nrow(svm_probs) == n_samples) {
     svm_classes <- colnames(svm_probs)
 
-    convert_decision_to_probs <- function(decision_values, model = NULL) {
-      if (length(decision_values) == 0) {
-        return(numeric(0))
-      }
-
-      # If we have the model, use training statistics for calibration
-      if (!is.null(model) && !is.null(model$decision.values)) {
-        train_dec <- as.numeric(model$decision.values)
-
-        train_dec <- train_dec[!is.na(train_dec)]
-
-        if (length(train_dec) > 0) {
-          dec_mean <- mean(train_dec)
-          dec_sd <- sd(train_dec)
-
-          if (is.na(dec_sd) || dec_sd == 0) {
-            dec_sd <- 1
-          }
-
-          # Standardize decision values
-          scaled_dec <- (decision_values - dec_mean) / dec_sd
-          probs <- 1 / (1 + exp(-scaled_dec))
-        } else {
-          # Fallback if training data unavailable
-          probs <- 1 / (1 + exp(-decision_values))
-        }
-      } else {
-        # Simple sigmoid without calibration
-        probs <- 1 / (1 + exp(-decision_values))
-      }
-
-      probs <- pmax(pmin(probs, 0.999), 0.001)
-
-      return(probs)
-    }
     for (cls in intersect(svm_classes, all_classes)) {
       prob_matrix[, cls] <- svm_probs[, cls]
     }

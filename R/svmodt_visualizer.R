@@ -1,4 +1,4 @@
-utils::globalVariables(c("boundary", "decision_value", "response"))
+utils::globalVariables(c("boundary", "decision_value"))
 
 # ══════════════════════════════════════════════════════════════════════════════
 # Internal helpers
@@ -108,7 +108,7 @@ plot_node_boundary <- function(data, node_features, svm_model, scaler,
       plot_data[[plot_features[2]]] <= y_rng[2] + y_disp, ]
 
   data_pts           <- data[, c(plot_features, response_col), drop = FALSE]
-  names(data_pts)[3] <- "response"
+  names(data_pts)[3] <- "true_class"
 
   present_sides <- unique(as.character(tile_data$boundary))
   fill_vals     <- c("Left" = "lightblue", "Right" = "lightcoral")

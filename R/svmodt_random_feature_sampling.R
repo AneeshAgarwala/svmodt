@@ -88,7 +88,7 @@ svm_info_gain <- function(feature_subset, data, response,
 
       # Create binary split based on decision values
       split_feature <- factor(
-        ifelse(distances < 0, "left", "right"),
+        ifelse(distances > 0, "left", "right"),
         levels = c("left", "right")
       )
 
