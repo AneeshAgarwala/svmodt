@@ -81,17 +81,19 @@ tree <- svm_split(
 predictions <- predict(tree, test_data)
 
 # Visualize Split Boundary at Individual Node(s)
-viz <- plot_boundary(
+viz <- plot(
   tree = tree,
   original_data = train_data,
-  response_col = "diagnosis"
+  response_col = "diagnosis",
+  plot.type = "boundary"
 )
 
 # Visualize Overall Surface Split(s) 
 viz <- plot_surface(
   tree = tree,
   data = data, 
-  response = "diagnois")
+  response = "diagnois",
+  plot.type = "surface")
 ```
 
 ### Advanced Usage

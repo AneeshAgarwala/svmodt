@@ -20,3 +20,25 @@
 \description{
 Predict method for svmodt_node objects
 }
+\examples{
+\dontrun{
+# Train DTSVM tree
+tree <- svm_split_enhanced(
+  data = wdbc,
+  response = "diagnosis",
+  max_depth = 3,
+  max_features = 2,
+  feature_method = "cor",
+  class_weights = "balanced_subsample"
+)
+
+# Predict on WDBC data
+preds <- predict(tree, newdata = wdbc)
+
+# Predict with probabilities and logistic calibration
+result <- predict_svm_tree(tree,
+  newdata = wdbc,
+  return_probs = TRUE, calibrate_probs = TRUE
+)
+}
+}

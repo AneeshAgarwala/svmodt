@@ -49,28 +49,6 @@
 #'       \item \code{calibrate_probs = TRUE} uses the distance from the hyperplane for logistic post-processing into probabilities.
 #'     }
 #' }
-#'
-#' @examples
-#' \dontrun{
-#' # Train DTSVM tree
-#' tree <- svm_split_enhanced(
-#'   data = wdbc,
-#'   response = "diagnosis",
-#'   max_depth = 3,
-#'   max_features = 2,
-#'   feature_method = "cor",
-#'   class_weights = "balanced_subsample"
-#' )
-#'
-#' # Predict on WDBC data
-#' preds <- predict_svm_tree(tree, newdata = wdbc)
-#'
-#' # Predict with probabilities and logistic calibration
-#' result <- predict_svm_tree(tree,
-#'   newdata = wdbc,
-#'   return_probs = TRUE, calibrate_probs = TRUE
-#' )
-#' }
 #' @keywords internal
 svm_predict_tree <- function(tree, newdata, return_probs = FALSE,
                              calibrate_probs = TRUE) {

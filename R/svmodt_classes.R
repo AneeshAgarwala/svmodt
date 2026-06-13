@@ -18,6 +18,17 @@ svmodt_tree <- function(x) {
 #' @param x An object of class \code{svmodt_node}.
 #' @param ... Further arguments passed to \code{\link{print_svm_tree}}.
 #' @method print svmodt_node
+#' @examples
+#' tree <- svm_split(
+#'   data = wdbc,
+#'   response = "diagnosis",
+#'   max_features = 2,
+#'   max_depth = 3,
+#'   min_samples = 5,
+#'   feature_method = "random",
+#'   verbose = TRUE
+#' )
+#' print(tree)
 #' @export
 print.svmodt_node <- function(x, ...) {
   print_svm_tree(x, ...)
@@ -48,6 +59,27 @@ print.svmodt_tree <- function(x, ...) {
 #' @param calibrate_probs Logical; if \code{TRUE}, uses logistic calibration on decision values.
 #' @param ... Currently unused.
 #' @method predict svmodt_node
+#' @examples
+#' \dontrun{
+#' # Train DTSVM tree
+#' tree <- svm_split_enhanced(
+#'   data = wdbc,
+#'   response = "diagnosis",
+#'   max_depth = 3,
+#'   max_features = 2,
+#'   feature_method = "cor",
+#'   class_weights = "balanced_subsample"
+#' )
+#'
+#' # Predict on WDBC data
+#' preds <- predict(tree, newdata = wdbc)
+#'
+#' # Predict with probabilities and logistic calibration
+#' result <- predict_svm_tree(tree,
+#'   newdata = wdbc,
+#'   return_probs = TRUE, calibrate_probs = TRUE
+#' )
+#' }
 #' @export
 predict.svmodt_node <- function(object, newdata, return_probs = FALSE,
                                 calibrate_probs = TRUE, ...) {

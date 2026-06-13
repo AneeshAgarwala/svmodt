@@ -14,3 +14,15 @@
 \description{
 Print method for svmodt_node objects
 }
+\examples{
+tree <- svm_split(
+  data = wdbc,
+  response = "diagnosis",
+  max_features = 2,
+  max_depth = 3,
+  min_samples = 5,
+  feature_method = "random",
+  verbose = TRUE
+)
+print(tree)
+}

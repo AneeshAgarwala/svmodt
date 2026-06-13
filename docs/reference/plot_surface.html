@@ -113,29 +113,6 @@ Higher values give smoother region boundaries.</p></dd>
 used.</p>
     </div>
 
-    <div id="ref-examples">
-    <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="va">tree</span> <span class="op">&lt;-</span> <span class="fu"><a href="svm_split.html">svm_split</a></span><span class="op">(</span><span class="va">wdbc</span>, response <span class="op">=</span> <span class="st">"diagnosis"</span>, max_depth <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Default: uses first two root features</span></span></span>
-<span class="r-in"><span><span class="fu">plot_surface</span><span class="op">(</span><span class="va">tree</span>, <span class="va">wdbc</span>, response <span class="op">=</span> <span class="st">"diagnosis"</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Explicit feature choice</span></span></span>
-<span class="r-in"><span><span class="fu">plot_surface</span><span class="op">(</span><span class="va">tree</span>, <span class="va">wdbc</span>,</span></span>
-<span class="r-in"><span>  response <span class="op">=</span> <span class="st">"diagnosis"</span>,</span></span>
-<span class="r-in"><span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"radius_mean"</span>, <span class="st">"concavity_mean"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Multiclass (wine dataset)</span></span></span>
-<span class="r-in"><span><span class="va">tree_w</span> <span class="op">&lt;-</span> <span class="fu"><a href="svm_split.html">svm_split</a></span><span class="op">(</span><span class="va">wine</span>, response <span class="op">=</span> <span class="st">"class"</span>, max_depth <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">plot_surface</span><span class="op">(</span><span class="va">tree_w</span>, <span class="va">wine</span>,</span></span>
-<span class="r-in"><span>  response <span class="op">=</span> <span class="st">"class"</span>,</span></span>
-<span class="r-in"><span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"flavanoids"</span>, <span class="st">"color_intensity"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
-</code></pre></div>
-    </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top"><h2 data-toc-skip>Contents</h2>

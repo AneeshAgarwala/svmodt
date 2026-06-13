@@ -51,19 +51,4 @@ showing the SVM hyperplane for that node's binary split, the background
 region colouring, and the actual data points (coloured by true class).
 Each node receives only the subset of data that reaches it during training.
 }
-\examples{
-\dontrun{
-tree <- svm_split(wdbc, response = "diagnosis", max_depth = 3)
-
-viz <- plot_boundary(tree, wdbc, response_col = "diagnosis")
-
-# Access individual node plots
-viz$plots[[1]] # root node
-viz$plots[[2]] # first child
-
-# Display all node plots in a grid
-library(patchwork)
-patchwork::wrap_plots(viz$plots, ncol = 2)
-}
-}
 \keyword{internal}

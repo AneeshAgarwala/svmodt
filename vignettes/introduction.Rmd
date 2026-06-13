@@ -96,7 +96,7 @@ print(tree_penguins,
 predictions <- predict(tree_penguins, test_penguins)
 
 # Predict with probabilities
-predictions_prob <- svm_predict_tree(tree_penguins, test_penguins,
+predictions_prob <- predict(tree_penguins, test_penguins,
   return_probs = TRUE
 )
 
@@ -118,12 +118,12 @@ Table \@ref(tab:penguins-predict) shows the predicted value along with the assoc
 ```{r penguins-viz, fig.height=6, fig.width=8}
 #| fig-cap: SVMODT Split at Root Node (Depth = 1)
 # Visualize tree decision boundaries
-viz_penguins <- plot_boundary(
-  tree = tree_penguins,
-  data = train_penguins,
-  response_col = "species",
-  max_depth = 3
-)
+viz_penguins <- plot(tree_penguins, 
+                     data = train_penguins, 
+                     response = "species", 
+                     plot.type = "boundary", 
+                     max_depth = 3)
+
 
 viz_penguins$plots$depth_1_Root
 ```
@@ -283,7 +283,7 @@ tree_wine <- svm_split(
 ### Visualize Decision Surface
 ```{r wine-multiclass-viz, fig.height=6, fig.width=8}
 #| fig-cap: SVMODT Decision Surface on Wine Dataset
-plot_surface(tree = tree_wine, data = train_wine, response = "class")
+plot(tree_wine, data = train_wine, response = "class", plot.type = "surface")
 ```
 
 Figure \@ref(fig:wine-multiclass-viz) displays multiclass decision surface on the Wine dataset across two features in the tree. 
@@ -301,7 +301,7 @@ Each internal node shows the class used for the one-vs-rest binary split (`split
 
 ### Performance
 ```{r wine-eval}
-preds_wine <- svm_predict_tree(tree = tree_wine, newdata = test_wine)
+preds_wine <- predict(tree_wine, newdata = test_wine)
 acc_wine <- mean(preds_wine == test_wine$class)
 cat("Test accuracy:", round(acc_wine, 4), "\n")
 conf_mat <- table(Predicted = preds_wine, Actual = test_wine$class)
@@ -340,7 +340,7 @@ model_svm <- e1071::svm(diagnosis ~ ., data = train_wdbc, probability = TRUE)
 pred_svm <- predict(model_svm, test_wdbc)
 
 # Get SVMODT predictions
-pred_svmodt <- svm_predict_tree(tree_wdbc, test_wdbc)
+pred_svmodt <- predict(tree_wdbc, test_wdbc)
 
 # Compare accuracies
 results <- data.frame(

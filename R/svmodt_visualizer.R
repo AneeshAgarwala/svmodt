@@ -235,21 +235,6 @@ plot_node_boundary <- function(data, node_features, svm_model, scaler,
 #'     the pad factor that was needed.}
 #'   \item{\code{response_col}}{The response column name used.}
 #' }
-#'
-#' @examples
-#' \dontrun{
-#' tree <- svm_split(wdbc, response = "diagnosis", max_depth = 3)
-#'
-#' viz <- plot_boundary(tree, wdbc, response_col = "diagnosis")
-#'
-#' # Access individual node plots
-#' viz$plots[[1]] # root node
-#' viz$plots[[2]] # first child
-#'
-#' # Display all node plots in a grid
-#' library(patchwork)
-#' patchwork::wrap_plots(viz$plots, ncol = 2)
-#' }
 #' @keywords internal
 plot_boundary <- function(tree, data,
                           response_col = NULL,
@@ -411,27 +396,6 @@ plot_boundary <- function(tree, data,
 #'
 #' @return A \pkg{ggplot2} object.  The background tiles show the predicted
 #'   class for each grid cell; points show true class labels.
-#'
-#' @examples
-#' \dontrun{
-#' tree <- svm_split(wdbc, response = "diagnosis", max_depth = 3)
-#'
-#' # Default: uses first two root features
-#' plot_surface(tree, wdbc, response = "diagnosis")
-#'
-#' # Explicit feature choice
-#' plot_surface(tree, wdbc,
-#'   response = "diagnosis",
-#'   features = c("radius_mean", "concavity_mean")
-#' )
-#'
-#' # Multiclass (wine dataset)
-#' tree_w <- svm_split(wine, response = "class", max_depth = 4)
-#' plot_surface(tree_w, wine,
-#'   response = "class",
-#'   features = c("flavanoids", "color_intensity")
-#' )
-#' }
 #' @keywords internal
 plot_surface <- function(tree, data, response,
                          features = NULL,

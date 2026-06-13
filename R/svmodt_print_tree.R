@@ -8,17 +8,6 @@
 #' @param show_feature_info Logical; whether to show features used at nodes.
 #' @param show_penalties Logical; whether to show penalty flags at nodes.
 #' @return Invisibly returns NULL. Prints to console.
-#' @examples
-#' tree <- svm_split(
-#'   data = wdbc,
-#'   response = "diagnosis",
-#'   max_features = 2,
-#'   max_depth = 3,
-#'   min_samples = 5,
-#'   feature_method = "random",
-#'   verbose = TRUE
-#' )
-#' print_svm_tree(tree)
 #' @keywords internal
 print_svm_tree <- function(tree, indent = "", show_probabilities = FALSE,
                            show_feature_info = TRUE, show_penalties = TRUE) {

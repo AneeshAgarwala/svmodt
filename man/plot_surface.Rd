@@ -36,25 +36,4 @@ All features not used as plot axes are held fixed at their in-sample median
 \code{features}; if omitted the first two features used at the root node are
 used.
 }
-\examples{
-\dontrun{
-tree <- svm_split(wdbc, response = "diagnosis", max_depth = 3)
-
-# Default: uses first two root features
-plot_surface(tree, wdbc, response = "diagnosis")
-
-# Explicit feature choice
-plot_surface(tree, wdbc,
-  response = "diagnosis",
-  features = c("radius_mean", "concavity_mean")
-)
-
-# Multiclass (wine dataset)
-tree_w <- svm_split(wine, response = "class", max_depth = 4)
-plot_surface(tree_w, wine,
-  response = "class",
-  features = c("flavanoids", "color_intensity")
-)
-}
-}
 \keyword{internal}
