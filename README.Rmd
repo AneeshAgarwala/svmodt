@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/AneeshAgarwala/project-svodt/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/AneeshAgarwala/project-svodt/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/AneeshAgarwala/svmodt/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/AneeshAgarwala/svmodt/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The **svmodt** package in R implements recursive oblique decision trees, leveraging linear Support Vector Machines (SVMs) to define oblique splits at each node. While traditional decision trees are valued for their interpretability due to axis-aligned splits, oblique decision trees introduce complexity by using linear combinations of features, making optimal split determination more challenging. SVMs, however, offer a principled approach to splitting by identifying hyperplanes that maximize the margin between classes.
