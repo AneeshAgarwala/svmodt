@@ -10,7 +10,7 @@
   ...,
   data = NULL,
   response = NULL,
-  plot.type = c("boundary", "surface"),
+  plot.type = c("surface", "boundary"),
   features = NULL,
   max_depth = NULL,
   check_accuracy = TRUE,
@@ -29,7 +29,7 @@ generic signature.}
 
 \item{response}{Character string naming the response column (required).}
 
-\item{plot.type}{One of \code{"boundary"} (default) or \code{"surface"}.}
+\item{plot.type}{One of \code{"surface"} (default) or \code{"boundary"}.}
 
 \item{features}{Length-2 character vector of axis features
 (\code{"surface"} only; default uses root node features).}

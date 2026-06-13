@@ -36,6 +36,9 @@ plot_surface depending on plot.type."><!-- mathjax --><script src="https://cdnjs
       <a href="../articles/introduction.html">Constructing Oblique Trees with svmodt</a>
     </li>
   </ul></li>
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/AneeshAgarwala/svmodt/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
@@ -69,7 +72,7 @@ plot_surface depending on plot.type."><!-- mathjax --><script src="https://cdnjs
 <span>  <span class="va">...</span>,</span>
 <span>  data <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  response <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  plot.type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"boundary"</span>, <span class="st">"surface"</span><span class="op">)</span>,</span>
+<span>  plot.type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"surface"</span>, <span class="st">"boundary"</span><span class="op">)</span>,</span>
 <span>  features <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  max_depth <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  check_accuracy <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -103,7 +106,7 @@ generic signature.</p></dd>
 
 
 <dt id="arg-plot-type">plot.type<a class="anchor" aria-label="anchor" href="#arg-plot-type"></a></dt>
-<dd><p>One of <code>"boundary"</code> (default) or <code>"surface"</code>.</p></dd>
+<dd><p>One of <code>"surface"</code> (default) or <code>"boundary"</code>.</p></dd>
 
 
 <dt id="arg-features">features<a class="anchor" aria-label="anchor" href="#arg-features"></a></dt>
@@ -141,19 +144,25 @@ Default <code>100</code> for <code>"boundary"</code>, <code>200</code> for
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="va">tree</span> <span class="op">&lt;-</span> <span class="fu"><a href="svm_split.html">svm_split</a></span><span class="op">(</span><span class="va">wdbc</span>, response <span class="op">=</span> <span class="st">"diagnosis"</span>, max_depth <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># All-node boundary panels — prints first, returns list</span></span></span>
-<span class="r-in"><span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">tree</span>, data <span class="op">=</span> <span class="va">wdbc</span>, response <span class="op">=</span> <span class="st">"diagnosis"</span>,</span></span>
-<span class="r-in"><span>            plot.type <span class="op">=</span> <span class="st">"boundary"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">viz</span><span class="op">$</span><span class="va">plots</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span>  <span class="co"># second node</span></span></span>
+<span class="r-in"><span><span class="co"># All-node boundary panels - prints first, returns list</span></span></span>
+<span class="r-in"><span><span class="va">viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">tree</span>,</span></span>
+<span class="r-in"><span>  data <span class="op">=</span> <span class="va">wdbc</span>, response <span class="op">=</span> <span class="st">"diagnosis"</span>,</span></span>
+<span class="r-in"><span>  plot.type <span class="op">=</span> <span class="st">"boundary"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">viz</span><span class="op">$</span><span class="va">plots</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span> <span class="co"># second node</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Global decision surface</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">tree</span>, data <span class="op">=</span> <span class="va">wdbc</span>, response <span class="op">=</span> <span class="st">"diagnosis"</span>,</span></span>
-<span class="r-in"><span>     plot.type <span class="op">=</span> <span class="st">"surface"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">tree</span>,</span></span>
+<span class="r-in"><span>  data <span class="op">=</span> <span class="va">wdbc</span>, response <span class="op">=</span> <span class="st">"diagnosis"</span>,</span></span>
+<span class="r-in"><span>  plot.type <span class="op">=</span> <span class="st">"surface"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Surface with explicit feature axes</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">tree</span>, data <span class="op">=</span> <span class="va">wdbc</span>, response <span class="op">=</span> <span class="st">"diagnosis"</span>,</span></span>
-<span class="r-in"><span>     plot.type  <span class="op">=</span> <span class="st">"surface"</span>,</span></span>
-<span class="r-in"><span>     features   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"radius_mean"</span>, <span class="st">"concavity_mean"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">tree</span>,</span></span>
+<span class="r-in"><span>  data <span class="op">=</span> <span class="va">wdbc</span>, response <span class="op">=</span> <span class="st">"diagnosis"</span>,</span></span>
+<span class="r-in"><span>  plot.type <span class="op">=</span> <span class="st">"surface"</span>,</span></span>
+<span class="r-in"><span>  features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"radius_mean"</span>, <span class="st">"concavity_mean"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

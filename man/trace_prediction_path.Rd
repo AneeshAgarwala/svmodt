@@ -25,3 +25,4 @@ including decision values, branches, and final prediction.
 trace_prediction_path(tree, test_data, sample_idx = 1)
 }
 }
+\keyword{internal}

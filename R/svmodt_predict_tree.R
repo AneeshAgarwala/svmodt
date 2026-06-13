@@ -71,7 +71,7 @@
 #'   return_probs = TRUE, calibrate_probs = TRUE
 #' )
 #' }
-#' @export
+#' @keywords internal
 svm_predict_tree <- function(tree, newdata, return_probs = FALSE,
                              calibrate_probs = TRUE) {
   # Handle leaf nodes

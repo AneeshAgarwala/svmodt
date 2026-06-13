@@ -282,6 +282,7 @@ tree_wine <- svm_split(
 
 ### Visualize Decision Surface
 ```{r wine-multiclass-viz, fig.height=6, fig.width=8}
+#| fig-cap: SVMODT Decision Surface on Wine Dataset
 plot_surface(tree = tree_wine, data = train_wine, response = "class")
 ```
 

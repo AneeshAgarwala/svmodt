@@ -19,7 +19,7 @@
 #'   verbose = TRUE
 #' )
 #' print_svm_tree(tree)
-#' @export
+#' @keywords internal
 print_svm_tree <- function(tree, indent = "", show_probabilities = FALSE,
                            show_feature_info = TRUE, show_penalties = TRUE) {
   if (tree$is_leaf) {

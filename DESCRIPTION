@@ -6,7 +6,7 @@ Authors@R: c(
     person(
       "Aneesh", "Agarwal",
       email = "aaga0022@student.monash.edu",
-      role = c("aut", "cre")
+      role = c("aut", "cre", "cph")
     ),
     person(
       "Jack", "Jewson",
@@ -19,14 +19,12 @@ Authors@R: c(
       role = c("aut", "ths")
     )
   )
-Description: Implements Support Vector Machine Oblique Decision Trees (SVMODT), a hybrid 
-    classifier combining decision tree interpretability with Support Vector Machine 
-    robustness. Recursively builds classification trees using linear SVM hyperplanes 
-    at each node instead of axis-parallel splits, creating oblique decision boundaries 
-    that better capture complex patterns. Features include multiple feature selection 
-    methods (random, mutual information, correlation-based), dynamic feature subset 
-    strategies, class weight support for imbalanced datasets, node-specific feature 
-    scaling.
+Description: Implements Support Vector Machine Oblique Decision Trees (SVMODT).
+    Recursively builds classification trees using linear SVM hyperplanes at each
+    node instead of axis-parallel splits, creating oblique decision boundaries.
+    Features include multiple feature selection methods, dynamic feature subset 
+    strategies, class weight support for imbalanced datasets, pruning and 
+    feature penalization.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true

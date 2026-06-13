@@ -11,7 +11,7 @@
 #' \dontrun{
 #' trace_prediction_path(tree, test_data, sample_idx = 1)
 #' }
-#' @export
+#' @keywords internal
 trace_prediction_path <- function(tree, sample_data, sample_idx = 1) {
   cat("=== Tracing Prediction Path ===\n")
   cat("Sample", sample_idx, ":\n")

@@ -41,3 +41,4 @@ tree <- svm_split(
 )
 print_svm_tree(tree)
 }
+\keyword{internal}

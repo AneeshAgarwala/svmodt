@@ -37,6 +37,9 @@ feature selection strategies."><!-- mathjax --><script src="https://cdnjs.cloudf
       <a href="../articles/introduction.html">Constructing Oblique Trees with svmodt</a>
     </li>
   </ul></li>
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/AneeshAgarwala/svmodt/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
@@ -101,14 +104,14 @@ depth-dependent strategies).</p></dd>
 
 <dt id="arg-strategy">strategy<a class="anchor" aria-label="anchor" href="#arg-strategy"></a></dt>
 <dd><p>Character string specifying how to determine the number of
-features. One of:</p><ul><li><p>`"constant"` – always use `base_max_features` (default).</p></li>
-<li><p>`"decrease"` – exponentially decrease the number of features with depth.</p></li>
-<li><p>`"random"` – randomly select the number of features within a range.</p></li>
+features. One of:</p><ul><li><p>`"constant"` &lt;U+2013&gt; always use `base_max_features` (default).</p></li>
+<li><p>`"decrease"` &lt;U+2013&gt; exponentially decrease the number of features with depth.</p></li>
+<li><p>`"random"` &lt;U+2013&gt; randomly select the number of features within a range.</p></li>
 </ul></dd>
 
 
 <dt id="arg-decrease-rate">decrease_rate<a class="anchor" aria-label="anchor" href="#arg-decrease-rate"></a></dt>
-<dd><p>Numeric; factor (0–1] controlling how fast the number of
+<dd><p>Numeric; factor (0&lt;U+2013&gt;1] controlling how fast the number of
 features decreases with depth when `strategy = "decrease"`. Default is 0.8.</p></dd>
 
 

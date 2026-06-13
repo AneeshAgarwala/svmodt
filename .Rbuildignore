@@ -13,3 +13,5 @@
 ^presentation-slides$
 ^stree-tests$
 ^R/stree-*
+^cran-comments\.md$
+^revdep$

@@ -53,6 +53,9 @@
     </li>
   </ul>
 </li>
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
@@ -527,7 +530,7 @@ cannot.</p>
 <h3 id="custom-class-weights">
 <span class="header-section-number">2.7</span> Custom Class Weights<a class="anchor" aria-label="anchor" href="#custom-class-weights"></a>
 </h3>
-<p>We can also add custom class weights for our class labels in the model using domain expertise. This enables us to minimise classification of false negatives by assigning correct weights based on domain expertise.</p>
+<p>We can also add custom class weights for our class labels in the model using domain expertise. This enables us to minimize classification of false negatives by assigning correct weights based on domain expertise.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Give malignant cases higher weight</span></span>
 <span><span class="va">custom_weights</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B"</span> <span class="op">=</span> <span class="fl">1</span>, <span class="st">"M"</span> <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
@@ -553,8 +556,8 @@ cannot.</p>
 <span></span>
 <span><span class="va">wine</span><span class="op">$</span><span class="va">class</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">wine</span><span class="op">$</span><span class="va">class</span><span class="op">)</span></span>
 <span><span class="va">split_wine</span> <span class="op">&lt;-</span> <span class="fu">rsample</span><span class="fu">::</span><span class="fu"><a href="https://rsample.tidymodels.org/reference/initial_split.html" class="external-link">initial_split</a></span><span class="op">(</span><span class="va">wine</span>, prop <span class="op">=</span> <span class="fl">0.8</span>, strata <span class="op">=</span> <span class="va">class</span><span class="op">)</span></span>
-<span><span class="va">train_wine</span>  <span class="op">&lt;-</span> <span class="fu">rsample</span><span class="fu">::</span><span class="fu"><a href="https://rsample.tidymodels.org/reference/initial_split.html" class="external-link">training</a></span><span class="op">(</span><span class="va">split_wine</span><span class="op">)</span></span>
-<span><span class="va">test_wine</span>   <span class="op">&lt;-</span> <span class="fu">rsample</span><span class="fu">::</span><span class="fu"><a href="https://rsample.tidymodels.org/reference/initial_split.html" class="external-link">testing</a></span><span class="op">(</span><span class="va">split_wine</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">train_wine</span> <span class="op">&lt;-</span> <span class="fu">rsample</span><span class="fu">::</span><span class="fu"><a href="https://rsample.tidymodels.org/reference/initial_split.html" class="external-link">training</a></span><span class="op">(</span><span class="va">split_wine</span><span class="op">)</span></span>
+<span><span class="va">test_wine</span> <span class="op">&lt;-</span> <span class="fu">rsample</span><span class="fu">::</span><span class="fu"><a href="https://rsample.tidymodels.org/reference/initial_split.html" class="external-link">testing</a></span><span class="op">(</span><span class="va">split_wine</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3" number="3.1">
 <h3 id="train-multiclass-svmodt">
 <span class="header-section-number">3.1</span> Train Multiclass SVMODT<a class="anchor" aria-label="anchor" href="#train-multiclass-svmodt"></a>
@@ -562,17 +565,17 @@ cannot.</p>
 <p>At each internal node, SVMODT iterates over all present classes, fits a binary one-vs-rest SVM, and selects the split that maximally reduces entropy. This continues recursively until <code>max_depth</code> is reached or <code>min_impurity_decrease</code> prevents uninformative splits.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tree_wine</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/svm_split.html">svm_split</a></span><span class="op">(</span></span>
-<span>  data               <span class="op">=</span> <span class="va">train_wine</span>,</span>
-<span>  response           <span class="op">=</span> <span class="st">"class"</span>,</span>
-<span>  max_depth          <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">train_wine</span>,</span>
+<span>  response <span class="op">=</span> <span class="st">"class"</span>,</span>
+<span>  max_depth <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  max_features <span class="op">=</span> <span class="fl">5</span>,</span>
-<span>  feature_method     <span class="op">=</span> <span class="st">"mutual"</span>,</span>
-<span>  impurity_measure   <span class="op">=</span> <span class="st">"entropy"</span>,</span>
+<span>  feature_method <span class="op">=</span> <span class="st">"mutual"</span>,</span>
+<span>  impurity_measure <span class="op">=</span> <span class="st">"entropy"</span>,</span>
 <span>  min_impurity_decrease <span class="op">=</span> <span class="fl">0.01</span>,</span>
-<span>  class_weights      <span class="op">=</span> <span class="st">"balanced"</span>,</span>
+<span>  class_weights <span class="op">=</span> <span class="st">"balanced"</span>,</span>
 <span>  penalize_used_features <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  feature_penalty_weight <span class="op">=</span> <span class="fl">0.5</span>,</span>
-<span>  verbose            <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3" number="3.2">
@@ -581,8 +584,13 @@ cannot.</p>
 </h3>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_surface.html">plot_surface</a></span><span class="op">(</span>tree <span class="op">=</span> <span class="va">tree_wine</span>, data <span class="op">=</span> <span class="va">train_wine</span>, response <span class="op">=</span> <span class="st">"class"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/wine-multiclass-viz-1.png"><!-- -->
-Figure <a href="#fig:wine-multiclass-viz"><strong>??</strong></a> displays multiclass decision surface on the Wine dataset acorss two features in the tree.</p>
+<div class="figure">
+<span style="display:block;" id="fig:wine-multiclass-viz"></span>
+<img src="introduction_files/figure-html/wine-multiclass-viz-1.png" alt="SVMODT Decision Surface on Wine Dataset"><p class="caption">
+Figure 3: SVMODT Decision Surface on Wine Dataset
+</p>
+</div>
+<p>Figure <a href="#fig:wine-multiclass-viz">3</a> displays multiclass decision surface on the Wine dataset across two features in the tree.</p>
 </div>
 <div class="section level3" number="3.3">
 <h3 id="tree-structure">
@@ -615,7 +623,7 @@ Figure <a href="#fig:wine-multiclass-viz"><strong>??</strong></a> displays multi
 <span><span class="co">#&gt;       |   [Leaf] predict = 3 | n = 4</span></span>
 <span><span class="co">#&gt;        `- Negative branch (distance &lt; 0):</span></span>
 <span><span class="co">#&gt;           [Leaf] predict = 3 | n = 34</span></span></code></pre></div>
-<p>Each internal node shows the class used for the one-vs-rest binary split (<code>split: X vs rest</code>), the features selected at that node, and whether feature penalisation was active (<code>penalty = !</code>).</p>
+<p>Each internal node shows the class used for the one-vs-rest binary split (<code>split: X vs rest</code>), the features selected at that node, and whether feature penalization was active (<code>penalty = !</code>).</p>
 </div>
 <div class="section level3" number="3.4">
 <h3 id="performance">

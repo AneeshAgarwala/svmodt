@@ -250,7 +250,7 @@ plot_node_boundary <- function(data, node_features, svm_model, scaler,
 #' library(patchwork)
 #' patchwork::wrap_plots(viz$plots, ncol = 2)
 #' }
-#' @export
+#' @keywords internal
 plot_boundary <- function(tree, data,
                           response_col = NULL,
                           max_depth = NULL,
@@ -432,7 +432,7 @@ plot_boundary <- function(tree, data,
 #'   features = c("flavanoids", "color_intensity")
 #' )
 #' }
-#' @export
+#' @keywords internal
 plot_surface <- function(tree, data, response,
                          features = NULL,
                          resolution = 200) {
@@ -565,7 +565,7 @@ plot_surface <- function(tree, data, response,
 #' @param ... Currently unused.
 #' @param data The original training data frame (required).
 #' @param response Character string naming the response column (required).
-#' @param plot.type One of \code{"boundary"} (default) or \code{"surface"}.
+#' @param plot.type One of \code{"surface"} (default) or \code{"boundary"}.
 #' @param features Length-2 character vector of axis features
 #'   (\code{"surface"} only; default uses root node features).
 #' @param max_depth Maximum depth to visualise
@@ -614,7 +614,7 @@ plot_surface <- function(tree, data, response,
 plot.svmodt_node <- function(x, y = NULL, ...,
                              data = NULL,
                              response = NULL,
-                             plot.type = c("boundary", "surface"),
+                             plot.type = c("surface", "boundary"),
                              features = NULL,
                              max_depth = NULL,
                              check_accuracy = TRUE,
@@ -633,24 +633,23 @@ plot.svmodt_node <- function(x, y = NULL, ...,
   }
 
   plot.type <- match.arg(plot.type)
-
-  if (plot.type == "surface") {
+  if (plot.type == "boundary") {
+    res <- if (is.null(resolution)) 100L else as.integer(resolution)
+    result <- plot_boundary(x, data,
+      response_col   = response,
+      max_depth      = max_depth,
+      check_accuracy = check_accuracy,
+      resolution     = res
+    )
+    if (length(result$plots) > 0) print(result$plots)
+    invisible(result)
+  }
+  else{
     res <- if (is.null(resolution)) 200L else as.integer(resolution)
     p <- plot_surface(x, data, response,
-      features = features, resolution = res
+                      features = features, resolution = res
     )
     print(p)
     return(invisible(p))
   }
-
-  # "boundary"
-  res <- if (is.null(resolution)) 100L else as.integer(resolution)
-  result <- plot_boundary(x, data,
-    response_col   = response,
-    max_depth      = max_depth,
-    check_accuracy = check_accuracy,
-    resolution     = res
-  )
-  if (length(result$plots) > 0) print(result$plots[[1]])
-  invisible(result)
 }

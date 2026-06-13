@@ -83,3 +83,4 @@ result <- predict_svm_tree(tree,
 )
 }
 }
+\keyword{internal}
