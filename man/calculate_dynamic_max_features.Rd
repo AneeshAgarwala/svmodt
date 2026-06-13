@@ -30,12 +30,12 @@ depth-dependent strategies).}
 \item{strategy}{Character string specifying how to determine the number of
 features. One of:
 \itemize{
-  \item `"constant"` – always use `base_max_features` (default).
-  \item `"decrease"` – exponentially decrease the number of features with depth.
-  \item `"random"` – randomly select the number of features within a range.
+  \item `"constant"` <U+2013> always use `base_max_features` (default).
+  \item `"decrease"` <U+2013> exponentially decrease the number of features with depth.
+  \item `"random"` <U+2013> randomly select the number of features within a range.
 }}
 
-\item{decrease_rate}{Numeric; factor (0–1] controlling how fast the number of
+\item{decrease_rate}{Numeric; factor (0<U+2013>1] controlling how fast the number of
 features decreases with depth when `strategy = "decrease"`. Default is 0.8.}
 
 \item{random_range}{Numeric vector of length 2 specifying the lower and upper

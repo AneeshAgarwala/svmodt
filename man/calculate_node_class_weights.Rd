@@ -17,9 +17,9 @@ calculate_node_class_weights(
 \item{class_weights}{Character string specifying the weighting strategy.
 Options are:
 \itemize{
-  \item `"none"` – no weighting (default).
-  \item `"balanced"` – weights inversely proportional to class frequencies.
-  \item `"custom"` – user-provided custom weights.
+  \item `"none"` <U+2013> no weighting (default).
+  \item `"balanced"` <U+2013> weights inversely proportional to class frequencies.
+  \item `"custom"` <U+2013> user-provided custom weights.
 }}
 
 \item{custom_class_weights}{Named numeric vector of custom class weights

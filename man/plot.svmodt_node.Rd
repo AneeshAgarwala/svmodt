@@ -60,19 +60,25 @@ Thin S3 wrapper that dispatches to \code{\link{plot_boundary}} or
 \dontrun{
 tree <- svm_split(wdbc, response = "diagnosis", max_depth = 3)
 
-# All-node boundary panels — prints first, returns list
-viz <- plot(tree, data = wdbc, response = "diagnosis",
-            plot.type = "boundary")
-viz$plots[[2]]  # second node
+# All-node boundary panels - prints first, returns list
+viz <- plot(tree,
+  data = wdbc, response = "diagnosis",
+  plot.type = "boundary"
+)
+viz$plots[[2]] # second node
 
 # Global decision surface
-plot(tree, data = wdbc, response = "diagnosis",
-     plot.type = "surface")
+plot(tree,
+  data = wdbc, response = "diagnosis",
+  plot.type = "surface"
+)
 
 # Surface with explicit feature axes
-plot(tree, data = wdbc, response = "diagnosis",
-     plot.type  = "surface",
-     features   = c("radius_mean", "concavity_mean"))
+plot(tree,
+  data = wdbc, response = "diagnosis",
+  plot.type = "surface",
+  features = c("radius_mean", "concavity_mean")
+)
 }
 
 }

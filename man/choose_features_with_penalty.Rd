@@ -27,7 +27,7 @@ choose_features_with_penalty(
 
 \item{penalize_used}{Logical; if \code{TRUE}, previously used features are penalized.}
 
-\item{penalty_weight}{Numeric (0–0.99); fraction by which to reduce the score/weight of used features.}
+\item{penalty_weight}{Numeric (0<U+2013>0.99); fraction by which to reduce the score/weight of used features.}
 
 \item{used_features}{Character vector of features previously used in the tree.}
 

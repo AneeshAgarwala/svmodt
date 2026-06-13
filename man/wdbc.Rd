@@ -41,7 +41,7 @@ A data frame with 569 rows and 32 columns:
 }
 }
 \source{
-Dr. William H. Wolberg, W. Nick Street, and Olvi L. Mangasarian, University of Wisconsin–Madison.
+Dr. William H. Wolberg, W. Nick Street, and Olvi L. Mangasarian, University of Wisconsin<U+2013>Madison.
 Original dataset available at: <https://archive.ics.uci.edu/dataset/17/breast+cancer+wisconsin+diagnostic>
 }
 \usage{

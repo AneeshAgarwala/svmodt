@@ -232,7 +232,7 @@ tree_random <- svm_split(
 
 ### Custom Class Weights
 
-We can also add custom class weights for our class labels in the model using domain expertise. This enables us to minimise classification of false negatives by assigning correct weights based on domain expertise. 
+We can also add custom class weights for our class labels in the model using domain expertise. This enables us to minimize classification of false negatives by assigning correct weights based on domain expertise. 
 
 ```{r custom-weights}
 # Give malignant cases higher weight
@@ -284,7 +284,8 @@ tree_wine <- svm_split(
 ```{r wine-multiclass-viz, fig.height=6, fig.width=8}
 plot_surface(tree = tree_wine, data = train_wine, response = "class")
 ```
-Figure \@ref(fig:wine-multiclass-viz) displays multiclass decision surface on the Wine dataset acorss two features in the tree. 
+
+Figure \@ref(fig:wine-multiclass-viz) displays multiclass decision surface on the Wine dataset across two features in the tree. 
 
 ### Tree Structure
 ```{r wine-structure}
@@ -295,7 +296,7 @@ print(tree_wine,
 )
 ```
 
-Each internal node shows the class used for the one-vs-rest binary split (`split: X vs rest`), the features selected at that node, and whether feature penalisation was active (`penalty = !`).
+Each internal node shows the class used for the one-vs-rest binary split (`split: X vs rest`), the features selected at that node, and whether feature penalization was active (`penalty = !`).
 
 ### Performance
 ```{r wine-eval}

@@ -58,8 +58,8 @@ tree <- svm_split(wdbc, response = "diagnosis", max_depth = 3)
 viz <- plot_boundary(tree, wdbc, response_col = "diagnosis")
 
 # Access individual node plots
-viz$plots[[1]]   # root node
-viz$plots[[2]]   # first child
+viz$plots[[1]] # root node
+viz$plots[[2]] # first child
 
 # Display all node plots in a grid
 library(patchwork)

@@ -71,7 +71,7 @@ fraction of features if `max_features_strategy = "random"`.}
 \item{penalize_used_features}{Logical; if TRUE, features used in ancestor nodes
 are penalized to encourage diversity.}
 
-\item{feature_penalty_weight}{Numeric (0–1) weight for penalizing previously used features.}
+\item{feature_penalty_weight}{Numeric (0<U+2013>1) weight for penalizing previously used features.}
 
 \item{n_subsets}{Number of Evaluated Random Feature combinations at each node when `feature_method = "random`}
 
@@ -103,7 +103,7 @@ A nested list representing the decision tree. Each node contains:
   \item{features}{Vector of features selected for this node.}
   \item{scaler}{Scaling information used at this node.}
   \item{left}{Left child node (decision value > 0).}
-  \item{right}{Right child node (decision value ≤ 0).}
+  \item{right}{Right child node (decision value <U+2264> 0).}
   \item{depth}{Depth of this node in the tree.}
   \item{n}{Number of samples at this node.}
   \item{max_features_used}{Number of features considered at this node.}
@@ -137,6 +137,5 @@ tree <- svm_split(
   verbose = TRUE
 )
 }
-
 
 }

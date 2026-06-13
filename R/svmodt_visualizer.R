@@ -436,6 +436,7 @@ plot_boundary <- function(tree, data,
 plot_surface <- function(tree, data, response,
                          features = NULL,
                          resolution = 200) {
+  predicted <- NULL
   if (!response %in% names(data)) {
     stop("plot_surface: response column '", response, "' not found in data")
   }
@@ -499,7 +500,7 @@ plot_surface <- function(tree, data, response,
   plot_data <- data.frame(
     x          = grid[[features[1]]],
     y          = grid[[features[2]]],
-    prediction = factor(pred_result$predictions)
+    predicted = factor(pred_result$predictions)
   )
   names(plot_data)[1:2] <- features
 
@@ -512,7 +513,7 @@ plot_surface <- function(tree, data, response,
     )
   ) +
     ggplot2::geom_tile(
-      ggplot2::aes(fill = prediction),
+      ggplot2::aes(fill = predicted),
       alpha = 0.25
     ) +
     ggplot2::geom_point(

@@ -27,7 +27,7 @@ A \pkg{ggplot2} object.  The background tiles show the predicted
 Predicts class labels across a 2-D grid using the complete tree (not
 individual node SVMs), then overlays the original data points.  Because
 predictions come from \code{\link{svm_predict_tree}}, multiclass trees are
-handled correctly — each grid cell receives the final leaf prediction which
+handled correctly - each grid cell receives the final leaf prediction which
 respects all OVR splits along the path.
 }
 \details{
@@ -44,12 +44,16 @@ tree <- svm_split(wdbc, response = "diagnosis", max_depth = 3)
 plot_surface(tree, wdbc, response = "diagnosis")
 
 # Explicit feature choice
-plot_surface(tree, wdbc, response = "diagnosis",
-             features = c("radius_mean", "concavity_mean"))
+plot_surface(tree, wdbc,
+  response = "diagnosis",
+  features = c("radius_mean", "concavity_mean")
+)
 
 # Multiclass (wine dataset)
 tree_w <- svm_split(wine, response = "class", max_depth = 4)
-plot_surface(tree_w, wine, response = "class",
-             features = c("flavanoids", "color_intensity"))
+plot_surface(tree_w, wine,
+  response = "class",
+  features = c("flavanoids", "color_intensity")
+)
 }
 }
