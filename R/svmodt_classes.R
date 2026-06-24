@@ -14,11 +14,15 @@ svmodt_tree <- function(x) {
 
 #  print generic + methods
 
-#' Print method for svmodt_node objects
+#' ' Print method for svmodt_node objects
 #' @param x An object of class \code{svmodt_node}.
 #' @param ... Further arguments passed to \code{\link{print_svm_tree}}.
+#' @return Invisibly returns \code{x} (the \code{svmodt_node} object), called
+#'   for its side effect of printing a human-readable summary of the tree
+#'   structure to the console.
 #' @method print svmodt_node
 #' @examples
+#' \donttest{
 #' tree <- svm_split(
 #'   data = wdbc,
 #'   response = "diagnosis",
@@ -29,6 +33,7 @@ svmodt_tree <- function(x) {
 #'   verbose = TRUE
 #' )
 #' print(tree)
+#' }
 #' @export
 print.svmodt_node <- function(x, ...) {
   print_svm_tree(x, ...)
@@ -58,27 +63,44 @@ print.svmodt_tree <- function(x, ...) {
 #' @param return_probs Logical; if \code{TRUE}, returns predictions and probabilities.
 #' @param calibrate_probs Logical; if \code{TRUE}, uses logistic calibration on decision values.
 #' @param ... Currently unused.
+#'
+#' @return
+#' If \code{return_probs = FALSE} (the default), a character vector of predicted
+#' class labels, one element per row of \code{newdata}.
+#'
+#' If \code{return_probs = TRUE}, a named list with two elements:
+#' \describe{
+#'   \item{predictions}{Character vector of predicted class labels (length =
+#'     \code{nrow(newdata)}).}
+#'   \item{probabilities}{Numeric matrix of class probabilities with
+#'     \code{nrow(newdata)} rows and one column per class. Column names are the
+#'     class labels; each row sums to 1. When \code{calibrate_probs = TRUE},
+#'     probabilities are derived from the SVM decision value via logistic
+#'     calibration; otherwise empirical class frequencies at the leaf node are
+#'     used.}
+#' }
+#'
 #' @method predict svmodt_node
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Train DTSVM tree
-#' tree <- svm_split_enhanced(
+#' tree <- svm_split(
 #'   data = wdbc,
 #'   response = "diagnosis",
 #'   max_depth = 3,
 #'   max_features = 2,
-#'   feature_method = "cor",
-#'   class_weights = "balanced_subsample"
+#'   feature_method = "cor"
 #' )
 #'
-#' # Predict on WDBC data
+#' # Predict on WDBC data (returns a character vector of class labels)
 #' preds <- predict(tree, newdata = wdbc)
 #'
 #' # Predict with probabilities and logistic calibration
-#' result <- predict_svm_tree(tree,
-#'   newdata = wdbc,
+#' result <- predict(tree, newdata = wdbc,
 #'   return_probs = TRUE, calibrate_probs = TRUE
 #' )
+#' head(result$predictions)
+#' head(result$probabilities)
 #' }
 #' @export
 predict.svmodt_node <- function(object, newdata, return_probs = FALSE,
@@ -124,7 +146,7 @@ trace_path <- function(object, ...) UseMethod("trace_path")
 #' @param ... Currently unused.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' tree <- svm_split(wdbc, response = "diagnosis", max_depth = 3)
 #' trace_path(tree, wdbc, sample_idx = 5)
 #' }

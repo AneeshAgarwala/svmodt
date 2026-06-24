@@ -22,7 +22,7 @@ plot_boundary(
 \code{data}.  Auto-detected when \code{NULL} (first factor/character
 column not used as a predictor).}
 
-\item{max_depth}{Maximum tree depth to visualise.  \code{NULL} (default)
+\item{max_depth}{Maximum tree depth to visualize.  \code{NULL} (default)
 shows all nodes.}
 
 \item{check_accuracy}{Logical; if \code{TRUE} (default), compute and

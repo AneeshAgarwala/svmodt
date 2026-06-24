@@ -14,15 +14,13 @@ trace_prediction_path(tree, sample_data, sample_idx = 1)
 \item{sample_idx}{Index of the sample to trace (default 1).}
 }
 \value{
-The predicted class for the sample. Prints path to console.
+The predicted class for the sample (a character string). Called
+  primarily for its side effect of printing the full decision path to the
+  console, including node features, SVM decision values, branch directions,
+  and the final predicted class label.
 }
 \description{
 Shows the path taken by a single sample through the SVM tree,
 including decision values, branches, and final prediction.
-}
-\examples{
-\dontrun{
-trace_prediction_path(tree, test_data, sample_idx = 1)
-}
 }
 \keyword{internal}

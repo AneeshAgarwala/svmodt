@@ -34,7 +34,7 @@ generic signature.}
 \item{features}{Length-2 character vector of axis features
 (\code{"surface"} only; default uses root node features).}
 
-\item{max_depth}{Maximum depth to visualise
+\item{max_depth}{Maximum depth to visualize
 (\code{"boundary"} only; default \code{NULL} = full tree).}
 
 \item{check_accuracy}{Logical; show per-node accuracy
@@ -57,7 +57,7 @@ Thin S3 wrapper that dispatches to \code{\link{plot_boundary}} or
 \code{\link{plot_surface}} depending on \code{plot.type}.
 }
 \examples{
-\dontrun{
+\donttest{
 tree <- svm_split(wdbc, response = "diagnosis", max_depth = 3)
 
 # All-node boundary panels - prints first, returns list

@@ -17,28 +17,44 @@
 
 \item{...}{Currently unused.}
 }
+\value{
+If \code{return_probs = FALSE} (the default), a character vector of predicted
+class labels, one element per row of \code{newdata}.
+
+If \code{return_probs = TRUE}, a named list with two elements:
+\describe{
+  \item{predictions}{Character vector of predicted class labels (length =
+    \code{nrow(newdata)}).}
+  \item{probabilities}{Numeric matrix of class probabilities with
+    \code{nrow(newdata)} rows and one column per class. Column names are the
+    class labels; each row sums to 1. When \code{calibrate_probs = TRUE},
+    probabilities are derived from the SVM decision value via logistic
+    calibration; otherwise empirical class frequencies at the leaf node are
+    used.}
+}
+}
 \description{
 Predict method for svmodt_node objects
 }
 \examples{
-\dontrun{
+\donttest{
 # Train DTSVM tree
-tree <- svm_split_enhanced(
+tree <- svm_split(
   data = wdbc,
   response = "diagnosis",
   max_depth = 3,
   max_features = 2,
-  feature_method = "cor",
-  class_weights = "balanced_subsample"
+  feature_method = "cor"
 )
 
-# Predict on WDBC data
+# Predict on WDBC data (returns a character vector of class labels)
 preds <- predict(tree, newdata = wdbc)
 
 # Predict with probabilities and logistic calibration
-result <- predict_svm_tree(tree,
-  newdata = wdbc,
+result <- predict(tree, newdata = wdbc,
   return_probs = TRUE, calibrate_probs = TRUE
 )
+head(result$predictions)
+head(result$probabilities)
 }
 }

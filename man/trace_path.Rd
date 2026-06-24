@@ -32,7 +32,7 @@ final predicted class at the leaf.
 
 }}
 \examples{
-\dontrun{
+\donttest{
 tree <- svm_split(wdbc, response = "diagnosis", max_depth = 3)
 trace_path(tree, wdbc, sample_idx = 5)
 }

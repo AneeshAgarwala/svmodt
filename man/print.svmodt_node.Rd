@@ -2,7 +2,7 @@
 % Please edit documentation in R/svmodt_classes.R
 \name{print.svmodt_node}
 \alias{print.svmodt_node}
-\title{Print method for svmodt_node objects}
+\title{' Print method for svmodt_node objects}
 \usage{
 \method{print}{svmodt_node}(x, ...)
 }
@@ -11,10 +11,16 @@
 
 \item{...}{Further arguments passed to \code{\link{print_svm_tree}}.}
 }
+\value{
+Invisibly returns \code{x} (the \code{svmodt_node} object), called
+  for its side effect of printing a human-readable summary of the tree
+  structure to the console.
+}
 \description{
-Print method for svmodt_node objects
+' Print method for svmodt_node objects
 }
 \examples{
+\donttest{
 tree <- svm_split(
   data = wdbc,
   response = "diagnosis",
@@ -25,4 +31,5 @@ tree <- svm_split(
   verbose = TRUE
 )
 print(tree)
+}
 }

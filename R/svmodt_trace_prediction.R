@@ -6,11 +6,10 @@
 #' @param tree The tree object.
 #' @param sample_data Data frame containing the sample(s).
 #' @param sample_idx Index of the sample to trace (default 1).
-#' @return The predicted class for the sample. Prints path to console.
-#' @examples
-#' \dontrun{
-#' trace_prediction_path(tree, test_data, sample_idx = 1)
-#' }
+#' @return The predicted class for the sample (a character string). Called
+#'   primarily for its side effect of printing the full decision path to the
+#'   console, including node features, SVM decision values, branch directions,
+#'   and the final predicted class label.
 #' @keywords internal
 trace_prediction_path <- function(tree, sample_data, sample_idx = 1) {
   cat("=== Tracing Prediction Path ===\n")

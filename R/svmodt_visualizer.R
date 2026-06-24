@@ -216,7 +216,7 @@ plot_node_boundary <- function(data, node_features, svm_model, scaler,
 #' @param response_col Character string naming the response column in
 #'   \code{data}.  Auto-detected when \code{NULL} (first factor/character
 #'   column not used as a predictor).
-#' @param max_depth Maximum tree depth to visualise.  \code{NULL} (default)
+#' @param max_depth Maximum tree depth to visualize.  \code{NULL} (default)
 #'   shows all nodes.
 #' @param check_accuracy Logical; if \code{TRUE} (default), compute and
 #'   display training accuracy at each node.
@@ -532,7 +532,7 @@ plot_surface <- function(tree, data, response,
 #' @param plot.type One of \code{"surface"} (default) or \code{"boundary"}.
 #' @param features Length-2 character vector of axis features
 #'   (\code{"surface"} only; default uses root node features).
-#' @param max_depth Maximum depth to visualise
+#' @param max_depth Maximum depth to visualize
 #'   (\code{"boundary"} only; default \code{NULL} = full tree).
 #' @param check_accuracy Logical; show per-node accuracy
 #'   (\code{"boundary"} only; default \code{TRUE}).
@@ -549,7 +549,7 @@ plot_surface <- function(tree, data, response,
 #' }
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' tree <- svm_split(wdbc, response = "diagnosis", max_depth = 3)
 #'
 #' # All-node boundary panels - prints first, returns list

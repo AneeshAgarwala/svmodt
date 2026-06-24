@@ -96,6 +96,5 @@ return a flag to continue normal processing.
 - If only one child is too small, the other child is recursively split.
 - This function ensures that tree nodes respect the minimum sample requirement,
   avoiding invalid splits that could destabilize the SVM-based tree.
-- **FIXED**: Properly passes features that remain after constant removal
 }
 \keyword{internal}

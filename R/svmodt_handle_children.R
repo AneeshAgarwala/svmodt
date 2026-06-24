@@ -40,7 +40,6 @@
 #' - If only one child is too small, the other child is recursively split.
 #' - This function ensures that tree nodes respect the minimum sample requirement,
 #'   avoiding invalid splits that could destabilize the SVM-based tree.
-#' - **FIXED**: Properly passes features that remain after constant removal
 #'
 #' @keywords internal
 handle_small_children <- function(left_idx, right_idx, min_samples,

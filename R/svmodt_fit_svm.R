@@ -21,16 +21,6 @@
 #'   \code{\link[e1071]{svm}} via its \code{class.weights} parameter.
 #' - Returns \code{NULL} if data is empty or model fitting fails.
 #'
-#' @examples
-#' \dontrun{
-#' library(e1071)
-#' set.seed(1)
-#' X <- data.frame(x1 = rnorm(100), x2 = rnorm(100))
-#' y <- factor(sample(c("A", "B"), 100, replace = TRUE))
-#' weights <- c(A = 1, B = 3)
-#' model <- fit_svm_with_weights(X, y, class_weights = weights, verbose = TRUE)
-#' }
-#'
 #' @keywords internal
 fit_svm_with_weights <- function(X_scaled, y, class_weights_vec,
                                  verbose = FALSE, ...) {
